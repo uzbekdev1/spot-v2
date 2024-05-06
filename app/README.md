@@ -1,1 +1,1 @@
-# Spot Client
+# Spot App
