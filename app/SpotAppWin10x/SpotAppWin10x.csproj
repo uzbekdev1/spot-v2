@@ -1,0 +1,291 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5339B7A9-1570-4ADB-8EE2-7983A1532BB7}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>SpotApp</RootNamespace>
+    <AssemblyName>SpotApp</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.0</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Build\DebugWin10x\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Build\ReleaseWin10x\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>favicon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Build\Debug\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>..\Build\Release\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <Optimize>false</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisIgnoreGeneratedCode>false</CodeAnalysisIgnoreGeneratedCode>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Build\DebugWin10x\</OutputPath>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>..\Build\ReleaseWin10x\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <Optimize>false</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreGeneratedCode>false</CodeAnalysisIgnoreGeneratedCode>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net, Version=2.0.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>..\Libs\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutBox.Designer.cs">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Conrtols\ContractsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Conrtols\ContractsControl.Designer.cs">
+      <DependentUpon>ContractsControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\ApiResponse.cs" />
+    <Compile Include="Core\AppSettings.cs" />
+    <Compile Include="Core\FormSettings.cs" />
+    <Compile Include="Dtos\AllContract.cs" />
+    <Compile Include="Dtos\ContractItem.cs" />
+    <Compile Include="Dtos\MyOrderResult.cs" />
+    <Compile Include="Dtos\NewSpotContract.cs" />
+    <Compile Include="Dtos\OrderItem.cs" />
+    <Compile Include="Dtos\ClientItem.cs" />
+    <Compile Include="Dtos\ContactPart.cs" />
+    <Compile Include="Dtos\OrderTemplate.cs" />
+    <Compile Include="Dtos\Quote.cs" />
+    <Compile Include="Dtos\RangeContract.cs" />
+    <Compile Include="Dtos\SaleContract.cs" />
+    <Compile Include="Dtos\SelectItem.cs" />
+    <Compile Include="Forms\AllBidsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AllBidsForm.Designer.cs">
+      <DependentUpon>AllBidsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ContractQuoteForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ContractQuoteForm.Designer.cs">
+      <DependentUpon>ContractQuoteForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MyClientsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MyClientsForm.Designer.cs">
+      <DependentUpon>MyClientsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SendAllNewBidForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SendAllNewBidForm.Designer.cs">
+      <DependentUpon>SendAllNewBidForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\CryptographyHelper.cs" />
+    <Compile Include="Helpers\LogHelper.cs" />
+    <Compile Include="Helpers\RequestHelper.cs" />
+    <Compile Include="Helpers\SettingsHelper.cs" />
+    <Compile Include="Helpers\UIHelper.cs" />
+    <Compile Include="LoginForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LoginForm.Designer.cs">
+      <DependentUpon>LoginForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MyBidsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MyBidsForm.Designer.cs">
+      <DependentUpon>MyBidsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\NewBidForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NewBidForm.Designer.cs">
+      <DependentUpon>NewBidForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AllContractDesign.cs" />
+    <Compile Include="Models\ClientItemDesign.cs" />
+    <Compile Include="Models\MainTabs.cs" />
+    <Compile Include="Models\MyOrderDesignV2.cs" />
+    <Compile Include="Models\NewSpotContractDesign.cs" />
+    <Compile Include="Models\OrderFormDesign.cs" />
+    <Compile Include="Models\OrderItemDesign.cs" />
+    <Compile Include="Models\OrderForm.cs" />
+    <Compile Include="Dtos\UserInfo.cs" />
+    <Compile Include="Helpers\Win32Helper.cs" />
+    <Compile Include="Models\OrderLog.cs" />
+    <Compile Include="Models\OrderTemplateDesign.cs" />
+    <Compile Include="Models\QuoteDesign.cs" />
+    <Compile Include="Models\RangeContractDesign.cs" />
+    <Compile Include="Models\SaleContractDesign.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\SpotServiceV2.cs" />
+    <Compile Include="Services\TimeService.cs" />
+    <Content Include="Logs\readme.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Settings\readme.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="Properties\DataSources\SpotApp.Models.AllContractDesign.datasource" />
+    <None Include="Properties\DataSources\SpotApp.Models.ClientItemDesign.datasource" />
+    <None Include="Properties\DataSources\SpotApp.Models.MainContractDesign.datasource" />
+    <None Include="Properties\DataSources\SpotApp.Models.MyOrderDesign.datasource" />
+    <None Include="Properties\DataSources\SpotApp.Models.MyOrderDesignV2.datasource" />
+    <None Include="Properties\DataSources\SpotApp.Models.NewSpotContractDesign.datasource" />
+    <None Include="Properties\DataSources\SpotApp.Models.OrderFormDesign.datasource" />
+    <None Include="Properties\DataSources\SpotApp.Models.OrderItemDesign.datasource" />
+    <None Include="Properties\DataSources\SpotApp.Models.OrderTemplateDesign.datasource" />
+    <None Include="Properties\DataSources\SpotApp.Models.QuoteDesign.datasource" />
+    <None Include="Properties\DataSources\SpotApp.Models.RangeContractDesign.datasource" />
+    <None Include="Properties\DataSources\SpotApp.Models.SaleContractDesign.datasource" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="favicon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="AboutBox.resx">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AllBidsForm.resx">
+      <DependentUpon>AllBidsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ContractQuoteForm.resx">
+      <DependentUpon>ContractQuoteForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MyBidsForm.resx">
+      <DependentUpon>MyBidsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MyClientsForm.resx">
+      <DependentUpon>MyClientsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NewBidForm.resx">
+      <DependentUpon>NewBidForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SendAllNewBidForm.resx">
+      <DependentUpon>SendAllNewBidForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LoginForm.resx">
+      <DependentUpon>LoginForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
