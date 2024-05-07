@@ -11,7 +11,7 @@
 
         public const string AppName = "SpotApp";
 
-        public const string AppVersion = "30042024";
+        public const string AppVersion = "07052024";
 
     }
 }

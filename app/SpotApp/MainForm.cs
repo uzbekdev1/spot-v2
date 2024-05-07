@@ -281,7 +281,7 @@ namespace SpotApp
             {
                 WindowOrder = _bidsWindowCounter,
                 Tag = $"newBidForm{_bidsWindowCounter}",
-                Name = $"newBidForm{_bidsWindowCounter}"
+                Name = SettingsHelper.GenerateOrderName("newBidForm", _bidsWindowCounter)
             };
 
             if (contractsControl1.SelectedTemplate != null)
@@ -548,6 +548,8 @@ namespace SpotApp
 
             SettingsHelper.SetForm(_myClientsForm);
 
+            SettingsHelper.SetForm(_contractQuoteForm);
+
             MessageBox.Show("Все формы успешно сохранены", "Настройки");
         }
 
@@ -619,7 +621,7 @@ namespace SpotApp
             _contractQuoteForm = new ContractQuoteForm(contractsControl1.SelectedContract, _userInfo.Token)
             {
                 Tag = $"contractQuoteForm{_contractQuoteFormCounter}",
-                Name = $"contractQuoteForm{_contractQuoteFormCounter}"
+                Name = SettingsHelper.GenerateOrderName("contractQuoteForm", _contractQuoteFormCounter)
             };
 
             _contractQuoteForm.FormClosing += (object sender1, FormClosingEventArgs e1) =>

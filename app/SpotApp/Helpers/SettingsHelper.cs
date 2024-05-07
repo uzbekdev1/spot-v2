@@ -24,9 +24,10 @@ namespace SpotApp.Helpers
             {
                 Location = control.Location,
                 Size = control.Size,
-                Name = control.Name,
+                Name = GetCleanName(control.Name),
             }, Formatting.Indented);
-            var path = Path.Combine(_root, $"{control.Name}.json");
+
+            var path = Path.Combine(_root, $"{GetCleanName(control.Name)}.json");
 
             File.WriteAllText(path, json);
         }
@@ -36,7 +37,7 @@ namespace SpotApp.Helpers
             if (control == null)
                 return null;
 
-            var path = Path.Combine(_root, $"{control.Name}.json");
+            var path = Path.Combine(_root, $"{GetCleanName(control.Name)}.json");
 
             if (!File.Exists(path))
             {
@@ -48,5 +49,24 @@ namespace SpotApp.Helpers
             return JsonConvert.DeserializeObject<FormSettings>(json);
         }
 
+        public static string GenerateOrderName(string name, int? order = null)
+        {
+            if (order != null && order.HasValue)
+                return $"{name}_{order.Value}";
+            return name;
+        }
+
+        private static string GetCleanName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return string.Empty;
+
+            if (name.IndexOf("_") < 0)
+                return name;
+
+            var clean = name.Substring(0, name.LastIndexOf("_"));
+
+            return clean;
+        }
     }
 }
