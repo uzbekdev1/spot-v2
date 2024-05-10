@@ -1,4 +1,5 @@
 ﻿using log4net;
+using SpotApp.Exceptions;
 using SpotApp.Helpers;
 using SpotApp.Models;
 using SpotApp.Services;
@@ -67,11 +68,15 @@ namespace SpotApp.Forms
                     contractQuoteGridView.Refresh();
                 });
 
-                _logger.InfoFormat($"Contact quotations: contact {_contractId}");
+                _logger.Info($"PC~ContractQuoteForm.LoadData contractId:{_contractId} {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"PC~ContractQuoteForm.LoadData contractId:{_contractId} Error:{ex.Message} {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
             }
             finally
             {
-                _logger.Info($"PC~ContractQuoteForm.LoadData {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+
             }
         }
 

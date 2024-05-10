@@ -84,8 +84,15 @@ namespace SpotApp.Forms
             BtnOk.Enabled = SendAllCheckBox.Checked;
             if (SendAllCheckBox.Checked)
             {
-                var servise = new SpotServiceV2();
-                _timeDifference = servise.GetTimeV2(_token).Subtract(DateTime.Now).TotalMilliseconds;
+                try
+                {
+                    var servise = new SpotServiceV2();
+                    _timeDifference = servise.GetTimeV2(_token).Subtract(DateTime.Now).TotalMilliseconds;
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(ex.Message);
+                }
                 BtnOk.Focus();
             }
         }

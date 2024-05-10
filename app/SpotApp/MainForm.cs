@@ -1,6 +1,7 @@
 ﻿using log4net;
 using SpotApp.Core;
 using SpotApp.Dtos;
+using SpotApp.Exceptions;
 using SpotApp.Forms;
 using SpotApp.Helpers;
 using SpotApp.Models;
@@ -50,24 +51,36 @@ namespace SpotApp
 
         private void ReloadTime()
         {
-            var service = new SpotServiceV2();
-            _serverTime = service.GetTimeV2(_userInfo.Token);
-
-            var clientTime = DateTime.Now;
-
-            int compareTime = DateTime.Compare(_serverTime, clientTime);
-
-            if (compareTime > 0)
+            try
             {
-                _timeDifference = _serverTime.Subtract(clientTime).TotalMilliseconds;
+                var service = new SpotServiceV2();
+                _serverTime = service.GetTimeV2(_userInfo.Token);
+
+                var clientTime = DateTime.Now;
+
+                int compareTime = DateTime.Compare(_serverTime, clientTime);
+
+                if (compareTime > 0)
+                {
+                    _timeDifference = _serverTime.Subtract(clientTime).TotalMilliseconds;
+                }
+                else if (compareTime < 0)
+                {
+                    _timeDifference = (-1.0) * clientTime.Subtract(_serverTime).TotalMilliseconds;
+                }
+                else
+                {
+                    _timeDifference = 0.0;
+                }
             }
-            else if (compareTime < 0)
+            catch (Exception ex)
             {
-                _timeDifference = (-1.0) * clientTime.Subtract(_serverTime).TotalMilliseconds;
+                _logger.Error($"PC~MainForm.ReloadTime Error:{ex.Message}");
+                return;
             }
-            else
+            finally
             {
-                _timeDifference = 0.0;
+
             }
         }
 
@@ -681,6 +694,5 @@ namespace SpotApp
             _contractQuoteFormCounter++;
             _contractQuoteFormList.Add(_contractQuoteForm);
         }
-
     }
 }

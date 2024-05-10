@@ -1,5 +1,6 @@
 ﻿using log4net;
 using SpotApp.Dtos;
+using SpotApp.Exceptions;
 using SpotApp.Helpers;
 using SpotApp.Models;
 using SpotApp.Services;
@@ -58,11 +59,15 @@ namespace SpotApp.Forms
                     myBidsGridV2.Refresh();
                 });
 
-                _logger.InfoFormat("My bids: ok...");
+                _logger.Info($"PC~MyBidsForm.LoadData {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"PC~MyBidsForm.LoadData Error:{ex.Message} {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
             }
             finally
             {
-                _logger.Info($"PC~MyBidsForm.LoadData {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+
             }
         }
 

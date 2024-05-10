@@ -1,6 +1,7 @@
 ﻿using log4net;
 using SpotApp.Core;
 using SpotApp.Dtos;
+using SpotApp.Exceptions;
 using SpotApp.Helpers;
 using SpotApp.Models;
 using SpotApp.Services;
@@ -145,10 +146,25 @@ namespace SpotApp.Forms
 
         private void LoadClients()
         {
-            var service = new SpotServiceV2();
-            var clients = service.ClientsDDL(_token);
+            string startDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            try
+            {
+                var service = new SpotServiceV2();
+                var clients = service.ClientsDDL(_token);
 
-            RefreshClients(clients);
+                RefreshClients(clients);
+
+                _logger.Info($"PC~NewBidForm.LoadClients {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+            }
+            catch (TooManyRequestsException ex)
+            {
+                _logger.Error($"PC~NewBidForm.LoadClients Error:{ex.Message} {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+                return;
+            }
+            finally
+            {
+
+            }
         }
 
         private void LoadLimits(int? selectedValue = null)
@@ -248,29 +264,43 @@ namespace SpotApp.Forms
                     return;
                 }
 
-                var service = new SpotServiceV2();
-                var items = service.RangeContracts(_selectContact.contractId, _token);
-
-                var results = new List<RangeContractDesign>();
-
-                foreach (var item in items)
+                string startDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+                try
                 {
-                    results.Add(new RangeContractDesign
+                    var service = new SpotServiceV2();
+                    var items = service.RangeContracts(_selectContact.contractId, _token);
+
+                    var results = new List<RangeContractDesign>();
+
+                    foreach (var item in items)
                     {
-                        priceDate = item.priceDate.ToString("dd.MM.yyyy"),
-                        startPrice = UIHelper.NumberFormat(item.startPrice),
-                        minPrice = UIHelper.NumberFormat(item.minPrice),
-                        avgPrice = UIHelper.NumberFormat(item.avgPrice),
-                        maxPrice = UIHelper.NumberFormat(item.maxPrice),
-                        pricePercent = UIHelper.NumberFormat(item.pricePercent),
-                    });
-                }
+                        results.Add(new RangeContractDesign
+                        {
+                            priceDate = item.priceDate.ToString("dd.MM.yyyy"),
+                            startPrice = UIHelper.NumberFormat(item.startPrice),
+                            minPrice = UIHelper.NumberFormat(item.minPrice),
+                            avgPrice = UIHelper.NumberFormat(item.avgPrice),
+                            maxPrice = UIHelper.NumberFormat(item.maxPrice),
+                            pricePercent = UIHelper.NumberFormat(item.pricePercent),
+                        });
+                    }
 
-                UIHelper.SafeInvoke(this, (form) =>
+                    UIHelper.SafeInvoke(this, (form) =>
+                    {
+                        contrRangeDataGridView.DataSource = results;
+                        contrRangeDataGridView.Refresh();
+                    });
+
+                    _logger.Info($"PC~NewBidForm.LoadContractRange {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+                }
+                catch (Exception ex)
                 {
-                    contrRangeDataGridView.DataSource = results;
-                    contrRangeDataGridView.Refresh();
-                });
+                    _logger.Error($"PC~NewBidForm.LoadContractRange Error:{ex.Message} {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+                }
+                finally
+                {
+
+                }
             }
         }
 
@@ -462,10 +492,16 @@ namespace SpotApp.Forms
 
                     BtnOk.Enabled = ValidateForm();
                 }
+
+                _logger.Info($"PC~NewBidForm.TxtContractNumber_TextChanged {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"PC~NewBidForm.TxtContractNumber_TextChanged Error:{ex.Message} {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
             }
             finally
             {
-                _logger.Info($"PC~NewBidForm.TxtContractNumber_TextChanged {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+
             }
         }
 
@@ -567,7 +603,7 @@ namespace SpotApp.Forms
 
         private void BntReloadClients_Click(object sender, EventArgs e)
         {
-            string startDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            //string startDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
             try
             {
                 UIHelper.RunAsync(this, form =>
@@ -577,7 +613,7 @@ namespace SpotApp.Forms
             }
             finally
             {
-                _logger.Info($"PC~NewBidForm.BntReloadClients_Click {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+                //_logger.Info($"PC~NewBidForm.BntReloadClients_Click {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
             }
         }
 
@@ -600,7 +636,7 @@ namespace SpotApp.Forms
             }
             finally
             {
-                _logger.Info($"PC~NewBidForm.ContractRangeCheckBox_CheckedChanged {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+
             }
         }
 

@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SpotApp.Core;
 using SpotApp.Dtos;
+using SpotApp.Exceptions;
 using SpotApp.Helpers;
 using SpotApp.Models;
 using System;
@@ -119,6 +120,14 @@ namespace SpotApp.Services
 
                 return new DateTime(1970, 1, 1) + TimeSpan.FromMilliseconds(tick);
             }
+            catch (WebException ex)
+            {
+                if (ex.Status == WebExceptionStatus.ProtocolError)
+                    if (((HttpWebResponse)ex.Response).StatusCode == (HttpStatusCode)429)
+                        throw new TooManyRequestsException();
+
+                return DateTime.Now;
+            }
             catch (Exception ex)
             {
                 _logger.Error($"PC~SpotServiceV2.GetTimeV2 {methodStage} - {ex.Message}");
@@ -142,16 +151,31 @@ namespace SpotApp.Services
 
         public List<MyOrderResult> MyOrders(string token)
         {
-            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/MyOrders", token);
-            if (content.Length == 0) throw new Exception("Connection error");
-            var response = JsonConvert.DeserializeObject<ApiResponse<List<MyOrderResult>>>(content);
-
-            if (!response.Success)
+            try
             {
-                throw new Exception(response.Error);
-            }
+                var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/MyOrders", token);
+                if (content.Length == 0) throw new Exception("Connection error");
+                var response = JsonConvert.DeserializeObject<ApiResponse<List<MyOrderResult>>>(content);
 
-            return response.Data;
+                if (!response.Success)
+                {
+                    throw new Exception(response.Error);
+                }
+
+                return response.Data;
+            }
+            catch (WebException ex)
+            {
+                if (ex.Status == WebExceptionStatus.ProtocolError)
+                    if (((HttpWebResponse)ex.Response).StatusCode == (HttpStatusCode)429)
+                        throw new TooManyRequestsException();
+
+                throw;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public List<AllContract> AllContracts(int partId, string search, bool isProd, string token)
@@ -184,16 +208,31 @@ namespace SpotApp.Services
 
         public List<ClientItem> Clients(string token)
         {
-            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/GetClients", token);
-            if (content.Length == 0) throw new Exception("Connection error");
-            var response = JsonConvert.DeserializeObject<ApiResponse<List<ClientItem>>>(content);
-
-            if (!response.Success)
+            try
             {
-                throw new Exception(response.Error);
-            }
+                var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/GetClients", token);
+                if (content.Length == 0) throw new Exception("Connection error");
+                var response = JsonConvert.DeserializeObject<ApiResponse<List<ClientItem>>>(content);
 
-            return response.Data;
+                if (!response.Success)
+                {
+                    throw new Exception(response.Error);
+                }
+
+                return response.Data;
+            }
+            catch (WebException ex)
+            {
+                if (ex.Status == WebExceptionStatus.ProtocolError)
+                    if (((HttpWebResponse)ex.Response).StatusCode == (HttpStatusCode)429)
+                        throw new TooManyRequestsException();
+
+                throw;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public List<ContactPart> Parts(string token)
@@ -212,44 +251,92 @@ namespace SpotApp.Services
 
         public List<OrderItem> AllOrders(int contractId, string token)
         {
-            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/GetOrders/{contractId}", token);
-            if (content.Length == 0) throw new Exception("Connection error");
-            var response = JsonConvert.DeserializeObject<ApiResponse<List<OrderItem>>>(content);
-
-            if (!response.Success)
+            try
             {
-                throw new Exception(response.Error);
-            }
+                var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/GetOrders/{contractId}", token);
+                if (content.Length == 0) throw new Exception("Connection error");
+                var response = JsonConvert.DeserializeObject<ApiResponse<List<OrderItem>>>(content);
 
-            return response.Data;
+                if (!response.Success)
+                {
+                    throw new Exception(response.Error);
+                }
+
+                return response.Data;
+            }
+            catch (WebException ex)
+            {
+                if (ex.Status == WebExceptionStatus.ProtocolError)
+                    if (((HttpWebResponse)ex.Response).StatusCode == (HttpStatusCode)429)
+                        throw new TooManyRequestsException();
+
+                throw;
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         public List<ContractItem> GetContractsWithId(string search, string token)
         {
-            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/GetContractsWithId?search={search}", token);
-            if (content.Length == 0) throw new Exception("Connection error");
-            var response = JsonConvert.DeserializeObject<ApiResponse<List<ContractItem>>>(content);
-
-            if (!response.Success)
+            try
             {
-                throw new Exception(response.Error);
-            }
+                var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/GetContractsWithId?search={search}", token);
+                if (content.Length == 0) throw new Exception("Connection error");
+                var response = JsonConvert.DeserializeObject<ApiResponse<List<ContractItem>>>(content);
 
-            return response.Data;
+                if (!response.Success)
+                {
+                    throw new Exception(response.Error);
+                }
+
+                return response.Data;
+            }
+            catch (WebException ex)
+            {
+                if (ex.Status == WebExceptionStatus.ProtocolError)
+                    if (((HttpWebResponse)ex.Response).StatusCode == (HttpStatusCode)429)
+                        throw new TooManyRequestsException();
+
+                throw;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public List<ClientItem> SearchClient(int inp, string token)
         {
-            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/SearchClient?inp={inp}", token);
-            if (content.Length == 0) throw new Exception("Connection error");
-            var response = JsonConvert.DeserializeObject<ApiResponse<List<ClientItem>>>(content);
-
-            if (!response.Success)
+            try
             {
-                throw new Exception(response.Error);
-            }
+                var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/SearchClient?inp={inp}", token);
+                if (content.Length == 0) throw new Exception("Connection error");
+                var response = JsonConvert.DeserializeObject<ApiResponse<List<ClientItem>>>(content);
 
-            return response.Data;
+                if (!response.Success)
+                {
+                    throw new Exception(response.Error);
+                }
+
+                return response.Data;
+            }
+            catch (WebException ex)
+            {
+                if (ex.Status == WebExceptionStatus.ProtocolError)
+                    if (((HttpWebResponse)ex.Response).StatusCode == (HttpStatusCode)429)
+                    {
+                        _logger.Error(ex.Message);
+                        return new List<ClientItem>();
+                    }
+
+                throw;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public List<ClientItem> SetClient(int inp, string token)
@@ -310,30 +397,60 @@ namespace SpotApp.Services
 
         public List<Quote> Quotes(int contractId, string token)
         {
-            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/GetQuotes?contractId={contractId}", token);
-            if (content.Length == 0) throw new Exception("Connection error");
-            var response = JsonConvert.DeserializeObject<ApiResponse<List<Quote>>>(content);
-
-            if (!response.Success)
+            try
             {
-                throw new Exception(response.Error);
-            }
+                var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/GetQuotes?contractId={contractId}", token);
+                if (content.Length == 0) throw new Exception("Connection error");
+                var response = JsonConvert.DeserializeObject<ApiResponse<List<Quote>>>(content);
 
-            return response.Data;
+                if (!response.Success)
+                {
+                    throw new Exception(response.Error);
+                }
+
+                return response.Data;
+            }
+            catch (WebException ex)
+            {
+                if (ex.Status == WebExceptionStatus.ProtocolError)
+                    if (((HttpWebResponse)ex.Response).StatusCode == (HttpStatusCode)429)
+                        throw new TooManyRequestsException();
+
+                throw;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public List<RangeContract> RangeContracts(int contractId, string token)
         {
-            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/RangeContracts?contractId={contractId}", token);
-            if (content.Length == 0) throw new Exception("Connection error");
-            var response = JsonConvert.DeserializeObject<ApiResponse<List<RangeContract>>>(content);
-
-            if (!response.Success)
+            try
             {
-                throw new Exception(response.Error);
-            }
+                var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/RangeContracts?contractId={contractId}", token);
+                if (content.Length == 0) throw new Exception("Connection error");
+                var response = JsonConvert.DeserializeObject<ApiResponse<List<RangeContract>>>(content);
 
-            return response.Data;
+                if (!response.Success)
+                {
+                    throw new Exception(response.Error);
+                }
+
+                return response.Data;
+            }
+            catch (WebException ex)
+            {
+                if (ex.Status == WebExceptionStatus.ProtocolError)
+                    if (((HttpWebResponse)ex.Response).StatusCode == (HttpStatusCode)429)
+                        throw new TooManyRequestsException();
+
+                throw;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public void CreateOrderV2(OrderForm model, string token)

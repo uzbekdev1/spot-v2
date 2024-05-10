@@ -144,6 +144,7 @@
     <Compile Include="Dtos\RangeContract.cs" />
     <Compile Include="Dtos\SaleContract.cs" />
     <Compile Include="Dtos\SelectItem.cs" />
+    <Compile Include="Exceptions\TooManyRequestsException.cs" />
     <Compile Include="Forms\AllBidsForm.cs">
       <SubType>Form</SubType>
     </Compile>

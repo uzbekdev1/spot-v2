@@ -1,5 +1,6 @@
 ﻿using log4net;
 using SpotApp.Dtos;
+using SpotApp.Exceptions;
 using SpotApp.Helpers;
 using SpotApp.Models;
 using SpotApp.Services;
@@ -7,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Reflection;
+using System.Runtime.InteropServices.ComTypes;
 using System.Windows.Forms;
 
 namespace SpotApp.Forms
@@ -31,30 +33,42 @@ namespace SpotApp.Forms
 
         private void LoadData()
         {
-            var service = new SpotServiceV2();
-            var items = service.Clients(_token);
-
-
-            var results = new List<ClientItemDesign>();
-
-            foreach (var item in items)
+            string startDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            try
             {
-                results.Add(new ClientItemDesign
+                var service = new SpotServiceV2();
+                var items = service.Clients(_token);
+
+
+                var results = new List<ClientItemDesign>();
+
+                foreach (var item in items)
                 {
-                    inp = item.inp,
-                    name = item.name
+                    results.Add(new ClientItemDesign
+                    {
+                        inp = item.inp,
+                        name = item.name
+                    });
+                }
+
+                _myClients = items;
+
+                UIHelper.SafeInvoke(this, (form) =>
+                {
+                    myClientsGridView.DataSource = results;
+                    myClientsGridView.Refresh();
                 });
+
+                _logger.Info($"PC~MyClientsForm.LoadData {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
             }
-
-            _myClients = items;
-
-            UIHelper.SafeInvoke(this, (form) =>
+            catch (Exception ex)
             {
-                myClientsGridView.DataSource = results;
-                myClientsGridView.Refresh();
-            });
+                _logger.Error($"PC~MyClientsForm.LoadData Error:{ex.Message} {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+            }
+            finally
+            {
 
-            _logger.InfoFormat("My clients: ok...");
+            }
         }
 
         public void UpdateMyClients()
@@ -176,20 +190,30 @@ namespace SpotApp.Forms
                 return;
             }
 
-            var service = new SpotServiceV2();
-            var clientItems = service.SearchClient(inpnumber, _token);
-
-            if (clientItems.Count > 0)
+            try
             {
-                if (clientItems[0].inp > 0)
-                {
-                    _selectClient = clientItems[0];
-                    btnAdd.Enabled = true;
-                    LblNameClient.Text = clientItems[0].name;
-                    LblNameClient.ForeColor = _myClients.Exists(x => x.inp == clientItems[0].inp) ? Color.Red : Color.Green;
-                    LblNameClient.Visible = true;
+                var service = new SpotServiceV2();
+                var clientItems = service.SearchClient(inpnumber, _token);
 
-                    _logger.InfoFormat($"Search client: inp - {inpnumber}");
+                if (clientItems.Count > 0)
+                {
+                    if (clientItems[0].inp > 0)
+                    {
+                        _selectClient = clientItems[0];
+                        btnAdd.Enabled = true;
+                        LblNameClient.Text = clientItems[0].name;
+                        LblNameClient.ForeColor = _myClients.Exists(x => x.inp == clientItems[0].inp) ? Color.Red : Color.Green;
+                        LblNameClient.Visible = true;
+
+                        _logger.InfoFormat($"Search client: inp - {inpnumber}");
+                    }
+                    else
+                    {
+                        _selectClient = null;
+                        btnAdd.Enabled = false;
+                        LblNameClient.Text = "";
+                        LblNameClient.Visible = false;
+                    }
                 }
                 else
                 {
@@ -198,13 +222,12 @@ namespace SpotApp.Forms
                     LblNameClient.Text = "";
                     LblNameClient.Visible = false;
                 }
+
+                _logger.Info($"PC~MyClientsForm.BtnSearch_Click inpnumber:{inpnumber}");
             }
-            else
+            catch (Exception ex)
             {
-                _selectClient = null;
-                btnAdd.Enabled = false;
-                LblNameClient.Text = "";
-                LblNameClient.Visible = false;
+                _logger.Error($"PC~MyClientsForm.BtnSearch_Click Error: {ex.Message}");
             }
         }
 

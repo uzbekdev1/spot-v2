@@ -327,6 +327,7 @@
             this.contractsControl1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.contractsControl1.Name = "contractsControl1";
             this.contractsControl1.SelectedContract = 0;
+            this.contractsControl1.SelectedTemplate = null;
             this.contractsControl1.Size = new System.Drawing.Size(984, 402);
             this.contractsControl1.TabIndex = 9;
             // 

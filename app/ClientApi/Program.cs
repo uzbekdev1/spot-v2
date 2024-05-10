@@ -8,8 +8,10 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Prometheus;
 using Serilog;
+using Swashbuckle.AspNetCore.SwaggerUI;
 using System.Net;
 using System.Text;
+using System.Threading.RateLimiting;
 
 namespace ClientApi
 {
@@ -113,6 +115,45 @@ namespace ClientApi
                         .AllowCredentials());
             });
 
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+                options.AddPolicy("fixed_2_limit_in_1_sec", httpContent =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: httpContent.Connection.RemoteIpAddress?.ToString(),
+                    factory: partition => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 2,
+                        Window = TimeSpan.FromSeconds(1)
+                    }));
+            });
+
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+                options.AddPolicy("fixed_3_limit_in_1_sec", httpContent =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: httpContent.Connection.RemoteIpAddress?.ToString(),
+                    factory: partition => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 2,
+                        Window = TimeSpan.FromSeconds(1)
+                    }));
+            });
+
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+                options.AddPolicy("fixed_5_limit_in_1_sec", httpContent =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: httpContent.Connection.RemoteIpAddress?.ToString(),
+                    factory: partition => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 5,
+                        Window = TimeSpan.FromSeconds(1)
+                    }));
+            });
+
             var app = builder.Build();
 
             app.UseMetricServer();
@@ -138,6 +179,7 @@ namespace ClientApi
                     options.DisplayRequestDuration();
                     options.EnableTryItOutByDefault();
                     options.DefaultModelsExpandDepth(-1);
+                    options.DocExpansion(DocExpansion.None);
                 });
             }
             else
@@ -169,6 +211,8 @@ namespace ClientApi
             {
                 options.AddCustomLabel("host", context => context.Request.Host.Host);
             });
+
+            app.UseRateLimiter();
 
             app.UseAuthorization();
             app.UseAuthentication();

@@ -10,7 +10,7 @@ using System.Windows.Forms;
 namespace SpotApp.Forms
 {
     public delegate void AllBidsFormF1KeyEventHandler();
-    
+
     public delegate void AllBidsFormBidFormEventHandler(int contractId);
 
     partial class AllBidsForm : Form
@@ -64,11 +64,15 @@ namespace SpotApp.Forms
                     allBidGridView.Refresh();
                 });
 
-                _logger.InfoFormat($"All bids: contract {_contractId}");
+                _logger.Info($"PC~AllBidsForm.LoadData contract: {_contractId} {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"PC~AllBidsForm.LoadData contract: {_contractId} Error:{ex.Message} {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
             }
             finally
             {
-                _logger.Info($"PC~AllBidsForm.LoadData {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+
             }
         }
 
