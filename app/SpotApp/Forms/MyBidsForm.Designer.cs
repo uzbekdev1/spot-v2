@@ -42,7 +42,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.LblTotalBids = new System.Windows.Forms.Label();
             this.myBidsGridV2 = new System.Windows.Forms.DataGridView();
-            this.deleteActionColumn = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.myBidsSourceV2 = new System.Windows.Forms.BindingSource(this.components);
             this.orderIdColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.inpColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.contractIdColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -50,7 +50,7 @@
             this.kolvoColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.statusColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.orderTimeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.myBidsSourceV2 = new System.Windows.Forms.BindingSource(this.components);
+            this.deleteActionColumn = new System.Windows.Forms.DataGridViewButtonColumn();
             ((System.ComponentModel.ISupportInitialize)(this.myBidsGridV2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.myBidsSourceV2)).BeginInit();
             this.SuspendLayout();
@@ -95,11 +95,7 @@
             this.myBidsGridV2.AllowUserToAddRows = false;
             this.myBidsGridV2.AllowUserToDeleteRows = false;
             this.myBidsGridV2.AllowUserToResizeRows = false;
-            this.myBidsGridV2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.myBidsGridV2.AutoGenerateColumns = false;
-            this.myBidsGridV2.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.myBidsGridV2.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.myBidsGridV2.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
@@ -110,7 +106,7 @@
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.myBidsGridV2.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            this.myBidsGridV2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            this.myBidsGridV2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.myBidsGridV2.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.orderIdColumn,
             this.inpColumn,
@@ -121,28 +117,24 @@
             this.orderTimeColumn,
             this.deleteActionColumn});
             this.myBidsGridV2.DataSource = this.myBidsSourceV2;
-            this.myBidsGridV2.Location = new System.Drawing.Point(12, 39);
+            this.myBidsGridV2.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.myBidsGridV2.Location = new System.Drawing.Point(0, 51);
             this.myBidsGridV2.MultiSelect = false;
             this.myBidsGridV2.Name = "myBidsGridV2";
             this.myBidsGridV2.ReadOnly = true;
             this.myBidsGridV2.RowHeadersVisible = false;
-            this.myBidsGridV2.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.myBidsGridV2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.myBidsGridV2.ShowCellErrors = false;
             this.myBidsGridV2.ShowEditingIcon = false;
             this.myBidsGridV2.ShowRowErrors = false;
-            this.myBidsGridV2.Size = new System.Drawing.Size(860, 510);
+            this.myBidsGridV2.Size = new System.Drawing.Size(884, 510);
             this.myBidsGridV2.TabIndex = 15;
             this.myBidsGridV2.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.myBidsGridV2_CellContentClick);
             // 
-            // deleteActionColumn
+            // myBidsSourceV2
             // 
-            this.deleteActionColumn.HeaderText = "Действия";
-            this.deleteActionColumn.Name = "deleteActionColumn";
-            this.deleteActionColumn.ReadOnly = true;
-            this.deleteActionColumn.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.deleteActionColumn.Text = "Удалить";
-            this.deleteActionColumn.UseColumnTextForButtonValue = true;
+            this.myBidsSourceV2.AllowNew = false;
+            this.myBidsSourceV2.DataSource = typeof(SpotApp.Models.MyOrderDesignV2);
             // 
             // orderIdColumn
             // 
@@ -152,6 +144,7 @@
             this.orderIdColumn.HeaderText = "№";
             this.orderIdColumn.Name = "orderIdColumn";
             this.orderIdColumn.ReadOnly = true;
+            this.orderIdColumn.Width = 107;
             // 
             // inpColumn
             // 
@@ -161,6 +154,7 @@
             this.inpColumn.HeaderText = "Инп";
             this.inpColumn.Name = "inpColumn";
             this.inpColumn.ReadOnly = true;
+            this.inpColumn.Width = 108;
             // 
             // contractIdColumn
             // 
@@ -170,16 +164,17 @@
             this.contractIdColumn.HeaderText = "Контракт";
             this.contractIdColumn.Name = "contractIdColumn";
             this.contractIdColumn.ReadOnly = true;
+            this.contractIdColumn.Width = 107;
             // 
             // cenaColumn
             // 
-            this.cenaColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.cenaColumn.DataPropertyName = "cena";
             dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             this.cenaColumn.DefaultCellStyle = dataGridViewCellStyle5;
             this.cenaColumn.HeaderText = "Цена";
             this.cenaColumn.Name = "cenaColumn";
             this.cenaColumn.ReadOnly = true;
+            this.cenaColumn.Width = 108;
             // 
             // kolvoColumn
             // 
@@ -189,6 +184,7 @@
             this.kolvoColumn.HeaderText = "Кол-во";
             this.kolvoColumn.Name = "kolvoColumn";
             this.kolvoColumn.ReadOnly = true;
+            this.kolvoColumn.Width = 107;
             // 
             // statusColumn
             // 
@@ -198,6 +194,7 @@
             this.statusColumn.HeaderText = "Результат";
             this.statusColumn.Name = "statusColumn";
             this.statusColumn.ReadOnly = true;
+            this.statusColumn.Width = 107;
             // 
             // orderTimeColumn
             // 
@@ -207,11 +204,17 @@
             this.orderTimeColumn.HeaderText = "Время";
             this.orderTimeColumn.Name = "orderTimeColumn";
             this.orderTimeColumn.ReadOnly = true;
+            this.orderTimeColumn.Width = 108;
             // 
-            // myBidsSourceV2
+            // deleteActionColumn
             // 
-            this.myBidsSourceV2.AllowNew = false;
-            this.myBidsSourceV2.DataSource = typeof(SpotApp.Models.MyOrderDesignV2);
+            this.deleteActionColumn.HeaderText = "Действия";
+            this.deleteActionColumn.Name = "deleteActionColumn";
+            this.deleteActionColumn.ReadOnly = true;
+            this.deleteActionColumn.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.deleteActionColumn.Text = "Удалить";
+            this.deleteActionColumn.UseColumnTextForButtonValue = true;
+            this.deleteActionColumn.Width = 107;
             // 
             // MyBidsForm
             // 

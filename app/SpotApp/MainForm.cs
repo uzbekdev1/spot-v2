@@ -734,6 +734,7 @@ namespace SpotApp
                     }
                 }
                 this.Focus();
+                _latestOpenForms.Clear();
             }
         }
     }

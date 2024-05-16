@@ -126,7 +126,6 @@ namespace ClientApi.Controllers
 
         [HttpGet("{contractId}")]
         [ProducesDefaultResponseType(typeof(ApiResponse<List<OrderItem>>))]
-        [EnableRateLimiting(RateLimiterPolicies.fixed_3_limit_in_1_sec)]
         public IActionResult GetOrders([FromRoute] int contractId)
         {
             if (!ModelState.IsValid)
@@ -224,7 +223,6 @@ namespace ClientApi.Controllers
 
         [HttpGet]
         [ProducesDefaultResponseType(typeof(ApiResponse<List<Quote>>))]
-        [EnableRateLimiting(RateLimiterPolicies.fixed_3_limit_in_1_sec)]
         public IActionResult GetQuotes([FromQuery] int contractId)
         {
             var results = _spotService.GetQuotes(UserId, contractId);
