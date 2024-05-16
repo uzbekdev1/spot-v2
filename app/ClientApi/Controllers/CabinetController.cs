@@ -31,7 +31,7 @@ namespace ClientApi.Controllers
 
         [HttpGet]
         [ProducesDefaultResponseType(typeof(ApiResponse<double>))]
-        [EnableRateLimiting("fixed_2_limit_in_1_sec")]
+        [EnableRateLimiting(RateLimiterPolicies.fixed_3_limit_in_1_sec)]
         public IActionResult CheckTimeV2()
         {
             var timeNow = DateTime.Now;
@@ -116,7 +116,7 @@ namespace ClientApi.Controllers
 
         [HttpGet]
         [ProducesDefaultResponseType(typeof(ApiResponse<List<MyOrderResult>>))]
-        [EnableRateLimiting("fixed_2_limit_in_1_sec")]
+        [EnableRateLimiting(RateLimiterPolicies.fixed_3_limit_in_1_sec)]
         public IActionResult MyOrders()
         {
             var results = _spotService.MyOrders(UserId);
@@ -126,7 +126,7 @@ namespace ClientApi.Controllers
 
         [HttpGet("{contractId}")]
         [ProducesDefaultResponseType(typeof(ApiResponse<List<OrderItem>>))]
-        [EnableRateLimiting("fixed_2_limit_in_1_sec")]
+        [EnableRateLimiting(RateLimiterPolicies.fixed_3_limit_in_1_sec)]
         public IActionResult GetOrders([FromRoute] int contractId)
         {
             if (!ModelState.IsValid)
@@ -146,7 +146,7 @@ namespace ClientApi.Controllers
 
         [HttpGet]
         [ProducesDefaultResponseType(typeof(ApiResponse<List<PetroClient>>))]
-        [EnableRateLimiting("fixed_5_limit_in_1_sec")]
+        [EnableRateLimiting(RateLimiterPolicies.fixed_5_limit_in_1_sec)]
         public IActionResult GetClients()
         {
             var results = _spotService.GetClients(UserId);
@@ -165,7 +165,7 @@ namespace ClientApi.Controllers
 
         [HttpGet]
         [ProducesDefaultResponseType(typeof(ApiResponse<List<ContactItem>>))]
-        [EnableRateLimiting("fixed_5_limit_in_1_sec")]
+        [EnableRateLimiting(RateLimiterPolicies.fixed_5_limit_in_1_sec)]
         public IActionResult GetContractsWithId([FromQuery] string search)
         {
             var items = _spotService.GetContractsWithId(search);
@@ -175,7 +175,7 @@ namespace ClientApi.Controllers
 
         [HttpGet]
         [ProducesDefaultResponseType(typeof(ApiResponse<List<PetroClient>>))]
-        [EnableRateLimiting("fixed_3_limit_in_1_sec")]
+        [EnableRateLimiting(RateLimiterPolicies.fixed_3_limit_in_1_sec)]
         public IActionResult SearchClient([FromQuery] int inp)
         {
             var results = _spotService.SearchClient(UserId, inp);
@@ -224,7 +224,7 @@ namespace ClientApi.Controllers
 
         [HttpGet]
         [ProducesDefaultResponseType(typeof(ApiResponse<List<Quote>>))]
-        [EnableRateLimiting("fixed_2_limit_in_1_sec")]
+        [EnableRateLimiting(RateLimiterPolicies.fixed_3_limit_in_1_sec)]
         public IActionResult GetQuotes([FromQuery] int contractId)
         {
             var results = _spotService.GetQuotes(UserId, contractId);
@@ -234,7 +234,7 @@ namespace ClientApi.Controllers
 
         [HttpGet]
         [ProducesDefaultResponseType(typeof(ApiResponse<List<RangeContract>>))]
-        [EnableRateLimiting("fixed_2_limit_in_1_sec")]
+        [EnableRateLimiting(RateLimiterPolicies.fixed_2_limit_in_1_sec)]
         public IActionResult RangeContracts([FromQuery] int contractId)
         {
             var results = _spotService.GetRangeContracts(UserId, contractId);

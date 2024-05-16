@@ -347,6 +347,7 @@
             this.Text = "Spot-клиент v2";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
+            this.Resize += new System.EventHandler(this.MainForm_Resize);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.timeBlock.ResumeLayout(false);

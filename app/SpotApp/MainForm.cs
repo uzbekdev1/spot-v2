@@ -1,7 +1,6 @@
 ﻿using log4net;
 using SpotApp.Core;
 using SpotApp.Dtos;
-using SpotApp.Exceptions;
 using SpotApp.Forms;
 using SpotApp.Helpers;
 using SpotApp.Models;
@@ -48,6 +47,8 @@ namespace SpotApp
         private double _timeDifference = 0.0;
 
         private readonly List<NewBidForm> _bids = new List<NewBidForm>();
+
+        private List<Form> _latestOpenForms = new List<Form>();
 
         private void ReloadTime()
         {
@@ -693,6 +694,47 @@ namespace SpotApp
             _contractQuoteForm.Show();
             _contractQuoteFormCounter++;
             _contractQuoteFormList.Add(_contractQuoteForm);
+        }
+
+        private void MainForm_Resize(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Minimized)
+            {
+                _latestOpenForms = new List<Form>();
+                foreach (Form form in Application.OpenForms)
+                {
+                    try
+                    {
+                        if (form == null || !form.Visible)
+                            continue;
+
+                        if (form.WindowState == FormWindowState.Normal || form.WindowState == FormWindowState.Maximized)
+                        {
+                            form.WindowState = FormWindowState.Minimized;
+                            _latestOpenForms.Add(form);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error($"PC~MainForm.MainForm_Resize Minimized Err:{ex.Message}");
+                    }
+                }
+            }
+            else if (this.WindowState == FormWindowState.Normal)
+            {
+                foreach (Form form in _latestOpenForms)
+                {
+                    try
+                    {
+                        form.WindowState = FormWindowState.Normal;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error($"PC~MainForm.MainForm_Resize Normal Err:{ex.Message}");
+                    }
+                }
+                this.Focus();
+            }
         }
     }
 }

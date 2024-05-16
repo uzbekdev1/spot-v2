@@ -89,12 +89,8 @@ namespace SpotApp.Forms
             else
             {
                 _searchIsWorking = true;
-
-                UIHelper.RunAsync(this, form =>
-                {
-                    LoadData();
-                    _searchIsWorking = false;
-                }, 300);
+                LoadData();
+                _searchIsWorking = false;
             }
         }
 

@@ -156,7 +156,7 @@ namespace SpotApp.Forms
 
                 _logger.Info($"PC~NewBidForm.LoadClients {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
             }
-            catch (TooManyRequestsException ex)
+            catch (Exception ex)
             {
                 _logger.Error($"PC~NewBidForm.LoadClients Error:{ex.Message} {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
                 return;
@@ -603,17 +603,13 @@ namespace SpotApp.Forms
 
         private void BntReloadClients_Click(object sender, EventArgs e)
         {
-            //string startDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
             try
             {
-                UIHelper.RunAsync(this, form =>
-                    {
-                        LoadClients();
-                    }, 500);
+                LoadClients();
             }
             finally
             {
-                //_logger.Info($"PC~NewBidForm.BntReloadClients_Click {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+
             }
         }
 
@@ -665,6 +661,9 @@ namespace SpotApp.Forms
         {
             BtnSendAllBidOk.Enabled = BtnOk.Enabled;
             createOrderTemplateCheckBox.Enabled = BtnOk.Enabled;
+
+            if (!BtnOk.Enabled)
+                createOrderTemplateCheckBox.Checked = false;
         }
 
         private void createOrderTemplateCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -684,8 +683,6 @@ namespace SpotApp.Forms
                 var createTemplate = service.CreateOrderTemplate(new OrderTemplate { contractId = _orderForm.contractId, inp = _orderForm.inp, price = _orderForm.price, kolvo = _orderForm.kolvo, maxPriceCount = (int)cbxLimitPrice.SelectedValue }, _token);
 
                 _createTemplateIsWorking = false;
-
-                createOrderTemplateCheckBox.Checked = false;
 
                 if (createTemplate.Success)
                     MessageBox.Show("Шаблон заявок успешный сохранено", "Успешный", MessageBoxButtons.OK, MessageBoxIcon.Information);

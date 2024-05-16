@@ -118,7 +118,7 @@ namespace ClientApi
             builder.Services.AddRateLimiter(options =>
             {
                 options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-                options.AddPolicy("fixed_2_limit_in_1_sec", httpContent =>
+                options.AddPolicy(RateLimiterPolicies.fixed_2_limit_in_1_sec, httpContent =>
                 RateLimitPartition.GetFixedWindowLimiter(
                     partitionKey: httpContent.Connection.RemoteIpAddress?.ToString(),
                     factory: partition => new FixedWindowRateLimiterOptions
@@ -131,12 +131,12 @@ namespace ClientApi
             builder.Services.AddRateLimiter(options =>
             {
                 options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-                options.AddPolicy("fixed_3_limit_in_1_sec", httpContent =>
+                options.AddPolicy(RateLimiterPolicies.fixed_3_limit_in_1_sec, httpContent =>
                 RateLimitPartition.GetFixedWindowLimiter(
                     partitionKey: httpContent.Connection.RemoteIpAddress?.ToString(),
                     factory: partition => new FixedWindowRateLimiterOptions
                     {
-                        PermitLimit = 2,
+                        PermitLimit = 3,
                         Window = TimeSpan.FromSeconds(1)
                     }));
             });
@@ -144,7 +144,7 @@ namespace ClientApi
             builder.Services.AddRateLimiter(options =>
             {
                 options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-                options.AddPolicy("fixed_5_limit_in_1_sec", httpContent =>
+                options.AddPolicy(RateLimiterPolicies.fixed_5_limit_in_1_sec, httpContent =>
                 RateLimitPartition.GetFixedWindowLimiter(
                     partitionKey: httpContent.Connection.RemoteIpAddress?.ToString(),
                     factory: partition => new FixedWindowRateLimiterOptions

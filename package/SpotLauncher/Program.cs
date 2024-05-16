@@ -27,6 +27,7 @@ namespace SpotLauncher
             {
                 return Assembly.Load(Resources.Interop_IWshRuntimeLibrary);
             }
+
             return null;
         }
 
