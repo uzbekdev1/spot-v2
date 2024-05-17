@@ -47,6 +47,7 @@ namespace SpotApp.Services
 
         public UserInfo GetUser(string login, string password)
         {
+            _logger.Info($"getuser login:{login} create post data");
             var data = new
             {
                 raw = CryptographyHelper.Encrypt(JsonConvert.SerializeObject(new
@@ -57,12 +58,17 @@ namespace SpotApp.Services
                 }))
             };
 
+            _logger.Info($"getuser login:{login} post data");
             var content = RequestHelper.Post($"{AppSettings.ApiUrl}/api/account/login", data);
+            
             if (content.Length == 0) throw new Exception("Connection error");
+
+            _logger.Info($"getuser login:{login} deserialize user data");
             var response = JsonConvert.DeserializeObject<ApiResponse<UserInfo>>(content);
 
             if (!response.Success)
             {
+                _logger.Info($"getuser login:{login} is not success");
                 throw new Exception(response.Error);
             }
 

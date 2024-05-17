@@ -49,6 +49,8 @@ namespace SpotApp
                 _logger.Info($"Credentials: {tbxUser.Text}");
                  
                 var userInfo = service.GetUser(usr, psw);
+
+                _logger.Info($"show mainform");
                 new MainForm(userInfo).Show();
                 Hide();
 
