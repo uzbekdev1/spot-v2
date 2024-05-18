@@ -20,6 +20,9 @@ namespace SpotApp.Helpers
             if (control == null)
                 return;
 
+            if (string.IsNullOrEmpty(control.Name))
+                return;
+
             var json = JsonConvert.SerializeObject(new FormSettings
             {
                 Location = control.Location,
@@ -35,6 +38,9 @@ namespace SpotApp.Helpers
         public static FormSettings GetForm(Control control)
         {
             if (control == null)
+                return null;
+
+            if (string.IsNullOrEmpty(control.Name))
                 return null;
 
             var path = Path.Combine(_root, $"{GetCleanName(control.Name)}.json");

@@ -56,7 +56,7 @@ namespace SpotApp.Helpers
             var runner = new BackgroundWorker();
 
             runner.DoWork += (object sender1, DoWorkEventArgs e1) =>
-            { 
+            {
             };
             runner.RunWorkerCompleted += (object sender1, RunWorkerCompletedEventArgs e1) =>
             {
@@ -101,5 +101,16 @@ namespace SpotApp.Helpers
             return DateTime.ParseExact(s, "ddMMyyyy", null, DateTimeStyles.None);
         }
 
+        public static void SafeInvokeForm(Form form, Action<Form> action)
+        {
+            if (form.InvokeRequired)
+            {
+                form.Invoke(action);
+            }
+            else
+            {
+                action(form);
+            }
+        }
     }
 }

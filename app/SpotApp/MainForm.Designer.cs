@@ -46,6 +46,7 @@
             this.hideTimeBlockToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.помощьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutProgramMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.networkSpeedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timeBlock = new System.Windows.Forms.Panel();
             this.btnTimeUpdate = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
@@ -193,7 +194,8 @@
             // помощьToolStripMenuItem
             // 
             this.помощьToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutProgramMenu});
+            this.aboutProgramMenu,
+            this.networkSpeedToolStripMenuItem});
             this.помощьToolStripMenuItem.Name = "помощьToolStripMenuItem";
             this.помощьToolStripMenuItem.Size = new System.Drawing.Size(68, 22);
             this.помощьToolStripMenuItem.Text = "Помощь";
@@ -201,9 +203,16 @@
             // aboutProgramMenu
             // 
             this.aboutProgramMenu.Name = "aboutProgramMenu";
-            this.aboutProgramMenu.Size = new System.Drawing.Size(149, 22);
+            this.aboutProgramMenu.Size = new System.Drawing.Size(180, 22);
             this.aboutProgramMenu.Text = "&О программе";
             this.aboutProgramMenu.Click += new System.EventHandler(this.AboutProgramMenu_Click);
+            // 
+            // networkSpeedToolStripMenuItem
+            // 
+            this.networkSpeedToolStripMenuItem.Name = "networkSpeedToolStripMenuItem";
+            this.networkSpeedToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.networkSpeedToolStripMenuItem.Text = "Скорость сети";
+            this.networkSpeedToolStripMenuItem.Click += new System.EventHandler(this.networkSpeedToolStripMenuItem_Click);
             // 
             // timeBlock
             // 
@@ -386,5 +395,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ToolStripMenuItem myClientsToolStripMenuItem;
         private System.Windows.Forms.Button btnTimeUpdate;
+        private System.Windows.Forms.ToolStripMenuItem networkSpeedToolStripMenuItem;
     }
 }

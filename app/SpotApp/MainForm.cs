@@ -24,6 +24,8 @@ namespace SpotApp
 
         private MyBidsForm _myBids;
 
+        private NetworkSpeedForm _networkSpeed;
+
         private NewBidForm _newBid;
 
         private MyClientsForm _myClientsForm;
@@ -146,10 +148,12 @@ namespace SpotApp
             if (keyData == Keys.F1)
             {
 
-                contractsControl1.LoadAllParts(true);
-                contractsControl1.UpdateList();
+                //contractsControl1.LoadAllParts(true);
+                //contractsControl1.UpdateList();
 
-                FormatTime(true);
+                //FormatTime(true);
+
+                ReloadSomePagesOnF1Event();
 
                 return true;
             }
@@ -443,10 +447,10 @@ namespace SpotApp
 
         private void ReloadSomePagesOnF1Event()
         {
-            if (_myBids != null && _myBids.Visible)
-            {
-                _myBids.UpdateOrders();
-            }
+            //if (_myBids != null && _myBids.Visible)
+            //{
+            //    _myBids.UpdateOrders();
+            //}
 
             if (contractsControl1._allBidsFormList != null)
             {
@@ -734,8 +738,26 @@ namespace SpotApp
                     }
                 }
                 this.Focus();
-                _latestOpenForms.Clear();
+
+                if (_latestOpenForms != null)
+                    if (_latestOpenForms.Count > 0)
+                        _latestOpenForms.Clear();
             }
+        }
+
+        private void networkSpeedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_networkSpeed == null || !_networkSpeed.Visible)
+            {
+                _networkSpeed = new NetworkSpeedForm();
+            }
+
+            if (_networkSpeed.Visible)
+            {
+                return;
+            }
+
+            _networkSpeed.Show();
         }
     }
 }

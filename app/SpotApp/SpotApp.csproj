@@ -163,6 +163,12 @@
     <Compile Include="Forms\MyClientsForm.Designer.cs">
       <DependentUpon>MyClientsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\NetworkSpeedForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NetworkSpeedForm.Designer.cs">
+      <DependentUpon>NetworkSpeedForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\SendAllNewBidForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -238,6 +244,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MyClientsForm.resx">
       <DependentUpon>MyClientsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NetworkSpeedForm.resx">
+      <DependentUpon>NetworkSpeedForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SendAllNewBidForm.resx">
       <DependentUpon>SendAllNewBidForm.cs</DependentUpon>
