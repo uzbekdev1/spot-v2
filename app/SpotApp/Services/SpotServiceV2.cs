@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Reflection;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 
 namespace SpotApp.Services
@@ -60,7 +61,7 @@ namespace SpotApp.Services
 
             _logger.Info($"getuser login:{login} post data");
             var content = RequestHelper.Post($"{AppSettings.ApiUrl}/api/account/login", data);
-            
+
             if (content.Length == 0) throw new Exception("Connection error");
 
             _logger.Info($"getuser login:{login} deserialize user data");
@@ -186,30 +187,54 @@ namespace SpotApp.Services
 
         public List<AllContract> AllContracts(int partId, string search, bool isProd, string token)
         {
-            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/MainContracts/{partId}?search={search}&isProd={isProd}", token);
-            if (content.Length == 0) throw new Exception("Connection error");
-            var response = JsonConvert.DeserializeObject<ApiResponse<List<AllContract>>>(content);
-
-            if (!response.Success)
+            var startDate = DateTime.Now;
+            try
             {
-                throw new Exception(response.Error);
-            }
+                var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/MainContracts/{partId}?search={search}&isProd={isProd}", token);
+                if (content.Length == 0) throw new Exception("Connection error");
+                var response = JsonConvert.DeserializeObject<ApiResponse<List<AllContract>>>(content);
 
-            return response.Data;
+                if (!response.Success)
+                {
+                    throw new Exception(response.Error);
+                }
+
+                var endDate = DateTime.Now;
+                _logger.Info($"PC~SpotServiceV2.AllContracts {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds})");
+                return response.Data;
+            }
+            catch (Exception ex)
+            {
+                var endDate = DateTime.Now;
+                _logger.Error($"PC~SpotServiceV2.AllContracts - Err:{ex.Message} {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds})");
+                return new List<AllContract>();
+            }
         }
 
         public List<SaleContract> SaleContracts(int partId, string search, bool isProd, string token)
         {
-            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/MainContracts/{partId}?search={search}&isProd={isProd}", token);
-            if (content.Length == 0) throw new Exception("Connection error");
-            var response = JsonConvert.DeserializeObject<ApiResponse<List<SaleContract>>>(content);
-
-            if (!response.Success)
+            var startDate = DateTime.Now;
+            try
             {
-                throw new Exception(response.Error);
-            }
+                var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/MainContracts/{partId}?search={search}&isProd={isProd}", token);
+                if (content.Length == 0) throw new Exception("Connection error");
+                var response = JsonConvert.DeserializeObject<ApiResponse<List<SaleContract>>>(content);
 
-            return response.Data;
+                if (!response.Success)
+                {
+                    throw new Exception(response.Error);
+                }
+
+                var endDate = DateTime.Now;
+                _logger.Info($"PC~SpotServiceV2.SaleContracts {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds})");
+                return response.Data;
+            }
+            catch (Exception ex)
+            {
+                var endDate = DateTime.Now;
+                _logger.Error($"PC~SpotServiceV2.SaleContracts - Err:{ex.Message} {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds})");
+                return new List<SaleContract>();
+            }
         }
 
         public List<ClientItem> Clients(string token)
@@ -375,16 +400,28 @@ namespace SpotApp.Services
 
         public List<NewSpotContract> NewSpotMainContracts(string search, string token)
         {
-            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/NewSpotMainContracts?search={search}", token);
-            if (content.Length == 0) throw new Exception("Connection error");
-            var response = JsonConvert.DeserializeObject<ApiResponse<List<NewSpotContract>>>(content);
-
-            if (!response.Success)
+            var startDate = DateTime.Now;
+            try
             {
-                throw new Exception(response.Error);
-            }
+                var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/NewSpotMainContracts?search={search}", token);
+                if (content.Length == 0) throw new Exception("Connection error");
+                var response = JsonConvert.DeserializeObject<ApiResponse<List<NewSpotContract>>>(content);
 
-            return response.Data;
+                if (!response.Success)
+                {
+                    throw new Exception(response.Error);
+                }
+
+                var endDate = DateTime.Now;
+                _logger.Info($"PC~SpotServiceV2.NewSpotMainContracts {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds})");
+                return response.Data;
+            }
+            catch (Exception ex)
+            {
+                var endDate = DateTime.Now;
+                _logger.Error($"PC~SpotServiceV2.NewSpotMainContracts - Err:{ex.Message} {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds})");
+                return new List<NewSpotContract>();
+            }
         }
 
         public List<ClientItem> ClientsDDL(string token)
@@ -536,16 +573,28 @@ namespace SpotApp.Services
 
         public List<OrderTemplate> GetOrderTemplates(string serach, string token)
         {
-            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/GetOrderTemplates?search={serach}", token);
-            if (content.Length == 0) throw new Exception("Connection error");
-            var response = JsonConvert.DeserializeObject<ApiResponse<List<OrderTemplate>>>(content);
-
-            if (!response.Success)
+            var startDate = DateTime.Now;
+            try
             {
-                throw new Exception(response.Error);
-            }
+                var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/GetOrderTemplates?search={serach}", token);
+                if (content.Length == 0) throw new Exception("Connection error");
+                var response = JsonConvert.DeserializeObject<ApiResponse<List<OrderTemplate>>>(content);
 
-            return response.Data;
+                if (!response.Success)
+                {
+                    throw new Exception(response.Error);
+                }
+
+                var endDate = DateTime.Now;
+                _logger.Info($"PC~SpotServiceV2.GetOrderTemplates {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds})");
+                return response.Data;
+            }
+            catch (Exception ex)
+            {
+                var endDate = DateTime.Now;
+                _logger.Error($"PC~SpotServiceV2.GetOrderTemplates - Err:{ex.Message} {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds})");
+                return new List<OrderTemplate>();
+            }
         }
 
         public ApiResponse CreateOrderTemplate(OrderTemplate order, string token)

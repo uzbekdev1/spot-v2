@@ -92,13 +92,17 @@ namespace SpotApp.Controls
             var partId = (int)cbxParts.SelectedValue;
             var tabIndex = tabControl1.SelectedIndex;
 
-            UIHelper.RunAsync(this, form =>
-            {
-                FetchList(term, tabIndex, partId);
-            }, form =>
-            {
-                ReloadList();
-            });
+            FetchList(term, tabIndex, partId);
+
+            ReloadList();
+
+            //UIHelper.RunAsync(this, form =>
+            //{
+            //    FetchList(term, tabIndex, partId);
+            //}, form =>
+            //{
+            //    ReloadList();
+            //});
         }
 
         private void FetchList(string term, int tab, int partId)
@@ -115,7 +119,10 @@ namespace SpotApp.Controls
             }
             else if (tab == (int)MainTabs.NewSpotContract)
             {
-                _newSpotContracts = service.NewSpotMainContracts(term, _token);
+                if (_newSpotContracts == null || _newSpotContracts.Count == 0)
+                {
+                    _newSpotContracts = service.NewSpotMainContracts(term, _token);
+                }
             }
             else if (tab == (int)MainTabs.BidTemplate)
             {

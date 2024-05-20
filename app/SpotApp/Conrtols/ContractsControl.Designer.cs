@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle17 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
@@ -40,7 +41,6 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle17 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
@@ -49,29 +49,12 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.saleContractDtGrView = new System.Windows.Forms.DataGridView();
-            this.saleContractIdColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.saleContractNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.saleContractDemandColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.saleContractOfferColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.saleNewBidActionColumn = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.saleContractBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.allContractDtGrView = new System.Windows.Forms.DataGridView();
-            this.allContractIdColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.allContractNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.allContractDemandColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.allContractOfferColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.allNewBidActionColumn = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.allContractBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.newSpotContractDtGrView = new System.Windows.Forms.DataGridView();
-            this.newSpotContractNumberColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.newSpotContractNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.newSpotContractNumberColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.newSpotContractBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.bidTemplateDtGrView = new System.Windows.Forms.DataGridView();
-            this.bidTemplateBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.cbxParts = new System.Windows.Forms.ComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -84,6 +67,23 @@
             this.idColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.nameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.demandColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.saleContractBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.allContractBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.newSpotContractBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.bidTemplateBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.saleContractIdColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.saleContractNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.saleContractDemandColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.saleContractOfferColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.saleNewBidActionColumn = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.allContractIdColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.allContractNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.allContractDemandColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.allContractOfferColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.allNewBidActionColumn = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.newSpotContractNumberColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.newSpotContractNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.newSpotContractNumberColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.bidTemplateIdColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.contractIdNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.clientInpNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -93,18 +93,18 @@
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.saleContractDtGrView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.saleContractBindingSource)).BeginInit();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.allContractDtGrView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.allContractBindingSource)).BeginInit();
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.newSpotContractDtGrView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.newSpotContractBindingSource)).BeginInit();
             this.tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bidTemplateDtGrView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.bidTemplateBindingSource)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.saleContractBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.allContractBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.newSpotContractBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.bidTemplateBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -170,58 +170,6 @@
             this.saleContractDtGrView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.saleContractDtGrView_CellClick);
             this.saleContractDtGrView.SelectionChanged += new System.EventHandler(this.saleContractDtGrView_SelectionChanged);
             // 
-            // saleContractIdColumn
-            // 
-            this.saleContractIdColumn.DataPropertyName = "id";
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.saleContractIdColumn.DefaultCellStyle = dataGridViewCellStyle1;
-            this.saleContractIdColumn.HeaderText = "Контракт";
-            this.saleContractIdColumn.Name = "saleContractIdColumn";
-            this.saleContractIdColumn.ReadOnly = true;
-            // 
-            // saleContractNameColumn
-            // 
-            this.saleContractNameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.saleContractNameColumn.DataPropertyName = "name";
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.saleContractNameColumn.DefaultCellStyle = dataGridViewCellStyle2;
-            this.saleContractNameColumn.HeaderText = "Наименование";
-            this.saleContractNameColumn.Name = "saleContractNameColumn";
-            this.saleContractNameColumn.ReadOnly = true;
-            // 
-            // saleContractDemandColumn
-            // 
-            this.saleContractDemandColumn.DataPropertyName = "demand";
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.saleContractDemandColumn.DefaultCellStyle = dataGridViewCellStyle3;
-            this.saleContractDemandColumn.HeaderText = "Спрос";
-            this.saleContractDemandColumn.Name = "saleContractDemandColumn";
-            this.saleContractDemandColumn.ReadOnly = true;
-            // 
-            // saleContractOfferColumn
-            // 
-            this.saleContractOfferColumn.DataPropertyName = "offer";
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.saleContractOfferColumn.DefaultCellStyle = dataGridViewCellStyle4;
-            this.saleContractOfferColumn.HeaderText = "Предложения";
-            this.saleContractOfferColumn.Name = "saleContractOfferColumn";
-            this.saleContractOfferColumn.ReadOnly = true;
-            // 
-            // saleNewBidActionColumn
-            // 
-            this.saleNewBidActionColumn.DataPropertyName = "id";
-            this.saleNewBidActionColumn.HeaderText = "Действия";
-            this.saleNewBidActionColumn.Name = "saleNewBidActionColumn";
-            this.saleNewBidActionColumn.ReadOnly = true;
-            this.saleNewBidActionColumn.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.saleNewBidActionColumn.Text = "Новая заявка";
-            this.saleNewBidActionColumn.UseColumnTextForButtonValue = true;
-            // 
-            // saleContractBindingSource
-            // 
-            this.saleContractBindingSource.AllowNew = false;
-            this.saleContractBindingSource.DataSource = typeof(SpotApp.Models.SaleContractDesign);
-            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.allContractDtGrView);
@@ -269,58 +217,6 @@
             this.allContractDtGrView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.allContractDtGrView_CellClick);
             this.allContractDtGrView.SelectionChanged += new System.EventHandler(this.allContractDtGrView_SelectionChanged);
             // 
-            // allContractIdColumn
-            // 
-            this.allContractIdColumn.DataPropertyName = "id";
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.allContractIdColumn.DefaultCellStyle = dataGridViewCellStyle5;
-            this.allContractIdColumn.HeaderText = "Контракт";
-            this.allContractIdColumn.Name = "allContractIdColumn";
-            this.allContractIdColumn.ReadOnly = true;
-            // 
-            // allContractNameColumn
-            // 
-            this.allContractNameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.allContractNameColumn.DataPropertyName = "name";
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.allContractNameColumn.DefaultCellStyle = dataGridViewCellStyle6;
-            this.allContractNameColumn.HeaderText = "Наименование";
-            this.allContractNameColumn.Name = "allContractNameColumn";
-            this.allContractNameColumn.ReadOnly = true;
-            // 
-            // allContractDemandColumn
-            // 
-            this.allContractDemandColumn.DataPropertyName = "demand";
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.allContractDemandColumn.DefaultCellStyle = dataGridViewCellStyle7;
-            this.allContractDemandColumn.HeaderText = "Спрос";
-            this.allContractDemandColumn.Name = "allContractDemandColumn";
-            this.allContractDemandColumn.ReadOnly = true;
-            // 
-            // allContractOfferColumn
-            // 
-            this.allContractOfferColumn.DataPropertyName = "offer";
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.allContractOfferColumn.DefaultCellStyle = dataGridViewCellStyle8;
-            this.allContractOfferColumn.HeaderText = "Предложения";
-            this.allContractOfferColumn.Name = "allContractOfferColumn";
-            this.allContractOfferColumn.ReadOnly = true;
-            // 
-            // allNewBidActionColumn
-            // 
-            this.allNewBidActionColumn.DataPropertyName = "id";
-            this.allNewBidActionColumn.HeaderText = "Действия";
-            this.allNewBidActionColumn.Name = "allNewBidActionColumn";
-            this.allNewBidActionColumn.ReadOnly = true;
-            this.allNewBidActionColumn.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.allNewBidActionColumn.Text = "Новая заявка";
-            this.allNewBidActionColumn.UseColumnTextForButtonValue = true;
-            // 
-            // allContractBindingSource
-            // 
-            this.allContractBindingSource.AllowNew = false;
-            this.allContractBindingSource.DataSource = typeof(SpotApp.Models.AllContractDesign);
-            // 
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.newSpotContractDtGrView);
@@ -363,39 +259,6 @@
             this.newSpotContractDtGrView.ShowRowErrors = false;
             this.newSpotContractDtGrView.Size = new System.Drawing.Size(710, 309);
             this.newSpotContractDtGrView.TabIndex = 0;
-            // 
-            // newSpotContractNumberColumn2
-            // 
-            this.newSpotContractNumberColumn2.DataPropertyName = "newSpotContractNumber";
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.newSpotContractNumberColumn2.DefaultCellStyle = dataGridViewCellStyle9;
-            this.newSpotContractNumberColumn2.HeaderText = "Контракт №";
-            this.newSpotContractNumberColumn2.Name = "newSpotContractNumberColumn2";
-            this.newSpotContractNumberColumn2.ReadOnly = true;
-            // 
-            // newSpotContractNameColumn
-            // 
-            this.newSpotContractNameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.newSpotContractNameColumn.DataPropertyName = "name";
-            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.newSpotContractNameColumn.DefaultCellStyle = dataGridViewCellStyle10;
-            this.newSpotContractNameColumn.HeaderText = "Наименование";
-            this.newSpotContractNameColumn.Name = "newSpotContractNameColumn";
-            this.newSpotContractNameColumn.ReadOnly = true;
-            // 
-            // newSpotContractNumberColumn1
-            // 
-            this.newSpotContractNumberColumn1.DataPropertyName = "offer";
-            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.newSpotContractNumberColumn1.DefaultCellStyle = dataGridViewCellStyle11;
-            this.newSpotContractNumberColumn1.HeaderText = "Предложения";
-            this.newSpotContractNumberColumn1.Name = "newSpotContractNumberColumn1";
-            this.newSpotContractNumberColumn1.ReadOnly = true;
-            // 
-            // newSpotContractBindingSource
-            // 
-            this.newSpotContractBindingSource.AllowNew = false;
-            this.newSpotContractBindingSource.DataSource = typeof(SpotApp.Models.NewSpotContractDesign);
             // 
             // tabPage4
             // 
@@ -444,11 +307,6 @@
             this.bidTemplateDtGrView.TabIndex = 0;
             this.bidTemplateDtGrView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.bidTemplateDtGrView_CellClick);
             this.bidTemplateDtGrView.SelectionChanged += new System.EventHandler(this.bidTemplateDtGrView_SelectionChanged);
-            // 
-            // bidTemplateBindingSource
-            // 
-            this.bidTemplateBindingSource.AllowNew = false;
-            this.bidTemplateBindingSource.DataSource = typeof(SpotApp.Models.OrderTemplateDesign);
             // 
             // cbxParts
             // 
@@ -557,6 +415,151 @@
             this.demandColumn.Name = "demandColumn";
             this.demandColumn.ReadOnly = true;
             // 
+            // saleContractBindingSource
+            // 
+            this.saleContractBindingSource.AllowNew = false;
+            this.saleContractBindingSource.DataSource = typeof(SpotApp.Models.SaleContractDesign);
+            // 
+            // allContractBindingSource
+            // 
+            this.allContractBindingSource.AllowNew = false;
+            this.allContractBindingSource.DataSource = typeof(SpotApp.Models.AllContractDesign);
+            // 
+            // newSpotContractBindingSource
+            // 
+            this.newSpotContractBindingSource.AllowNew = false;
+            this.newSpotContractBindingSource.DataSource = typeof(SpotApp.Models.NewSpotContractDesign);
+            // 
+            // bidTemplateBindingSource
+            // 
+            this.bidTemplateBindingSource.AllowNew = false;
+            this.bidTemplateBindingSource.DataSource = typeof(SpotApp.Models.OrderTemplateDesign);
+            // 
+            // saleContractIdColumn
+            // 
+            this.saleContractIdColumn.DataPropertyName = "id";
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.saleContractIdColumn.DefaultCellStyle = dataGridViewCellStyle1;
+            this.saleContractIdColumn.HeaderText = "Контракт";
+            this.saleContractIdColumn.Name = "saleContractIdColumn";
+            this.saleContractIdColumn.ReadOnly = true;
+            this.saleContractIdColumn.Width = 120;
+            // 
+            // saleContractNameColumn
+            // 
+            this.saleContractNameColumn.DataPropertyName = "name";
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.saleContractNameColumn.DefaultCellStyle = dataGridViewCellStyle2;
+            this.saleContractNameColumn.HeaderText = "Наименование";
+            this.saleContractNameColumn.Name = "saleContractNameColumn";
+            this.saleContractNameColumn.ReadOnly = true;
+            this.saleContractNameColumn.Width = 500;
+            // 
+            // saleContractDemandColumn
+            // 
+            this.saleContractDemandColumn.DataPropertyName = "demand";
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.saleContractDemandColumn.DefaultCellStyle = dataGridViewCellStyle3;
+            this.saleContractDemandColumn.HeaderText = "Спрос";
+            this.saleContractDemandColumn.Name = "saleContractDemandColumn";
+            this.saleContractDemandColumn.ReadOnly = true;
+            // 
+            // saleContractOfferColumn
+            // 
+            this.saleContractOfferColumn.DataPropertyName = "offer";
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.saleContractOfferColumn.DefaultCellStyle = dataGridViewCellStyle4;
+            this.saleContractOfferColumn.HeaderText = "Предложения";
+            this.saleContractOfferColumn.Name = "saleContractOfferColumn";
+            this.saleContractOfferColumn.ReadOnly = true;
+            // 
+            // saleNewBidActionColumn
+            // 
+            this.saleNewBidActionColumn.DataPropertyName = "id";
+            this.saleNewBidActionColumn.HeaderText = "Действия";
+            this.saleNewBidActionColumn.Name = "saleNewBidActionColumn";
+            this.saleNewBidActionColumn.ReadOnly = true;
+            this.saleNewBidActionColumn.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.saleNewBidActionColumn.Text = "Новая заявка";
+            this.saleNewBidActionColumn.UseColumnTextForButtonValue = true;
+            // 
+            // allContractIdColumn
+            // 
+            this.allContractIdColumn.DataPropertyName = "id";
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.allContractIdColumn.DefaultCellStyle = dataGridViewCellStyle5;
+            this.allContractIdColumn.HeaderText = "Контракт";
+            this.allContractIdColumn.Name = "allContractIdColumn";
+            this.allContractIdColumn.ReadOnly = true;
+            this.allContractIdColumn.Width = 120;
+            // 
+            // allContractNameColumn
+            // 
+            this.allContractNameColumn.DataPropertyName = "name";
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.allContractNameColumn.DefaultCellStyle = dataGridViewCellStyle6;
+            this.allContractNameColumn.HeaderText = "Наименование";
+            this.allContractNameColumn.Name = "allContractNameColumn";
+            this.allContractNameColumn.ReadOnly = true;
+            this.allContractNameColumn.Width = 500;
+            // 
+            // allContractDemandColumn
+            // 
+            this.allContractDemandColumn.DataPropertyName = "demand";
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.allContractDemandColumn.DefaultCellStyle = dataGridViewCellStyle7;
+            this.allContractDemandColumn.HeaderText = "Спрос";
+            this.allContractDemandColumn.Name = "allContractDemandColumn";
+            this.allContractDemandColumn.ReadOnly = true;
+            // 
+            // allContractOfferColumn
+            // 
+            this.allContractOfferColumn.DataPropertyName = "offer";
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.allContractOfferColumn.DefaultCellStyle = dataGridViewCellStyle8;
+            this.allContractOfferColumn.HeaderText = "Предложения";
+            this.allContractOfferColumn.Name = "allContractOfferColumn";
+            this.allContractOfferColumn.ReadOnly = true;
+            // 
+            // allNewBidActionColumn
+            // 
+            this.allNewBidActionColumn.DataPropertyName = "id";
+            this.allNewBidActionColumn.HeaderText = "Действия";
+            this.allNewBidActionColumn.Name = "allNewBidActionColumn";
+            this.allNewBidActionColumn.ReadOnly = true;
+            this.allNewBidActionColumn.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.allNewBidActionColumn.Text = "Новая заявка";
+            this.allNewBidActionColumn.UseColumnTextForButtonValue = true;
+            // 
+            // newSpotContractNumberColumn2
+            // 
+            this.newSpotContractNumberColumn2.DataPropertyName = "newSpotContractNumber";
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.newSpotContractNumberColumn2.DefaultCellStyle = dataGridViewCellStyle9;
+            this.newSpotContractNumberColumn2.HeaderText = "Контракт №";
+            this.newSpotContractNumberColumn2.Name = "newSpotContractNumberColumn2";
+            this.newSpotContractNumberColumn2.ReadOnly = true;
+            this.newSpotContractNumberColumn2.Width = 130;
+            // 
+            // newSpotContractNameColumn
+            // 
+            this.newSpotContractNameColumn.DataPropertyName = "name";
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.newSpotContractNameColumn.DefaultCellStyle = dataGridViewCellStyle10;
+            this.newSpotContractNameColumn.HeaderText = "Наименование";
+            this.newSpotContractNameColumn.Name = "newSpotContractNameColumn";
+            this.newSpotContractNameColumn.ReadOnly = true;
+            this.newSpotContractNameColumn.Width = 700;
+            // 
+            // newSpotContractNumberColumn1
+            // 
+            this.newSpotContractNumberColumn1.DataPropertyName = "offer";
+            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.newSpotContractNumberColumn1.DefaultCellStyle = dataGridViewCellStyle11;
+            this.newSpotContractNumberColumn1.HeaderText = "Предложения";
+            this.newSpotContractNumberColumn1.Name = "newSpotContractNumberColumn1";
+            this.newSpotContractNumberColumn1.ReadOnly = true;
+            // 
             // bidTemplateIdColumn
             // 
             this.bidTemplateIdColumn.DataPropertyName = "id";
@@ -569,7 +572,6 @@
             // 
             // contractIdNameDataGridViewTextBoxColumn
             // 
-            this.contractIdNameDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.contractIdNameDataGridViewTextBoxColumn.DataPropertyName = "contractIdName";
             dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             this.contractIdNameDataGridViewTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle13;
@@ -577,10 +579,10 @@
             this.contractIdNameDataGridViewTextBoxColumn.MinimumWidth = 75;
             this.contractIdNameDataGridViewTextBoxColumn.Name = "contractIdNameDataGridViewTextBoxColumn";
             this.contractIdNameDataGridViewTextBoxColumn.ReadOnly = true;
+            this.contractIdNameDataGridViewTextBoxColumn.Width = 300;
             // 
             // clientInpNameDataGridViewTextBoxColumn
             // 
-            this.clientInpNameDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.clientInpNameDataGridViewTextBoxColumn.DataPropertyName = "clientInpName";
             dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             this.clientInpNameDataGridViewTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle14;
@@ -588,6 +590,7 @@
             this.clientInpNameDataGridViewTextBoxColumn.MinimumWidth = 75;
             this.clientInpNameDataGridViewTextBoxColumn.Name = "clientInpNameDataGridViewTextBoxColumn";
             this.clientInpNameDataGridViewTextBoxColumn.ReadOnly = true;
+            this.clientInpNameDataGridViewTextBoxColumn.Width = 270;
             // 
             // kolvoDataGridViewTextBoxColumn
             // 
@@ -631,19 +634,19 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.saleContractDtGrView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.saleContractBindingSource)).EndInit();
             this.tabPage2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.allContractDtGrView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.allContractBindingSource)).EndInit();
             this.tabPage3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.newSpotContractDtGrView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.newSpotContractBindingSource)).EndInit();
             this.tabPage4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.bidTemplateDtGrView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.bidTemplateBindingSource)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.saleContractBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.allContractBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.newSpotContractBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.bidTemplateBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -672,9 +675,9 @@
         private System.Windows.Forms.BindingSource allContractBindingSource;
         private System.Windows.Forms.DataGridView newSpotContractDtGrView;
         private System.Windows.Forms.BindingSource newSpotContractBindingSource;
-        private System.Windows.Forms.DataGridViewTextBoxColumn newSpotContractNumberColumn2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn newSpotContractNameColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn newSpotContractNumberColumn1;
+        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.DataGridView bidTemplateDtGrView;
+        private System.Windows.Forms.BindingSource bidTemplateBindingSource;
         private System.Windows.Forms.DataGridViewTextBoxColumn saleContractIdColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn saleContractNameColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn saleContractDemandColumn;
@@ -685,9 +688,9 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn allContractDemandColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn allContractOfferColumn;
         private System.Windows.Forms.DataGridViewButtonColumn allNewBidActionColumn;
-        private System.Windows.Forms.TabPage tabPage4;
-        private System.Windows.Forms.DataGridView bidTemplateDtGrView;
-        private System.Windows.Forms.BindingSource bidTemplateBindingSource;
+        private System.Windows.Forms.DataGridViewTextBoxColumn newSpotContractNumberColumn2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn newSpotContractNameColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn newSpotContractNumberColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn bidTemplateIdColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn contractIdNameDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn clientInpNameDataGridViewTextBoxColumn;

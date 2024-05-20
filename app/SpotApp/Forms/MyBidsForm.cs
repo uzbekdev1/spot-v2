@@ -128,6 +128,11 @@ namespace SpotApp.Forms
         {
             if (myBidsGridV2.Columns[e.ColumnIndex].Name == "deleteActionColumn")
             {
+                if (e.RowIndex < 0)
+                {
+                    return;
+                }
+
                 if (!int.TryParse($"{myBidsGridV2.Rows[e.RowIndex].Cells["orderIdColumn"].Value}", out int orderId))
                 {
                     return;

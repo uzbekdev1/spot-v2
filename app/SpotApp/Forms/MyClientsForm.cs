@@ -231,6 +231,11 @@ namespace SpotApp.Forms
         {
             if (myClientsGridView.Columns[e.ColumnIndex].Name == "btnDeleteActionColumn")
             {
+                if (e.RowIndex < 0)
+                {
+                    return;
+                }
+
                 if (!int.TryParse($"{myClientsGridView.Rows[e.RowIndex].Cells["inpColumn"].Value}", out int inp))
                 {
                     return;

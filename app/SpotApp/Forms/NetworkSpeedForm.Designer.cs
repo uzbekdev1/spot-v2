@@ -50,7 +50,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(2, 56);
+            this.label7.Location = new System.Drawing.Point(7, 55);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(93, 13);
             this.label7.TabIndex = 52;
@@ -59,16 +59,16 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(4, 37);
+            this.label4.Location = new System.Drawing.Point(6, 36);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(91, 13);
+            this.label4.Size = new System.Drawing.Size(94, 13);
             this.label4.TabIndex = 51;
-            this.label4.Text = "Тек. скор. загр.:";
+            this.label4.Text = "Тек.  скор. загр.:";
             // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(187, 57);
+            this.label11.Location = new System.Drawing.Point(192, 56);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(94, 13);
             this.label11.TabIndex = 50;
@@ -77,7 +77,7 @@
             // lblTotalUpload
             // 
             this.lblTotalUpload.AutoSize = true;
-            this.lblTotalUpload.Location = new System.Drawing.Point(467, 57);
+            this.lblTotalUpload.Location = new System.Drawing.Point(472, 56);
             this.lblTotalUpload.Name = "lblTotalUpload";
             this.lblTotalUpload.Size = new System.Drawing.Size(64, 13);
             this.lblTotalUpload.TabIndex = 49;
@@ -86,7 +86,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(355, 57);
+            this.label9.Location = new System.Drawing.Point(360, 56);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(117, 13);
             this.label9.TabIndex = 48;
@@ -95,7 +95,7 @@
             // lblMaxUpload
             // 
             this.lblMaxUpload.AutoSize = true;
-            this.lblMaxUpload.Location = new System.Drawing.Point(280, 57);
+            this.lblMaxUpload.Location = new System.Drawing.Point(285, 56);
             this.lblMaxUpload.Name = "lblMaxUpload";
             this.lblMaxUpload.Size = new System.Drawing.Size(64, 13);
             this.lblMaxUpload.TabIndex = 47;
@@ -104,7 +104,7 @@
             // lblTotalDownload
             // 
             this.lblTotalDownload.AutoSize = true;
-            this.lblTotalDownload.Location = new System.Drawing.Point(467, 37);
+            this.lblTotalDownload.Location = new System.Drawing.Point(472, 36);
             this.lblTotalDownload.Name = "lblTotalDownload";
             this.lblTotalDownload.Size = new System.Drawing.Size(64, 13);
             this.lblTotalDownload.TabIndex = 46;
@@ -113,7 +113,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(355, 37);
+            this.label5.Location = new System.Drawing.Point(360, 36);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(115, 13);
             this.label5.TabIndex = 45;
@@ -123,7 +123,7 @@
             // 
             this.lblMaxDownload.AutoSize = true;
             this.lblMaxDownload.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMaxDownload.Location = new System.Drawing.Point(280, 37);
+            this.lblMaxDownload.Location = new System.Drawing.Point(285, 36);
             this.lblMaxDownload.Name = "lblMaxDownload";
             this.lblMaxDownload.Size = new System.Drawing.Size(64, 13);
             this.lblMaxDownload.TabIndex = 44;
@@ -132,26 +132,26 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(189, 37);
+            this.label2.Location = new System.Drawing.Point(192, 36);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(92, 13);
+            this.label2.Size = new System.Drawing.Size(95, 13);
             this.label2.TabIndex = 43;
-            this.label2.Text = "Мах. скор. загр.:";
+            this.label2.Text = "Мах.  скор. загр.:";
             // 
             // cmbInterface
             // 
             this.cmbInterface.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbInterface.FormattingEnabled = true;
-            this.cmbInterface.Location = new System.Drawing.Point(104, 7);
+            this.cmbInterface.Location = new System.Drawing.Point(245, 6);
             this.cmbInterface.Name = "cmbInterface";
-            this.cmbInterface.Size = new System.Drawing.Size(267, 21);
+            this.cmbInterface.Size = new System.Drawing.Size(287, 21);
             this.cmbInterface.TabIndex = 33;
             this.cmbInterface.SelectedIndexChanged += new System.EventHandler(this.cmbInterface_SelectedIndexChanged);
             // 
             // labelIPAddress
             // 
             this.labelIPAddress.AutoSize = true;
-            this.labelIPAddress.Location = new System.Drawing.Point(95, 77);
+            this.labelIPAddress.Location = new System.Drawing.Point(60, 11);
             this.labelIPAddress.Name = "labelIPAddress";
             this.labelIPAddress.Size = new System.Drawing.Size(88, 13);
             this.labelIPAddress.TabIndex = 40;
@@ -160,7 +160,7 @@
             // lblInterface
             // 
             this.lblInterface.AutoSize = true;
-            this.lblInterface.Location = new System.Drawing.Point(7, 13);
+            this.lblInterface.Location = new System.Drawing.Point(154, 11);
             this.lblInterface.Name = "lblInterface";
             this.lblInterface.Size = new System.Drawing.Size(89, 13);
             this.lblInterface.TabIndex = 34;
@@ -169,7 +169,7 @@
             // labelIP
             // 
             this.labelIP.AutoSize = true;
-            this.labelIP.Location = new System.Drawing.Point(42, 77);
+            this.labelIP.Location = new System.Drawing.Point(7, 10);
             this.labelIP.Name = "labelIP";
             this.labelIP.Size = new System.Drawing.Size(53, 13);
             this.labelIP.TabIndex = 39;
@@ -178,7 +178,7 @@
             // lblCurrentDownload
             // 
             this.lblCurrentDownload.AutoSize = true;
-            this.lblCurrentDownload.Location = new System.Drawing.Point(95, 37);
+            this.lblCurrentDownload.Location = new System.Drawing.Point(100, 36);
             this.lblCurrentDownload.Name = "lblCurrentDownload";
             this.lblCurrentDownload.Size = new System.Drawing.Size(64, 13);
             this.lblCurrentDownload.TabIndex = 37;
@@ -187,7 +187,7 @@
             // lblCurrentUpload
             // 
             this.lblCurrentUpload.AutoSize = true;
-            this.lblCurrentUpload.Location = new System.Drawing.Point(95, 57);
+            this.lblCurrentUpload.Location = new System.Drawing.Point(100, 56);
             this.lblCurrentUpload.Name = "lblCurrentUpload";
             this.lblCurrentUpload.Size = new System.Drawing.Size(64, 13);
             this.lblCurrentUpload.TabIndex = 38;
@@ -197,7 +197,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(539, 94);
+            this.ClientSize = new System.Drawing.Size(560, 75);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label11);
