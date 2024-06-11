@@ -1,14 +1,13 @@
 ﻿using log4net;
 using SpotApp.Dtos;
-using SpotApp.Exceptions;
 using SpotApp.Helpers;
 using SpotApp.Models;
 using SpotApp.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
-using System.Runtime.InteropServices.ComTypes;
 using System.Windows.Forms;
 
 namespace SpotApp.Forms
@@ -25,64 +24,109 @@ namespace SpotApp.Forms
 
         public event ReloadMyClientsEventHandler ReloadMyClients;
 
-        private List<ClientItem> _myClients;
+        private List<ClientItem> _myClients = new List<ClientItem>();
 
         private ClientItem _selectClient;
 
         private bool _searchIsWorking = false;
 
-        private void LoadData()
+        private bool _searchClientIsWorking = false;
+
+        private ErrorMessage _errorMessage = new ErrorMessage() { haveError = false };
+
+        private List<ClientItem> _clientItems = new List<ClientItem>();
+
+        private void ShowErrorMessageBox(string errorText = "", string exceptionTypeName = "", string errorKeyName = "", double? totalMilliseconds = null)
         {
-            string startDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            _errorMessage = new ErrorMessage() { haveError = false };
+
+            _logger.Error($"{errorKeyName} Error:{errorText}({exceptionTypeName}) diff({totalMilliseconds})");
+
+            MessageBox.Show(this, $"{errorText} ({exceptionTypeName})", $"{Text}", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private void ShowErrorMessageBox(ErrorMessage error)
+        {
+            _errorMessage = new ErrorMessage() { haveError = false };
+
+            _logger.Error($"{error.ErrorKeyName} Error:{error.AppException.Message} - {error.ErrorText}({error.ExceptionTypeName}) diff({error.ApiElapsedTime})");
+
+            MessageBox.Show(this, $"{error.ErrorText} ({error.ExceptionTypeName})", $"{Text}", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private void FetchList()
+        {
+            if (_searchIsWorking)
+                return;
+
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+
+            _errorMessage = new ErrorMessage() { haveError = false };
+
             try
             {
+                _searchIsWorking = true;
                 var service = new SpotServiceV2();
-                var items = service.Clients(_token);
-
-
-                var results = new List<ClientItemDesign>();
-
-                foreach (var item in items)
-                {
-                    results.Add(new ClientItemDesign
-                    {
-                        inp = item.inp,
-                        name = item.name
-                    });
-                }
-
-                _myClients = items;
-
-                UIHelper.SafeInvoke(this, (form) =>
-                {
-                    myClientsGridView.DataSource = results;
-                    myClientsGridView.Refresh();
-                });
-
-                _logger.Info($"PC~MyClientsForm.LoadData {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+                _myClients = service.Clients(_token, 3000);
             }
             catch (Exception ex)
             {
-                _logger.Error($"PC~MyClientsForm.LoadData Error:{ex.Message} {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+                stopWatch.Stop();
+                _myClients = new List<ClientItem>();
+                _errorMessage = new ErrorMessage()
+                {
+                    haveError = true,
+                    AppException = ex,
+                    ErrorKeyName = $"PC~MyClientsForm.FetchList",
+                    ApiElapsedTime = stopWatch.Elapsed.TotalMilliseconds
+                };
             }
             finally
             {
-
+                _searchIsWorking = false;
             }
+
+            if (stopWatch.IsRunning)
+            {
+                stopWatch.Stop();
+                if (stopWatch.Elapsed.TotalMilliseconds > 1000.00)
+                    _logger.Info($"PC~MyClientsForm.FetchList diff({stopWatch.Elapsed.TotalMilliseconds})");
+            }
+        }
+
+        private void ReloadList()
+        {
+            var results = new List<ClientItemDesign>();
+
+            foreach (var item in _myClients)
+            {
+                results.Add(new ClientItemDesign
+                {
+                    inp = item.inp,
+                    name = item.name
+                });
+            }
+
+            UIHelper.SafeInvokeForm(this, (form) =>
+            {
+                myClientsGridView.DataSource = results;
+                myClientsGridView.Refresh();
+            });
+
+            if (_errorMessage.haveError)
+                ShowErrorMessageBox(_errorMessage);
         }
 
         public void UpdateMyClients()
         {
-            if (_searchIsWorking)
+            UIHelper.RunAsyncForm(this, form =>
             {
-                return;
-            }
-            else
+                FetchList();
+            }, form =>
             {
-                _searchIsWorking = true;
-                LoadData();
-                _searchIsWorking = false;
-            }
+                ReloadList();
+            });
         }
 
         public MyClientsForm(string token)
@@ -109,34 +153,6 @@ namespace SpotApp.Forms
             UpdateMyClients();
         }
 
-        private void InpTextBox_TextChanged(object sender, EventArgs e)
-        {
-            //if (!int.TryParse(InpTextBox.Text, out var inpnumber))
-            //{
-            //    InpTextBox.Text = "";                
-            //    return;
-            //}
-
-            //var service = new SpotService();
-            //var clientItems = service.SearchClient(inpnumber, _token);
-
-            //if (clientItems != null)
-            //{
-            //    _selectClient = clientItems[0];
-
-            //    LblNameClient.Text = clientItems[0].name;
-            //    LblNameClient.Visible = true;
-            //}
-            //else
-            //{
-            //    _selectClient = null;
-
-            //    LblNameClient.Text = "";
-            //    LblNameClient.Visible = false;
-            //}
-
-        }
-
         private void BtnAdd_Click(object sender, EventArgs e)
         {
             if (_selectClient == null)
@@ -151,26 +167,116 @@ namespace SpotApp.Forms
                 return;
             }
 
-            var service = new SpotServiceV2();
-            var clientItems = service.SetClient(_selectClient.inp, _token);
-
-            if (clientItems.Count > 0)
+            try
             {
-                if (clientItems[0].msg.Equals("ok", StringComparison.OrdinalIgnoreCase))
+                var service = new SpotServiceV2();
+                var clientItems = service.SetClient(_selectClient.inp, _token);
+
+                if (clientItems.Count > 0)
                 {
-                    ReloadMyClients(true);
+                    if (clientItems[0].msg.Equals("ok", StringComparison.OrdinalIgnoreCase))
+                    {
+                        ReloadMyClients(true);
 
-                    MessageBox.Show($"Клиент успешно добавлено");
+                        MessageBox.Show($"Клиент успешно добавлено");
 
-                    _logger.InfoFormat($"Add client: inp - {_selectClient.inp}");
+                        UpdateMyClients();
+                    }
+                    else
+                    {
+                        MessageBox.Show($"{clientItems[0].msg}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessageBox(ex.Message, ex.GetType().Name, "PC~MyClientsForm.AddClient");
+            }
+        }
 
-                    UpdateMyClients();
+        private void FetchSearchClient(int inpNumber)
+        {
+            if (_searchClientIsWorking)
+                return;
+
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+
+            _errorMessage = new ErrorMessage() { haveError = false };
+
+            try
+            {
+                _searchClientIsWorking = true;
+                var service = new SpotServiceV2();
+                _clientItems = service.SearchClient(inpNumber, _token, 3000);
+            }
+            catch (Exception ex)
+            {
+                stopWatch.Stop();
+                _clientItems = new List<ClientItem>();
+                _errorMessage = new ErrorMessage()
+                {
+                    haveError = true,
+                    AppException = ex,
+                    ErrorKeyName = $"PC~MyClientsForm.FetchSearchClient",
+                    ApiElapsedTime = stopWatch.Elapsed.TotalMilliseconds
+                };
+            }
+            finally
+            {
+                _searchClientIsWorking = false;
+            }
+
+            if (stopWatch.IsRunning)
+            {
+                stopWatch.Stop();
+                if (stopWatch.Elapsed.TotalMilliseconds > 1000.00)
+                    _logger.Info($"PC~MyClientsForm.FetchSearchClient diff({stopWatch.Elapsed.TotalMilliseconds})");
+            }
+        }
+
+        private void ReloadSearchClient()
+        {
+            if (_clientItems.Count > 0)
+            {
+                if (_clientItems[0].inp > 0)
+                {
+                    _selectClient = _clientItems[0];
+
+                    UIHelper.SafeInvokeForm(this, (form) =>
+                    {
+                        btnAdd.Enabled = true;
+                        LblNameClient.Text = _clientItems[0].name;
+                        LblNameClient.ForeColor = _myClients.Exists(x => x.inp == _clientItems[0].inp) ? Color.Red : Color.Green;
+                        LblNameClient.Visible = true;
+                    });
                 }
                 else
                 {
-                    MessageBox.Show($"{clientItems[0].msg}");
+                    _selectClient = null;
+
+                    UIHelper.SafeInvokeForm(this, (form) =>
+                    {
+                        btnAdd.Enabled = false;
+                        LblNameClient.Text = "";
+                        LblNameClient.Visible = false;
+                    });
                 }
             }
+            else
+            {
+                _selectClient = null;
+
+                UIHelper.SafeInvokeForm(this, (form) =>
+                {
+                    btnAdd.Enabled = false;
+                    LblNameClient.Text = "";
+                    LblNameClient.Visible = false;
+                });
+            }
+
+            if (_errorMessage.haveError)
+                ShowErrorMessageBox(_errorMessage);
         }
 
         private void BtnSearch_Click(object sender, EventArgs e)
@@ -185,45 +291,15 @@ namespace SpotApp.Forms
                 LblNameClient.Visible = false;
                 return;
             }
-
-            try
+            else
             {
-                var service = new SpotServiceV2();
-                var clientItems = service.SearchClient(inpnumber, _token);
-
-                if (clientItems.Count > 0)
+                UIHelper.RunAsyncForm(this, form =>
                 {
-                    if (clientItems[0].inp > 0)
-                    {
-                        _selectClient = clientItems[0];
-                        btnAdd.Enabled = true;
-                        LblNameClient.Text = clientItems[0].name;
-                        LblNameClient.ForeColor = _myClients.Exists(x => x.inp == clientItems[0].inp) ? Color.Red : Color.Green;
-                        LblNameClient.Visible = true;
-
-                        _logger.InfoFormat($"Search client: inp - {inpnumber}");
-                    }
-                    else
-                    {
-                        _selectClient = null;
-                        btnAdd.Enabled = false;
-                        LblNameClient.Text = "";
-                        LblNameClient.Visible = false;
-                    }
-                }
-                else
+                    FetchSearchClient(inpnumber);
+                }, form =>
                 {
-                    _selectClient = null;
-                    btnAdd.Enabled = false;
-                    LblNameClient.Text = "";
-                    LblNameClient.Visible = false;
-                }
-
-                _logger.Info($"PC~MyClientsForm.BtnSearch_Click inpnumber:{inpnumber}");
-            }
-            catch (Exception ex)
-            {
-                _logger.Error($"PC~MyClientsForm.BtnSearch_Click Error: {ex.Message}");
+                    ReloadSearchClient();
+                });
             }
         }
 
@@ -253,21 +329,28 @@ namespace SpotApp.Forms
                     return;
                 }
 
-                var service = new SpotServiceV2();
-                var result = service.RemoveClient(inp, _token);
-
-                if (result.Count > 0)
+                try
                 {
-                    if (result[0].msg.Equals("ok", StringComparison.OrdinalIgnoreCase))
+                    var service = new SpotServiceV2();
+                    var result = service.RemoveClient(inp, _token);
+
+                    if (result.Count > 0)
                     {
-                        ReloadMyClients(true);
-                        MessageBox.Show($"Клиент успешно удалено");
-                        UpdateMyClients();
+                        if (result[0].msg.Equals("ok", StringComparison.OrdinalIgnoreCase))
+                        {
+                            ReloadMyClients(true);
+                            MessageBox.Show($"Клиент успешно удалено");
+                            UpdateMyClients();
+                        }
+                        else
+                        {
+                            MessageBox.Show($"{result[0].msg}");
+                        }
                     }
-                    else
-                    {
-                        MessageBox.Show($"{result[0].msg}");
-                    }
+                }
+                catch (Exception ex)
+                {
+                    ShowErrorMessageBox(ex.Message, ex.GetType().Name, "PC~MyClientsForm.RemoveClient");
                 }
             }
 

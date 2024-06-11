@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Serialization;
-using SpotApp.Helpers;
-using SpotApp.Services;
+﻿using SpotApp.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;

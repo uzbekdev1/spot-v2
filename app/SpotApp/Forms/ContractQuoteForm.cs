@@ -1,10 +1,11 @@
 ﻿using log4net;
-using SpotApp.Exceptions;
+using SpotApp.Dtos;
 using SpotApp.Helpers;
 using SpotApp.Models;
 using SpotApp.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -30,6 +31,10 @@ namespace SpotApp.Forms
 
         public bool _bidFormsIsActive = false;
 
+        private List<Quote> _quotes = new List<Quote>();
+
+        private ErrorMessage _errorMessage = new ErrorMessage() { haveError = false };
+
         public ContractQuoteForm(int contractId, string token)
         {
             _token = token;
@@ -38,60 +43,91 @@ namespace SpotApp.Forms
             InitializeComponent();
         }
 
-        private void LoadData()
+        private void ShowErrorMessageBox(ErrorMessage error)
         {
-            string startDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            _errorMessage = new ErrorMessage() { haveError = false };
+
+            _logger.Error($"{error.ErrorKeyName} Error:{error.AppException.Message} - {error.ErrorText}({error.ExceptionTypeName}) diff({error.ApiElapsedTime})");
+
+            MessageBox.Show(this, $"{error.ErrorText} ({error.ExceptionTypeName})", $"{Text}", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private void FetchList()
+        {
+            if (_searchIsWorking)
+                return;
+
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+
+            _errorMessage = new ErrorMessage() { haveError = false };
+
             try
             {
-                Text = $"{_contractId} - Котировки";
-
+                _searchIsWorking = true;
                 var service = new SpotServiceV2();
-                var items = service.Quotes(_contractId, _token);
-                var results = new List<QuoteDesign>();
-
-                foreach (var item in items)
-                {
-                    results.Add(new QuoteDesign
-                    {
-                        cena = UIHelper.NumberFormat(item.cena),
-                        amountBuy = item.amountBuy,
-                        amountSell = item._amountSell,
-                        countOrder = item.countOrder,
-                        countPrice = item.countPrice,
-                        brokerId = item._brokerId
-                    });
-                }
-
-                UIHelper.SafeInvoke(this, (form) =>
-                {
-                    contractQuoteGridView.DataSource = results;
-                    contractQuoteGridView.Refresh();
-                });
-
-                _logger.Info($"PC~ContractQuoteForm.LoadData contractId:{_contractId} {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+                _quotes = service.Quotes(_contractId, _token, 3000);
             }
             catch (Exception ex)
             {
-                _logger.Error($"PC~ContractQuoteForm.LoadData contractId:{_contractId} Error:{ex.Message} {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+                stopWatch.Stop();
+                _quotes = new List<Quote>();
+                _errorMessage = new ErrorMessage()
+                {
+                    haveError = true,
+                    AppException = ex,
+                    ErrorKeyName = $"PC~ContractQuoteForm.FetchList contractId: {_contractId}",
+                    ApiElapsedTime = stopWatch.Elapsed.TotalMilliseconds
+                };
             }
             finally
             {
-
+                _searchIsWorking = false;
             }
+
+            if (stopWatch.IsRunning)
+            {
+                stopWatch.Stop();
+                if (stopWatch.Elapsed.TotalMilliseconds > 1000.00)
+                    _logger.Info($"PC~ContractQuoteForm.FetchList contractId: {_contractId} diff({stopWatch.Elapsed.TotalMilliseconds})");
+            }
+        }
+
+        private void ReloadList()
+        {
+            var results = new List<QuoteDesign>();
+            foreach (var item in _quotes)
+            {
+                results.Add(new QuoteDesign
+                {
+                    cena = UIHelper.NumberFormat(item.cena),
+                    amountBuy = item.amountBuy,
+                    amountSell = item._amountSell,
+                    countOrder = item.countOrder,
+                    countPrice = item.countPrice,
+                    brokerId = item._brokerId
+                });
+            }
+
+            UIHelper.SafeInvokeForm(this, (form) =>
+            {
+                contractQuoteGridView.DataSource = results;
+                contractQuoteGridView.Refresh();
+            });
+
+            if (_errorMessage.haveError)
+                ShowErrorMessageBox(_errorMessage);
         }
 
         public void UpdateContractQuotes()
         {
-            if (_searchIsWorking)
+            UIHelper.RunAsyncForm(this, form =>
             {
-                return;
-            }
-            else
+                FetchList();
+            }, form =>
             {
-                _searchIsWorking = true;
-                LoadData();
-                _searchIsWorking = false;
-            }
+                ReloadList();
+            });
         }
 
         private void ShowBidForms()
@@ -127,6 +163,8 @@ namespace SpotApp.Forms
                 Location = settings.Location;
                 Size = settings.Size;
             }
+
+            Text = $"{_contractId} - Котировки";
 
             ShowBidForms();
 

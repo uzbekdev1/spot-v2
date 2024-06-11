@@ -95,6 +95,22 @@ namespace SpotApp.Helpers
             runner.RunWorkerAsync();
         }
 
+        public static void RunAsyncForm(Form form, Action<Form> start, Action<Form> done)
+        {
+            var runner = new BackgroundWorker();
+
+            runner.DoWork += (object sender1, DoWorkEventArgs e1) =>
+            {
+                start(form);
+            };
+
+            runner.RunWorkerCompleted += (object sender1, RunWorkerCompletedEventArgs e1) =>
+            {
+                done(form);
+            };
+
+            runner.RunWorkerAsync();
+        }
 
         public static DateTime ToVersionTime(string s)
         {
@@ -111,6 +127,11 @@ namespace SpotApp.Helpers
             {
                 action(form);
             }
+        }
+
+        public static string DateTimeFullTextFormat(DateTime d)
+        {
+            return d.ToString("yyyy-MM-dd HH:mm:ss.fff");
         }
     }
 }

@@ -156,7 +156,7 @@ namespace ClientApi.Controllers
         [HttpGet]
         [ProducesDefaultResponseType(typeof(ApiResponse<List<ContractPart>>))]
         public IActionResult GetParts()
-        {
+        {            
             var results = _spotService.GetParts();
 
             return Ok(results);

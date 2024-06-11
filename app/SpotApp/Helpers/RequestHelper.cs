@@ -39,7 +39,7 @@ namespace SpotApp.Helpers
             {
                 using (var dataStream = response.GetResponseStream())
                 {
-                    using (var reader = new StreamReader(dataStream))
+                    using (var reader = new StreamReader(dataStream, Encoding.UTF8))
                     {
                         var responseStatusCode = (int)response.StatusCode;
 
@@ -75,7 +75,7 @@ namespace SpotApp.Helpers
                 {
                     using (var respStream = response.GetResponseStream())
                     {
-                        using (var reader = new StreamReader(respStream))
+                        using (var reader = new StreamReader(respStream, Encoding.UTF8))
                         {
                             var responseStatusCode = (int)response.StatusCode;
 

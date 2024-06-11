@@ -7,9 +7,11 @@ using SpotApp.Models;
 using SpotApp.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Windows.Forms;
 
 namespace SpotApp
@@ -54,12 +56,11 @@ namespace SpotApp
 
         private void ReloadTime()
         {
+            var clientTime = DateTime.Now;
             try
             {
                 var service = new SpotServiceV2();
                 _serverTime = service.GetTimeV2(_userInfo.Token);
-
-                var clientTime = DateTime.Now;
 
                 int compareTime = DateTime.Compare(_serverTime, clientTime);
 
@@ -78,12 +79,7 @@ namespace SpotApp
             }
             catch (Exception ex)
             {
-                _logger.Error($"PC~MainForm.ReloadTime Error:{ex.Message}");
-                return;
-            }
-            finally
-            {
-
+                _logger.Error($"PC~MainForm.ReloadTime clientTime:{UIHelper.DateTimeFullTextFormat(clientTime)} Error:{ex.Message}");
             }
         }
 
@@ -147,12 +143,6 @@ namespace SpotApp
         {
             if (keyData == Keys.F1)
             {
-
-                //contractsControl1.LoadAllParts(true);
-                //contractsControl1.UpdateList();
-
-                //FormatTime(true);
-
                 ReloadSomePagesOnF1Event();
 
                 return true;
@@ -176,9 +166,7 @@ namespace SpotApp
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             _timer.Stop();
-
-            //TimerHelper.Close();
-
+            _networkSpeedTimer.Stop();
             Application.Exit();
         }
 
@@ -191,8 +179,6 @@ namespace SpotApp
                 Location = settings.Location;
                 Size = settings.Size;
             }
-
-            //TimerHelper.Open();
 
 #if DEBUG
             string spotClientType = $" - <<<TEST SPOT CLIENT>>>";
@@ -247,10 +233,7 @@ namespace SpotApp
                 }
             };
 
-            UIHelper.RunAsync(this, form =>
-            {
-                contractsControl1.LoadAllParts();
-            }, 500);
+            contractsControl1.LoadAllParts();
 
             FormatTime(true);
             _timer.Start();
@@ -259,6 +242,8 @@ namespace SpotApp
             {
                 LoadClients();
             }, 500);
+
+            InitializeNetworkSpeedTimer();
         }
 
         private void LoadClients()
@@ -447,11 +432,6 @@ namespace SpotApp
 
         private void ReloadSomePagesOnF1Event()
         {
-            //if (_myBids != null && _myBids.Visible)
-            //{
-            //    _myBids.UpdateOrders();
-            //}
-
             if (contractsControl1._allBidsFormList != null)
             {
                 foreach (var item in contractsControl1._allBidsFormList)
@@ -758,6 +738,85 @@ namespace SpotApp
             }
 
             _networkSpeed.Show();
+        }
+
+        private string _networkSpeedError = "";
+
+        private double? _networkSpeedElapsedMilliSeconds = null;
+
+        private Timer _networkSpeedTimer;
+
+        private const int _networkSpeedTimerUpdate = 5000;
+
+        private void FetchNetworkSpeed()
+        {
+            _networkSpeedElapsedMilliSeconds = null;
+            _networkSpeedError = "";
+
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+
+            try
+            {
+                var service = new SpotServiceV2();
+                var appVersion = service.GetVersion(1000);
+
+                stopWatch.Stop();
+                _networkSpeedElapsedMilliSeconds = stopWatch.Elapsed.TotalMilliseconds;
+            }
+            catch (Exception ex)
+            {
+                _networkSpeedError = (new ErrorMessage { AppException = ex }).ErrorText;
+                _networkSpeedElapsedMilliSeconds = null;
+            }
+            finally
+            {
+                if (stopWatch.IsRunning)
+                    stopWatch.Stop();
+            }
+        }
+
+        private void ReloadNetworkSpeed()
+        {
+            UIHelper.SafeInvokeForm(this, form =>
+            {
+                if (_networkSpeedElapsedMilliSeconds.HasValue && _networkSpeedElapsedMilliSeconds.Value <= 100d)
+                {
+                    netSpeedLabel.ForeColor = Color.Green;
+                    internetSpeedToolTip.SetToolTip(netSpeedLabel, "Скорость интернета высокая");
+                }
+                else if (_networkSpeedElapsedMilliSeconds.HasValue && _networkSpeedElapsedMilliSeconds.Value <= 300d)
+                {
+                    netSpeedLabel.ForeColor = Color.FromArgb(196, 160, 15);
+                    internetSpeedToolTip.SetToolTip(netSpeedLabel, "Скорость интернета средняя");
+                }
+                else
+                {
+                    netSpeedLabel.ForeColor = Color.Red;
+                    internetSpeedToolTip.SetToolTip(netSpeedLabel, _networkSpeedError);
+                }
+            });
+        }
+
+        private void NetworkSpeed_Timer_Tick(object sender, EventArgs e)
+        {
+            UIHelper.RunAsyncForm(this, start =>
+            {
+                FetchNetworkSpeed();
+            }, end =>
+            {
+                ReloadNetworkSpeed();
+            });
+        }
+
+        private void InitializeNetworkSpeedTimer()
+        {
+            _networkSpeedTimer = new Timer
+            {
+                Interval = _networkSpeedTimerUpdate
+            };
+            _networkSpeedTimer.Tick += new EventHandler(NetworkSpeed_Timer_Tick);
+            _networkSpeedTimer.Start();
         }
     }
 }

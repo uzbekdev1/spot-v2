@@ -1,11 +1,11 @@
 ﻿using log4net;
 using SpotApp.Dtos;
-using SpotApp.Exceptions;
 using SpotApp.Helpers;
 using SpotApp.Models;
 using SpotApp.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -21,55 +21,11 @@ namespace SpotApp.Forms
 
         private readonly string _token;
 
-        private List<MyOrderResult> _orders;
+        private List<MyOrderResult> _orders = new List<MyOrderResult>();
 
         private bool _searchIsWorking = false;
 
-        private void LoadData()
-        {
-            string startDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-            try
-            {
-                var service = new SpotServiceV2();
-                var items = service.MyOrders(_token);
-
-                LblTotalBids.Text = $"{items.Count}";
-
-                var results = new List<MyOrderDesignV2>();
-
-                foreach (var item in items)
-                {
-                    results.Add(new MyOrderDesignV2
-                    {
-                        cena = UIHelper.NumberFormat(item.cena),
-                        contractId = item.contractId,
-                        inp = item.inp,
-                        kolvo = item.kolvo,
-                        orderId = item.orderId,
-                        orderTime = DateTime.Parse(item.orderDate).ToString("HH:mm:ss.fff"),
-                        status = item.message
-                    });
-                }
-
-                _orders = items;
-
-                UIHelper.SafeInvoke(this, (form) =>
-                {
-                    myBidsGridV2.DataSource = results;
-                    myBidsGridV2.Refresh();
-                });
-
-                _logger.Info($"PC~MyBidsForm.LoadData {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
-            }
-            catch (Exception ex)
-            {
-                _logger.Error($"PC~MyBidsForm.LoadData Error:{ex.Message} {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
-            }
-            finally
-            {
-
-            }
-        }
+        private ErrorMessage _errorMessage = new ErrorMessage() { haveError = false };
 
         public MyBidsForm(string token)
         {
@@ -93,18 +49,94 @@ namespace SpotApp.Forms
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        public void UpdateOrders()
+        private void ShowErrorMessageBox(ErrorMessage error)
+        {
+            _errorMessage = new ErrorMessage() { haveError = false };
+
+            _logger.Error($"{error.ErrorKeyName} Error:{error.AppException.Message} - {error.ErrorText}({error.ExceptionTypeName}) diff({error.ApiElapsedTime})");
+
+            MessageBox.Show(this, $"{error.ErrorText} ({error.ExceptionTypeName})", $"{Text}", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private void FetchList()
         {
             if (_searchIsWorking)
-            {
                 return;
-            }
-            else
+
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+
+            _errorMessage = new ErrorMessage() { haveError = false };
+
+            try
             {
                 _searchIsWorking = true;
-                LoadData();
+                var service = new SpotServiceV2();
+                _orders = service.MyOrders(_token, 3000);
+            }
+            catch (Exception ex)
+            {
+                stopWatch.Stop();
+                _orders = new List<MyOrderResult>();
+                _errorMessage = new ErrorMessage()
+                {
+                    haveError = true,
+                    AppException = ex,
+                    ErrorKeyName = $"PC~MyBidsForm.FetchList",
+                    ApiElapsedTime = stopWatch.Elapsed.TotalMilliseconds
+                };
+            }
+            finally
+            {
                 _searchIsWorking = false;
             }
+
+            if (stopWatch.IsRunning)
+            {
+                stopWatch.Stop();
+                if (stopWatch.Elapsed.TotalMilliseconds > 1000.00)
+                    _logger.Info($"PC~MyBidsForm.FetchList diff({stopWatch.Elapsed.TotalMilliseconds})");
+            }
+        }
+
+        private void ReloadList()
+        {
+            var results = new List<MyOrderDesignV2>();
+
+            foreach (var item in _orders)
+            {
+                results.Add(new MyOrderDesignV2
+                {
+                    cena = UIHelper.NumberFormat(item.cena),
+                    contractId = item.contractId,
+                    inp = item.inp,
+                    kolvo = item.kolvo,
+                    orderId = item.orderId,
+                    orderTime = DateTime.Parse(item.orderDate).ToString("HH:mm:ss.fff"),
+                    status = item.message
+                });
+            }
+
+            UIHelper.SafeInvokeForm(this, (form) =>
+            {
+                LblTotalBids.Text = $"{_orders.Count}";
+                myBidsGridV2.DataSource = results;
+                myBidsGridV2.Refresh();
+            });
+
+            if (_errorMessage.haveError)
+                ShowErrorMessageBox(_errorMessage);
+        }
+
+        public void UpdateOrders()
+        {
+            UIHelper.RunAsyncForm(this, form =>
+            {
+                FetchList();
+            }, form =>
+            {
+                ReloadList();
+            });
         }
 
         private void MyBidsForm_Load(object sender, EventArgs e)

@@ -188,7 +188,6 @@
             this.InpTextBox.Name = "InpTextBox";
             this.InpTextBox.Size = new System.Drawing.Size(117, 20);
             this.InpTextBox.TabIndex = 1;
-            this.InpTextBox.TextChanged += new System.EventHandler(this.InpTextBox_TextChanged);
             // 
             // label1
             // 

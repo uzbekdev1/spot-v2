@@ -6,6 +6,7 @@ using SpotApp.Models;
 using SpotApp.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -22,13 +23,13 @@ namespace SpotApp.Controls
     {
         private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private List<SaleContract> _saleContracts;
+        private List<SaleContract> _saleContracts = new List<SaleContract>();
 
-        private List<AllContract> _allContracts;
+        private List<AllContract> _allContracts = new List<AllContract>();
 
-        private List<NewSpotContract> _newSpotContracts;
+        private List<NewSpotContract> _newSpotContracts = new List<NewSpotContract>();
 
-        private List<OrderTemplate> _orderTemplate;
+        private List<OrderTemplate> _orderTemplate = new List<OrderTemplate>();
 
         public event OpenNewBidEventHandler OpenNewBid;
 
@@ -42,7 +43,16 @@ namespace SpotApp.Controls
 
         public List<AllBidsForm> _allBidsFormList = new List<AllBidsForm>();
 
+        private List<ContactPart> _contractParts = new List<ContactPart>();
+
         private string _token;
+
+        private bool _saleContractSearchIsWorking = false;
+        private bool _allContractSearchIsWorking = false;
+        private bool _newSpotContractSearchIsWorking = false;
+        private bool _orderTemplateSearchIsWorking = false;
+
+        private ErrorMessage _errorMessage = new ErrorMessage() { haveError = false };
 
         public ContractsControl()
         {
@@ -58,15 +68,46 @@ namespace SpotApp.Controls
             _token = token;
         }
 
-        public void LoadAllParts(bool force = false)
+        private void FetchAllPartList()
         {
-            var service = new SpotServiceV2();
-            var parts = service.Parts(_token);
-            var items = new List<ContactPart>()
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+
+            _errorMessage = new ErrorMessage() { haveError = false };
+
+            try
             {
-                new ContactPart(){ partId=0, partName="Выбрать все товары"}
-            };
-            items.AddRange(parts);
+                var service = new SpotServiceV2();
+                _contractParts = service.Parts(_token, 4000);
+            }
+            catch (Exception ex)
+            {
+                stopWatch.Stop();
+                _contractParts = new List<ContactPart>();
+                _errorMessage = new ErrorMessage()
+                {
+                    haveError = true,
+                    AppException = ex,
+                    ErrorKeyName = $"PC~ContractsControl.FetchAllPartList",
+                    ApiElapsedTime = stopWatch.Elapsed.TotalMilliseconds
+                };
+            }
+
+            if (stopWatch.IsRunning)
+            {
+                stopWatch.Stop();
+                if (stopWatch.Elapsed.TotalMilliseconds > 1000.00)
+                    _logger.Info($"PC~ContractsControl.FetchAllPartList diff({stopWatch.Elapsed.TotalMilliseconds})");
+            }
+        }
+
+        private void ReloadAllPartList(bool force = false)
+        {
+            var items = new List<ContactPart> { new ContactPart() { partId = 0, partName = "Выбрать все товары" } };
+
+            if (_contractParts != null)
+                if (_contractParts.Count > 0)
+                    items.AddRange(_contractParts);
 
             cbxParts.DisplayMember = "partName";
             cbxParts.ValueMember = "partId";
@@ -76,13 +117,23 @@ namespace SpotApp.Controls
             UIHelper.SafeInvoke(this, (form) =>
             {
                 cbxParts.DataSource = items;
-
                 if (force)
-                {
                     cbxParts.SelectedValue = selectedValue;
-                }
-
                 cbxParts.Refresh();
+            });
+
+            if (_errorMessage.haveError)
+                ShowErrorMessageBox(_errorMessage);
+        }
+
+        public void LoadAllParts(bool force = false)
+        {
+            UIHelper.RunAsync(this, form =>
+            {
+                FetchAllPartList();
+            }, form =>
+            {
+                ReloadAllPartList(force);
             });
         }
 
@@ -92,41 +143,188 @@ namespace SpotApp.Controls
             var partId = (int)cbxParts.SelectedValue;
             var tabIndex = tabControl1.SelectedIndex;
 
-            FetchList(term, tabIndex, partId);
+            UIHelper.RunAsync(this, form =>
+            {
+                FetchList(term, tabIndex, partId);
+            }, form =>
+            {
+                ReloadList();
+            });
+        }
 
-            ReloadList();
+        private void ShowErrorMessageBox(ErrorMessage error)
+        {
+            _errorMessage = new ErrorMessage() { haveError = false };
 
-            //UIHelper.RunAsync(this, form =>
-            //{
-            //    FetchList(term, tabIndex, partId);
-            //}, form =>
-            //{
-            //    ReloadList();
-            //});
+            _logger.Error($"{error.ErrorKeyName} Error:{error.AppException.Message} - {error.ErrorText}({error.ExceptionTypeName}) diff({error.ApiElapsedTime})");
+
+            MessageBox.Show(this, $"{error.ErrorText} ({error.ExceptionTypeName})", $"{tabControl1.SelectedTab.Text}", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void FetchList(string term, int tab, int partId)
         {
-            var service = new SpotServiceV2();
-
             if (tab == (int)MainTabs.SaleContract)
             {
-                _saleContracts = service.SaleContracts(partId, term, true, _token);
+                if (_saleContractSearchIsWorking)
+                    return;
+
+                var stopWatch = new Stopwatch();
+                stopWatch.Start();
+
+                _errorMessage = new ErrorMessage() { haveError = false };
+
+                try
+                {
+                    _saleContractSearchIsWorking = true;
+                    var service = new SpotServiceV2();
+                    _saleContracts = service.SaleContracts(partId, term, true, _token, 4000);
+                }
+                catch (Exception ex)
+                {
+                    stopWatch.Stop();
+                    _saleContracts = new List<SaleContract>();
+                    _errorMessage = new ErrorMessage()
+                    {
+                        haveError = true,
+                        AppException = ex,
+                        ErrorKeyName = $"PC~ContractsControl.FetchList.SaleContracts",
+                        ApiElapsedTime = stopWatch.Elapsed.TotalMilliseconds
+                    };
+                }
+                finally
+                {
+                    _saleContractSearchIsWorking = false;
+                }
+
+                if (stopWatch.IsRunning)
+                {
+                    stopWatch.Stop();
+                    if (stopWatch.Elapsed.TotalMilliseconds > 1000.00)
+                        _logger.Info($"PC~ContractsControl.FetchList.SaleContracts diff({stopWatch.Elapsed.TotalMilliseconds})");
+                }
             }
             else if (tab == (int)MainTabs.AllContract)
             {
-                _allContracts = service.AllContracts(partId, term, false, _token);
+                if (_allContractSearchIsWorking)
+                    return;
+
+                var stopWatch = new Stopwatch();
+                stopWatch.Start();
+
+                _errorMessage = new ErrorMessage() { haveError = false };
+
+                try
+                {
+                    _allContractSearchIsWorking = true;
+                    var service = new SpotServiceV2();
+                    _allContracts = service.AllContracts(partId, term, false, _token, 4000);
+                }
+                catch (Exception ex)
+                {
+                    stopWatch.Stop();
+                    _allContracts = new List<AllContract>();
+                    _errorMessage = new ErrorMessage()
+                    {
+                        haveError = true,
+                        AppException = ex,
+                        ErrorKeyName = $"PC~ContractsControl.FetchList.AllContract",
+                        ApiElapsedTime = stopWatch.Elapsed.TotalMilliseconds
+                    };
+                }
+                finally
+                {
+                    _allContractSearchIsWorking = false;
+                }
+
+                if (stopWatch.IsRunning)
+                {
+                    stopWatch.Stop();
+                    if (stopWatch.Elapsed.TotalMilliseconds > 1000.00)
+                        _logger.Info($"PC~ContractsControl.FetchList.AllContract diff({stopWatch.Elapsed.TotalMilliseconds})");
+                }
             }
             else if (tab == (int)MainTabs.NewSpotContract)
             {
-                if (_newSpotContracts == null || _newSpotContracts.Count == 0)
+                if (_newSpotContractSearchIsWorking)
+                    return;
+
+                if (_newSpotContracts != null && _newSpotContracts.Count > 0)
+                    return;
+
+                var stopWatch = new Stopwatch();
+                stopWatch.Start();
+
+                _errorMessage = new ErrorMessage() { haveError = false };
+
+                try
                 {
-                    _newSpotContracts = service.NewSpotMainContracts(term, _token);
+                    _newSpotContractSearchIsWorking = true;
+                    var service = new SpotServiceV2();
+                    _newSpotContracts = service.NewSpotMainContracts(term, _token, 4000);
+                }
+                catch (Exception ex)
+                {
+                    stopWatch.Stop();
+                    _newSpotContracts = new List<NewSpotContract>();
+                    _errorMessage = new ErrorMessage()
+                    {
+                        haveError = true,
+                        AppException = ex,
+                        ErrorKeyName = $"PC~ContractsControl.FetchList.NewSpotContract",
+                        ApiElapsedTime = stopWatch.Elapsed.TotalMilliseconds
+                    };
+                }
+                finally
+                {
+                    _newSpotContractSearchIsWorking = false;
+                }
+
+                if (stopWatch.IsRunning)
+                {
+                    stopWatch.Stop();
+                    if (stopWatch.Elapsed.TotalMilliseconds > 1000.00)
+                        _logger.Info($"PC~ContractsControl.FetchList.NewSpotContract diff({stopWatch.Elapsed.TotalMilliseconds})");
                 }
             }
             else if (tab == (int)MainTabs.BidTemplate)
             {
-                _orderTemplate = service.GetOrderTemplates(term, _token);
+                if (_orderTemplateSearchIsWorking)
+                    return;
+
+                var stopWatch = new Stopwatch();
+                stopWatch.Start();
+
+                _errorMessage = new ErrorMessage() { haveError = false };
+
+                try
+                {
+                    _orderTemplateSearchIsWorking = true;
+                    var service = new SpotServiceV2();
+                    _orderTemplate = service.GetOrderTemplates(term, _token, 4000);
+                }
+                catch (Exception ex)
+                {
+                    stopWatch.Stop();
+                    _orderTemplate = new List<OrderTemplate>();
+                    _errorMessage = new ErrorMessage()
+                    {
+                        haveError = true,
+                        AppException = ex,
+                        ErrorKeyName = $"PC~ContractsControl.FetchList.BidTemplate",
+                        ApiElapsedTime = stopWatch.Elapsed.TotalMilliseconds
+                    };
+                }
+                finally
+                {
+                    _orderTemplateSearchIsWorking = false;
+                }
+
+                if (stopWatch.IsRunning)
+                {
+                    stopWatch.Stop();
+                    if (stopWatch.Elapsed.TotalMilliseconds > 1000.00)
+                        _logger.Info($"PC~ContractsControl.FetchList.BidTemplate diff({stopWatch.Elapsed.TotalMilliseconds})");
+                }
             }
         }
 
@@ -134,8 +332,6 @@ namespace SpotApp.Controls
         {
             if (tabControl1.SelectedIndex == (int)MainTabs.SaleContract)
             {
-                saleContractDtGrView.DataSource = null;
-
                 var results = new List<SaleContractDesign>();
 
                 foreach (var item in _saleContracts)
@@ -154,11 +350,12 @@ namespace SpotApp.Controls
                     saleContractDtGrView.DataSource = results;
                     saleContractDtGrView.Refresh();
                 });
+
+                if (_errorMessage.haveError)
+                    ShowErrorMessageBox(_errorMessage);
             }
             else if (tabControl1.SelectedIndex == (int)MainTabs.AllContract)
             {
-                allContractDtGrView.DataSource = null;
-
                 var results = new List<AllContractDesign>();
 
                 foreach (var item in _allContracts)
@@ -177,11 +374,12 @@ namespace SpotApp.Controls
                     allContractDtGrView.DataSource = results;
                     allContractDtGrView.Refresh();
                 });
+
+                if (_errorMessage.haveError)
+                    ShowErrorMessageBox(_errorMessage);
             }
             else if (tabControl1.SelectedIndex == (int)MainTabs.NewSpotContract)
             {
-                newSpotContractDtGrView.DataSource = null;
-
                 var results = new List<NewSpotContractDesign>();
 
                 foreach (var item in _newSpotContracts)
@@ -200,11 +398,12 @@ namespace SpotApp.Controls
                     newSpotContractDtGrView.DataSource = results;
                     newSpotContractDtGrView.Refresh();
                 });
+
+                if (_errorMessage.haveError)
+                    ShowErrorMessageBox(_errorMessage);
             }
             else if (tabControl1.SelectedIndex == (int)MainTabs.BidTemplate)
             {
-                bidTemplateDtGrView.DataSource = null;
-
                 var results = new List<OrderTemplateDesign>();
 
                 foreach (var item in _orderTemplate)
@@ -224,6 +423,9 @@ namespace SpotApp.Controls
                     bidTemplateDtGrView.DataSource = results;
                     bidTemplateDtGrView.Refresh();
                 });
+
+                if (_errorMessage.haveError)
+                    ShowErrorMessageBox(_errorMessage);
             }
         }
 
@@ -287,29 +489,26 @@ namespace SpotApp.Controls
 
         private void TabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var startDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-
             try
             {
                 SelectedTemplate = null;
                 UpdateList();
             }
-            finally
+            catch (Exception ex)
             {
-                _logger.Info($"PC~ContractsControl.TabControl1_SelectedIndexChanged {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+                _logger.Error($"PC~ContractsControl.TabControl1_SelectedIndexChanged Error:{ex.Message}");
             }
         }
 
         private void BtnSearch_Click(object sender, EventArgs e)
         {
-            string startDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
             try
             {
                 UpdateList();
             }
-            finally
+            catch (Exception ex)
             {
-                _logger.Info($"PC~ContractsControl.BtnSearch_Click {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+                _logger.Error($"PC~ContractsControl.BtnSearch_Click Error:{ex.Message}");
             }
         }
 
@@ -471,13 +670,11 @@ namespace SpotApp.Controls
 
             if (_orderTemplate == null)
             {
-                _logger.Error("_orderTemplate == null");
                 return;
             }
 
             if (_orderTemplate.Count == 0)
             {
-                _logger.Error("_orderTemplate.Count == 0");
                 return;
             }
 

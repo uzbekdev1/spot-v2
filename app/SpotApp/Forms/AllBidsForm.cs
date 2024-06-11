@@ -1,9 +1,11 @@
 ﻿using log4net;
+using SpotApp.Dtos;
 using SpotApp.Helpers;
 using SpotApp.Models;
 using SpotApp.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -27,6 +29,10 @@ namespace SpotApp.Forms
 
         private bool _searchIsWorking = false;
 
+        private List<OrderItem> _orderItems = new List<OrderItem>();
+
+        private ErrorMessage _errorMessage = new ErrorMessage() { haveError = false };
+
         private void ShowBidForms()
         {
             if (AllBidsFormBidForm != null)
@@ -35,59 +41,89 @@ namespace SpotApp.Forms
             }
         }
 
-        private void LoadData()
+        private void ShowErrorMessageBox(ErrorMessage error)
         {
-            string startDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            _errorMessage = new ErrorMessage() { haveError = false };
+
+            _logger.Error($"{error.ErrorKeyName} Error:{error.AppException.Message} - {error.ErrorText}({error.ExceptionTypeName}) diff({error.ApiElapsedTime})");
+
+            MessageBox.Show(this, $"{error.ErrorText} ({error.ExceptionTypeName})", $"{Text}", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private void FetchList()
+        {
+            if (_searchIsWorking)
+                return;
+
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+
+            _errorMessage = new ErrorMessage() { haveError = false };
+
             try
             {
+                _searchIsWorking = true;
                 var service = new SpotServiceV2();
-
-                Text = $"{_contractId}-Заявок на контракт";
-
-                var items = service.AllOrders(_contractId, _token);
-
-                var results = new List<OrderItemDesign>();
-                foreach (var item in items)
-                {
-                    results.Add(new OrderItemDesign
-                    {
-                        mine = item.mine ? "•" : "",
-                        cena = UIHelper.NumberFormat(item.cena),
-                        buying = item.status == "Покупка" ? $"{item.kolvo}" : "",
-                        selling = item.status == "Продажа" ? $"{item.kolvo}" : "",
-                    });
-                }
-
-                UIHelper.SafeInvoke(this, (form) =>
-                {
-                    allBidGridView.DataSource = results;
-                    allBidGridView.Refresh();
-                });
-
-                _logger.Info($"PC~AllBidsForm.LoadData contract: {_contractId} {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+                _orderItems = service.AllOrders(_contractId, _token, 3000);
             }
             catch (Exception ex)
             {
-                _logger.Error($"PC~AllBidsForm.LoadData contract: {_contractId} Error:{ex.Message} {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+                stopWatch.Stop();
+                _orderItems = new List<OrderItem>();
+                _errorMessage = new ErrorMessage()
+                {
+                    haveError = true,
+                    AppException = ex,
+                    ErrorKeyName = $"PC~AllBidsForm.FetchList contract: {_contractId}",
+                    ApiElapsedTime = stopWatch.Elapsed.TotalMilliseconds
+                };
             }
             finally
             {
-
+                _searchIsWorking = false;
             }
+
+            if (stopWatch.IsRunning)
+            {
+                stopWatch.Stop();
+                if (stopWatch.Elapsed.TotalMilliseconds > 1000.00)
+                    _logger.Info($"PC~AllBidsForm.FetchList contract: {_contractId} diff({stopWatch.Elapsed.TotalMilliseconds})");
+            }
+        }
+
+        private void ReloadList()
+        {
+            var results = new List<OrderItemDesign>();
+            foreach (var item in _orderItems)
+            {
+                results.Add(new OrderItemDesign
+                {
+                    mine = item.mine ? "•" : "",
+                    cena = UIHelper.NumberFormat(item.cena),
+                    buying = item.status == "Покупка" ? $"{item.kolvo}" : "",
+                    selling = item.status == "Продажа" ? $"{item.kolvo}" : "",
+                });
+            }
+
+            UIHelper.SafeInvokeForm(this, (form) =>
+            {
+                allBidGridView.DataSource = results;
+                allBidGridView.Refresh();
+            });
+
+            if (_errorMessage.haveError)
+                ShowErrorMessageBox(_errorMessage);
         }
 
         public void UpdateAllBids()
         {
-            if (_searchIsWorking)
+            UIHelper.RunAsyncForm(this, form =>
             {
-                return;
-            }
-            else
+                FetchList();
+            }, form =>
             {
-                _searchIsWorking = true;
-                LoadData();
-                _searchIsWorking = false;
-            }
+                ReloadList();
+            });
         }
 
         public AllBidsForm(int contractId, string token)
@@ -123,6 +159,8 @@ namespace SpotApp.Forms
                 Location = settings.Location;
                 Size = settings.Size;
             }
+
+            Text = $"{_contractId}-Заявок на контракт";
 
             ShowBidForms();
 

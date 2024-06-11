@@ -205,6 +205,7 @@
       <DependentUpon>NewBidForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\AllContractDesign.cs" />
+    <Compile Include="Models\ErrorMessage.cs" />
     <Compile Include="Models\ClientItemDesign.cs" />
     <Compile Include="Models\MainTabs.cs" />
     <Compile Include="Models\MyOrderDesignV2.cs" />

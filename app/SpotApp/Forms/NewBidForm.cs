@@ -1,12 +1,12 @@
 ﻿using log4net;
 using SpotApp.Core;
 using SpotApp.Dtos;
-using SpotApp.Exceptions;
 using SpotApp.Helpers;
 using SpotApp.Models;
 using SpotApp.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Reflection;
@@ -44,13 +44,25 @@ namespace SpotApp.Forms
 
         private OrderForm _orderForm = null;
 
-        private OrderLog _orderLog = null;
-
         public OrderForm OrderForm => _orderForm;
 
         public int? _contractId = null;
 
         private bool _createTemplateIsWorking = false;
+
+        private bool _refreshClientsIsWorking = false;
+
+        private List<ClientItem> _clients = new List<ClientItem>();
+
+        private List<RangeContract> _rangeContracts = new List<RangeContract>();
+
+        private bool _rangeContractsIsWorking = false;
+
+        private bool _contractsWithIdIsWorking = false;
+
+        private List<ContractItem> _contracts = new List<ContractItem>();
+
+        private ErrorMessage _errorMessage = new ErrorMessage() { haveError = false };
 
         private bool FormNotValid(string errText = "")
         {
@@ -61,7 +73,6 @@ namespace SpotApp.Forms
         private bool ValidateForm()
         {
             _orderForm = null;
-            _orderLog = null;
             errLabel.Text = "";
             _contractId = null;
 
@@ -134,37 +145,68 @@ namespace SpotApp.Forms
                 contractStartPrice = _selectContact.price
             };
 
-            _orderLog = new OrderLog
-            {
-                uid = _orderForm.uid,
-                clientVersion = _orderForm.clientVersion,
-                windowOrder = _orderForm.windowOrder
-            };
-
             return true;
+        }
+
+        private void ShowErrorMessageBox(ErrorMessage error)
+        {
+            _errorMessage = new ErrorMessage() { haveError = false };
+
+            _logger.Error($"{error.ErrorKeyName} Error:{error.AppException.Message} - {error.ErrorText}({error.ExceptionTypeName}) diff({error.ApiElapsedTime})");
+
+            MessageBox.Show(this, $"{error.ErrorText} ({error.ExceptionTypeName})", $"{Text}", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private void FetchClients()
+        {
+            if (_refreshClientsIsWorking)
+                return;
+
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+
+            _errorMessage = new ErrorMessage() { haveError = false };
+
+            try
+            {
+                _refreshClientsIsWorking = true;
+                var service = new SpotServiceV2();
+                _clients = service.ClientsDDL(_token, true, 3000);
+            }
+            catch (Exception ex)
+            {
+                stopWatch.Stop();
+                _clients = new List<ClientItem> { new ClientItem { inp = 0, name = "Выберите клиента" } };
+                _errorMessage = new ErrorMessage()
+                {
+                    haveError = true,
+                    AppException = ex,
+                    ErrorKeyName = $"PC~NewBidForm.FetchClients",
+                    ApiElapsedTime = stopWatch.Elapsed.TotalMilliseconds
+                };
+            }
+            finally
+            {
+                _refreshClientsIsWorking = false;
+            }
+
+            if (stopWatch.IsRunning)
+            {
+                stopWatch.Stop();
+                if (stopWatch.Elapsed.TotalMilliseconds > 1000.00)
+                    _logger.Info($"PC~NewBidForm.FetchClients diff({stopWatch.Elapsed.TotalMilliseconds})");
+            }
         }
 
         private void LoadClients()
         {
-            string startDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-            try
+            UIHelper.RunAsyncForm(this, form =>
             {
-                var service = new SpotServiceV2();
-                var clients = service.ClientsDDL(_token);
-
-                RefreshClients(clients);
-
-                _logger.Info($"PC~NewBidForm.LoadClients {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
-            }
-            catch (Exception ex)
+                FetchClients();
+            }, form =>
             {
-                _logger.Error($"PC~NewBidForm.LoadClients Error:{ex.Message} {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
-                return;
-            }
-            finally
-            {
-
-            }
+                RefreshClients(_clients);
+            });
         }
 
         private void LoadLimits(int? selectedValue = null)
@@ -209,7 +251,7 @@ namespace SpotApp.Forms
             RefreshClients(clients, selectedIndex == -1 ? 0 : selectedIndex);
         }
 
-        public void RefreshClients(List<ClientItem> clients, int selectedIndex = 0)
+        private void RefreshClients(List<ClientItem> clients, int selectedIndex = 0)
         {
             cbxClientInp.DisplayMember = "name";
             cbxClientInp.ValueMember = "inp";
@@ -220,6 +262,9 @@ namespace SpotApp.Forms
                 cbxClientInp.Refresh();
                 cbxClientInp.SelectedIndex = selectedIndex;
             });
+
+            if (_errorMessage.haveError)
+                ShowErrorMessageBox(_errorMessage);
         }
 
         public NewBidForm(string token)
@@ -255,6 +300,74 @@ namespace SpotApp.Forms
             }
         }
 
+        private void FetchContractRange()
+        {
+            if (_rangeContractsIsWorking)
+                return;
+
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+
+            _errorMessage = new ErrorMessage() { haveError = false };
+
+            try
+            {
+                _rangeContractsIsWorking = true;
+                var service = new SpotServiceV2();
+                var _rangeContracts = service.RangeContracts(_selectContact.contractId, _token, 3000);
+            }
+            catch (Exception ex)
+            {
+                stopWatch.Stop();
+                _rangeContracts = new List<RangeContract>();
+                _errorMessage = new ErrorMessage()
+                {
+                    haveError = true,
+                    AppException = ex,
+                    ErrorKeyName = $"PC~NewBidForm.FetchContractRange contract: {_selectContact.contractId}",
+                    ApiElapsedTime = stopWatch.Elapsed.TotalMilliseconds
+                };
+            }
+            finally
+            {
+                _rangeContractsIsWorking = false;
+            }
+
+            if (stopWatch.IsRunning)
+            {
+                stopWatch.Stop();
+                if (stopWatch.Elapsed.TotalMilliseconds > 1000.00)
+                    _logger.Info($"PC~NewBidForm.FetchContractRange diff({stopWatch.Elapsed.TotalMilliseconds})");
+            }
+        }
+
+        private void ReloadContractRange()
+        {
+            var results = new List<RangeContractDesign>();
+
+            foreach (var item in _rangeContracts)
+            {
+                results.Add(new RangeContractDesign
+                {
+                    priceDate = item.priceDate.ToString("dd.MM.yyyy"),
+                    startPrice = UIHelper.NumberFormat(item.startPrice),
+                    minPrice = UIHelper.NumberFormat(item.minPrice),
+                    avgPrice = UIHelper.NumberFormat(item.avgPrice),
+                    maxPrice = UIHelper.NumberFormat(item.maxPrice),
+                    pricePercent = UIHelper.NumberFormat(item.pricePercent),
+                });
+            }
+
+            UIHelper.SafeInvoke(this, (form) =>
+            {
+                contrRangeDataGridView.DataSource = results;
+                contrRangeDataGridView.Refresh();
+            });
+
+            if (_errorMessage.haveError)
+                ShowErrorMessageBox(_errorMessage);
+        }
+
         private void LoadContractRange()
         {
             if (contractRangeCheckBox.Checked && _selectContact != null)
@@ -264,43 +377,13 @@ namespace SpotApp.Forms
                     return;
                 }
 
-                string startDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-                try
+                UIHelper.RunAsyncForm(this, form =>
                 {
-                    var service = new SpotServiceV2();
-                    var items = service.RangeContracts(_selectContact.contractId, _token);
-
-                    var results = new List<RangeContractDesign>();
-
-                    foreach (var item in items)
-                    {
-                        results.Add(new RangeContractDesign
-                        {
-                            priceDate = item.priceDate.ToString("dd.MM.yyyy"),
-                            startPrice = UIHelper.NumberFormat(item.startPrice),
-                            minPrice = UIHelper.NumberFormat(item.minPrice),
-                            avgPrice = UIHelper.NumberFormat(item.avgPrice),
-                            maxPrice = UIHelper.NumberFormat(item.maxPrice),
-                            pricePercent = UIHelper.NumberFormat(item.pricePercent),
-                        });
-                    }
-
-                    UIHelper.SafeInvoke(this, (form) =>
-                    {
-                        contrRangeDataGridView.DataSource = results;
-                        contrRangeDataGridView.Refresh();
-                    });
-
-                    _logger.Info($"PC~NewBidForm.LoadContractRange {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
-                }
-                catch (Exception ex)
+                    FetchContractRange();
+                }, form =>
                 {
-                    _logger.Error($"PC~NewBidForm.LoadContractRange Error:{ex.Message} {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
-                }
-                finally
-                {
-
-                }
+                    ReloadContractRange();
+                });
             }
         }
 
@@ -417,7 +500,7 @@ namespace SpotApp.Forms
             TxtTotalFormat.Visible = true;
             TxtTotalFormat.Text = UIHelper.NumberFormat(bidprice);
 
-            var limit = 10;//(int)cbxLimitPrice.SelectedValue;
+            var limit = (int)cbxLimitPrice.SelectedValue;
 
             if (_selectContact == null)
             {
@@ -442,67 +525,110 @@ namespace SpotApp.Forms
             Close();
         }
 
-        private void TxtContractNumber_TextChanged(object sender, EventArgs e)
+        private void FetchContractsWithId(int contractNumber)
         {
-            string startDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            if (_contractsWithIdIsWorking)
+                return;
+
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+
+            _errorMessage = new ErrorMessage() { haveError = false };
+
             try
             {
-                if (!int.TryParse(TxtContractNumber.Text, out var contractnumber))
-                {
-                    _selectContact = null;
-
-                    TxtConractName.Text = "";
-                    TxtConractName.Visible = false;
-
-                    BtnOk.Enabled = ValidateForm();
-
-                    return;
-                }
-
+                _contractsWithIdIsWorking = true;
                 var service = new SpotServiceV2();
-                var contacts = service.GetContractsWithId($"{contractnumber}", _token);
-
-                if (contacts.Count > 0)
-                {
-                    _selectContact = contacts[0];
-
-                    TxtConractName.Text = contacts[0].name;
-                    TxtConractName.Visible = true;
-                    toolTipConractName.SetToolTip(TxtConractName, contacts[0].name);
-                    linkLblStartPrice.Text = $"{UIHelper.NumberFormat(contacts[0].price)} сум";
-                    _contractStartPrice = contacts[0].price;
-                    lblTradeTime.Text = $"{contacts[0].starttime}-{contacts[0].endtime}";
-
-                    BtnOk.Enabled = ValidateForm();
-
-                    LoadContractRange();
-
-                    _logger.Info($"New bid: search contact {contractnumber}");
-                }
-                else
-                {
-                    _selectContact = null;
-
-                    TxtConractName.Text = "";
-                    TxtConractName.Visible = false;
-                    toolTipConractName.SetToolTip(TxtConractName, null);
-                    linkLblStartPrice.Text = $"0 сум";
-                    _contractStartPrice = decimal.Zero;
-                    lblTradeTime.Text = "";
-
-                    BtnOk.Enabled = ValidateForm();
-                }
-
-                _logger.Info($"PC~NewBidForm.TxtContractNumber_TextChanged {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+                _contracts = service.GetContractsWithId($"{contractNumber}", _token, 3000);
             }
             catch (Exception ex)
             {
-                _logger.Error($"PC~NewBidForm.TxtContractNumber_TextChanged Error:{ex.Message} {startDate} - {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+                stopWatch.Stop();
+                _contracts = new List<ContractItem>();
+                _errorMessage = new ErrorMessage()
+                {
+                    haveError = true,
+                    AppException = ex,
+                    ErrorKeyName = $"PC~NewBidForm.FetchContractsWithId contract: {contractNumber}",
+                    ApiElapsedTime = stopWatch.Elapsed.TotalMilliseconds
+                };
             }
             finally
             {
-
+                _contractsWithIdIsWorking = false;
             }
+
+            if (stopWatch.IsRunning)
+            {
+                stopWatch.Stop();
+                if (stopWatch.Elapsed.TotalMilliseconds > 1000.00)
+                    _logger.Info($"PC~NewBidForm.FetchContractsWithId contract: {contractNumber} diff({stopWatch.Elapsed.TotalMilliseconds})");
+            }
+        }
+
+        private void ReloadContractsWithId()
+        {
+            if (_contracts.Count > 0)
+            {
+                _selectContact = _contracts[0];
+                _contractStartPrice = _contracts[0].price;
+
+                UIHelper.SafeInvokeForm(this, (form) =>
+                {
+                    TxtConractName.ForeColor = Color.Black;
+                    TxtConractName.Text = _contracts[0].name;
+                    TxtConractName.Visible = true;
+                    toolTipConractName.SetToolTip(TxtConractName, _contracts[0].name);
+                    linkLblStartPrice.Text = $"{UIHelper.NumberFormat(_contracts[0].price)} сум";
+                    lblTradeTime.Text = $"{_contracts[0].starttime}-{_contracts[0].endtime}";
+                });
+
+                BtnOk.Enabled = ValidateForm();
+                LoadContractRange();
+            }
+            else
+            {
+                _selectContact = null;
+                _contractStartPrice = decimal.Zero;
+
+                UIHelper.SafeInvokeForm(this, (form) =>
+                {
+                    TxtConractName.ForeColor = Color.Red;
+                    TxtConractName.Text = "Контракт не найден";
+                    TxtConractName.Visible = true;
+                    toolTipConractName.SetToolTip(TxtConractName, null);
+                    linkLblStartPrice.Text = $"0 сум";
+                    lblTradeTime.Text = "";
+                });
+
+                BtnOk.Enabled = ValidateForm();
+            }
+
+            if (_errorMessage.haveError)
+                ShowErrorMessageBox(_errorMessage);
+        }
+
+        private void TxtContractNumber_TextChanged(object sender, EventArgs e)
+        {
+            if (!int.TryParse(TxtContractNumber.Text, out var contractnumber))
+            {
+                _selectContact = null;
+
+                TxtConractName.Text = "";
+                TxtConractName.Visible = false;
+
+                BtnOk.Enabled = ValidateForm();
+
+                return;
+            }
+
+            UIHelper.RunAsyncForm(this, form =>
+            {
+                FetchContractsWithId(contractnumber);
+            }, form =>
+            {
+                ReloadContractsWithId();
+            });
         }
 
         private void TxtContractNumber_KeyPress(object sender, KeyPressEventArgs e)
@@ -603,14 +729,7 @@ namespace SpotApp.Forms
 
         private void BntReloadClients_Click(object sender, EventArgs e)
         {
-            try
-            {
-                LoadClients();
-            }
-            finally
-            {
-
-            }
+            LoadClients();
         }
 
         private void ContractRangeCheckBox_CheckedChanged(object sender, EventArgs e)
