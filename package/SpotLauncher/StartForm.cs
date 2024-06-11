@@ -103,13 +103,29 @@ namespace SpotLauncher
                         var processes1 = Process.GetProcessesByName("SpotApp");
                         if (processes1.Length > 0)
                         {
-                            processes1[0].Kill();
+                            try
+                            {
+                                processes1[0].Kill();
+                            }
+                            catch (Exception exp)
+                            {
+                                PrintLine("Ошибка: " + exp.Message);
+                            }
                         }
+
                         var processes2 = Process.GetProcessesByName("ClockApp");
                         if (processes2.Length > 0)
                         {
-                            processes2[0].Kill();
+                            try
+                            {
+                                processes2[0].Kill();
+                            }
+                            catch (Exception exp)
+                            {
+                                PrintLine("Ошибка: " + exp.Message);
+                            }
                         }
+
                         PrintLine("Процесс очищен");
                         PrintLine("Проверяем версию: {0}", Resources.AppVersion);
                     } break;
@@ -124,21 +140,43 @@ namespace SpotLauncher
                                     continue;
                                 }
 
-                                System.IO.Directory.Delete(dir, true);
+                                try
+                                {
+                                    System.IO.Directory.Delete(dir, true);
+                                }
+                                catch (Exception exp)
+                                {
+                                    PrintLine("Ошибка: " + exp.Message);
+                                }
                             }
 
                             foreach (var file in Directory.GetFiles(root))
                             {
-                                System.IO.File.Delete(file);
+                                try
+                                {
+                                    System.IO.File.Delete(file);
+                                }
+                                catch (Exception exp)
+                                {
+                                    PrintLine("Ошибка: " + exp.Message);
+                                }
                             }
                         }
                         else
                         {
-                            Directory.CreateDirectory(root);
+                            try
+                            {
+                                Directory.CreateDirectory(root);
+                            }
+                            catch (Exception exp)
+                            {
+                                PrintLine("Ошибка: " + exp.Message);
+                            }
                         }
 
                         PrintLine("Копирование файлов в Мои Документы");
-                        var path = Path.Combine(root, "client");
+                        var path = Path.Combine(root, "client"); 
+
                         System.IO.File.WriteAllBytes(path, Resources.client);
                     } break;
                 default:
