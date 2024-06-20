@@ -118,6 +118,19 @@ namespace ClientApi
             builder.Services.AddRateLimiter(options =>
             {
                 options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+                options.AddPolicy(RateLimiterPolicies.fixed_1_limit_in_1_sec, httpContent =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: httpContent.Connection.RemoteIpAddress?.ToString(),
+                    factory: partition => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 1,
+                        Window = TimeSpan.FromSeconds(1)
+                    }));
+            });
+
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
                 options.AddPolicy(RateLimiterPolicies.fixed_2_limit_in_1_sec, httpContent =>
                 RateLimitPartition.GetFixedWindowLimiter(
                     partitionKey: httpContent.Connection.RemoteIpAddress?.ToString(),

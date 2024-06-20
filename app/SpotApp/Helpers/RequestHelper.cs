@@ -16,7 +16,7 @@ namespace SpotApp.Helpers
             request.ContentType = "application/json";
             request.UserAgent = $"{Environment.OSVersion}";
             request.AllowAutoRedirect = false;
-            request.KeepAlive = false;
+            request.KeepAlive = true;
             request.Proxy = null;
             request.ServicePoint.Expect100Continue = false;
 

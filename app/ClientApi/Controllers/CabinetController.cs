@@ -31,7 +31,6 @@ namespace ClientApi.Controllers
 
         [HttpGet]
         [ProducesDefaultResponseType(typeof(ApiResponse<double>))]
-        [EnableRateLimiting(RateLimiterPolicies.fixed_3_limit_in_1_sec)]
         public IActionResult CheckTimeV2()
         {
             var timeNow = DateTime.Now;
@@ -116,7 +115,6 @@ namespace ClientApi.Controllers
 
         [HttpGet]
         [ProducesDefaultResponseType(typeof(ApiResponse<List<MyOrderResult>>))]
-        [EnableRateLimiting(RateLimiterPolicies.fixed_3_limit_in_1_sec)]
         public IActionResult MyOrders()
         {
             var results = _spotService.MyOrders(UserId);
@@ -145,7 +143,6 @@ namespace ClientApi.Controllers
 
         [HttpGet]
         [ProducesDefaultResponseType(typeof(ApiResponse<List<PetroClient>>))]
-        [EnableRateLimiting(RateLimiterPolicies.fixed_5_limit_in_1_sec)]
         public IActionResult GetClients()
         {
             var results = _spotService.GetClients(UserId);
@@ -156,7 +153,7 @@ namespace ClientApi.Controllers
         [HttpGet]
         [ProducesDefaultResponseType(typeof(ApiResponse<List<ContractPart>>))]
         public IActionResult GetParts()
-        {            
+        {
             var results = _spotService.GetParts();
 
             return Ok(results);
@@ -164,7 +161,6 @@ namespace ClientApi.Controllers
 
         [HttpGet]
         [ProducesDefaultResponseType(typeof(ApiResponse<List<ContactItem>>))]
-        [EnableRateLimiting(RateLimiterPolicies.fixed_5_limit_in_1_sec)]
         public IActionResult GetContractsWithId([FromQuery] string search)
         {
             var items = _spotService.GetContractsWithId(search);
@@ -174,7 +170,6 @@ namespace ClientApi.Controllers
 
         [HttpGet]
         [ProducesDefaultResponseType(typeof(ApiResponse<List<PetroClient>>))]
-        [EnableRateLimiting(RateLimiterPolicies.fixed_3_limit_in_1_sec)]
         public IActionResult SearchClient([FromQuery] int inp)
         {
             var results = _spotService.SearchClient(UserId, inp);
@@ -232,7 +227,6 @@ namespace ClientApi.Controllers
 
         [HttpGet]
         [ProducesDefaultResponseType(typeof(ApiResponse<List<RangeContract>>))]
-        [EnableRateLimiting(RateLimiterPolicies.fixed_2_limit_in_1_sec)]
         public IActionResult RangeContracts([FromQuery] int contractId)
         {
             var results = _spotService.GetRangeContracts(UserId, contractId);

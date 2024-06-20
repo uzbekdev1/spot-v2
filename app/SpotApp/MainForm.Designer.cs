@@ -206,7 +206,7 @@
             // aboutProgramMenu
             // 
             this.aboutProgramMenu.Name = "aboutProgramMenu";
-            this.aboutProgramMenu.Size = new System.Drawing.Size(180, 22);
+            this.aboutProgramMenu.Size = new System.Drawing.Size(153, 22);
             this.aboutProgramMenu.Text = "&О программе";
             this.aboutProgramMenu.Click += new System.EventHandler(this.AboutProgramMenu_Click);
             // 
@@ -214,7 +214,7 @@
             // 
             this.networkSpeedToolStripMenuItem.Enabled = false;
             this.networkSpeedToolStripMenuItem.Name = "networkSpeedToolStripMenuItem";
-            this.networkSpeedToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.networkSpeedToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
             this.networkSpeedToolStripMenuItem.Text = "Скорость сети";
             this.networkSpeedToolStripMenuItem.Click += new System.EventHandler(this.networkSpeedToolStripMenuItem_Click);
             // 
@@ -247,6 +247,7 @@
             this.netSpeedLabel.Size = new System.Drawing.Size(113, 17);
             this.netSpeedLabel.TabIndex = 9;
             this.netSpeedLabel.Text = "Скорость инт.";
+            this.netSpeedLabel.Visible = false;
             // 
             // btnTimeUpdate
             // 

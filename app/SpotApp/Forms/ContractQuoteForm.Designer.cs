@@ -37,17 +37,22 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ContractQuoteForm));
             this.contractQuoteGridView = new System.Windows.Forms.DataGridView();
-            this.contxtMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.contractQuoteSource = new System.Windows.Forms.BindingSource(this.components);
             this.AmountBuyColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CenaColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.AmountSellColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CountPriceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CountOrderColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.BrokerIdColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.contxtMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.msgLabel = new System.Windows.Forms.Label();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.contractQuoteSource = new System.Windows.Forms.BindingSource(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.contractQuoteGridView)).BeginInit();
             this.contxtMenuStrip.SuspendLayout();
+            this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.contractQuoteSource)).BeginInit();
             this.SuspendLayout();
             // 
@@ -85,28 +90,9 @@
             this.contractQuoteGridView.ShowCellErrors = false;
             this.contractQuoteGridView.ShowEditingIcon = false;
             this.contractQuoteGridView.ShowRowErrors = false;
-            this.contractQuoteGridView.Size = new System.Drawing.Size(384, 561);
+            this.contractQuoteGridView.Size = new System.Drawing.Size(384, 530);
             this.contractQuoteGridView.TabIndex = 0;
             this.contractQuoteGridView.Click += new System.EventHandler(this.contractQuoteGridView_Click);
-            // 
-            // contxtMenuStrip
-            // 
-            this.contxtMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.refreshToolStripMenuItem});
-            this.contxtMenuStrip.Name = "contxtMenuStrip";
-            this.contxtMenuStrip.Size = new System.Drawing.Size(129, 26);
-            // 
-            // refreshToolStripMenuItem
-            // 
-            this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
-            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
-            this.refreshToolStripMenuItem.Text = "Обновить";
-            this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
-            // 
-            // contractQuoteSource
-            // 
-            this.contractQuoteSource.AllowNew = false;
-            this.contractQuoteSource.DataSource = typeof(SpotApp.Models.QuoteDesign);
             // 
             // AmountBuyColumn
             // 
@@ -173,18 +159,74 @@
             this.BrokerIdColumn.ReadOnly = true;
             this.BrokerIdColumn.Width = 70;
             // 
+            // contxtMenuStrip
+            // 
+            this.contxtMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.refreshToolStripMenuItem});
+            this.contxtMenuStrip.Name = "contxtMenuStrip";
+            this.contxtMenuStrip.Size = new System.Drawing.Size(129, 26);
+            // 
+            // refreshToolStripMenuItem
+            // 
+            this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
+            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.refreshToolStripMenuItem.Text = "Обновить";
+            this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.msgLabel);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(384, 25);
+            this.panel1.TabIndex = 1;
+            this.panel1.Click += new System.EventHandler(this.panel1_Click);
+            // 
+            // msgLabel
+            // 
+            this.msgLabel.AutoSize = true;
+            this.msgLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.msgLabel.Location = new System.Drawing.Point(5, 4);
+            this.msgLabel.Name = "msgLabel";
+            this.msgLabel.Size = new System.Drawing.Size(91, 17);
+            this.msgLabel.TabIndex = 2;
+            this.msgLabel.Text = "Message text";
+            this.msgLabel.Click += new System.EventHandler(this.msgLabel_Click);
+            // 
+            // panel2
+            // 
+            this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel2.Controls.Add(this.contractQuoteGridView);
+            this.panel2.Location = new System.Drawing.Point(0, 31);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(384, 530);
+            this.panel2.TabIndex = 2;
+            // 
+            // contractQuoteSource
+            // 
+            this.contractQuoteSource.AllowNew = false;
+            this.contractQuoteSource.DataSource = typeof(SpotApp.Models.QuoteDesign);
+            // 
             // ContractQuoteForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(384, 561);
-            this.Controls.Add(this.contractQuoteGridView);
+            this.Controls.Add(this.panel2);
+            this.Controls.Add(this.panel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ContractQuoteForm";
             this.Text = "Котировки";
             this.Load += new System.EventHandler(this.ContractQuoteForm_Load);
+            this.Click += new System.EventHandler(this.ContractQuoteForm_Click);
             ((System.ComponentModel.ISupportInitialize)(this.contractQuoteGridView)).EndInit();
             this.contxtMenuStrip.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
+            this.panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.contractQuoteSource)).EndInit();
             this.ResumeLayout(false);
 
@@ -202,5 +244,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn CountPriceColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn CountOrderColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn BrokerIdColumn;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Label msgLabel;
     }
 }

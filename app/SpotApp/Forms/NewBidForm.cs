@@ -314,7 +314,7 @@ namespace SpotApp.Forms
             {
                 _rangeContractsIsWorking = true;
                 var service = new SpotServiceV2();
-                var _rangeContracts = service.RangeContracts(_selectContact.contractId, _token, 3000);
+                _rangeContracts = service.RangeContracts(_selectContact.contractId, _token, 3000);
             }
             catch (Exception ex)
             {

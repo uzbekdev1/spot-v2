@@ -80,14 +80,14 @@ namespace SpotApp
 
             if (!Win32Helper.InternetIsConnected())
             {
-                MessageBox.Show("Нет соединения!", "Интернет", MessageBoxButtons.OK);
+                MessageBox.Show("Нет соединения с интернетом. Проверьте подключение к интернету.", "Интернет", MessageBoxButtons.OK);
 
                 return;
             }
 
             if (!_mutex.WaitOne(TimeSpan.Zero, true))
             {
-                MessageBox.Show("Уже запущен!", "Приложение", MessageBoxButtons.OK);
+                MessageBox.Show("Spot-клиент v2 уже запущен!", "Приложение", MessageBoxButtons.OK);
             }
             else
             {
@@ -107,13 +107,13 @@ namespace SpotApp
                 var service = new SpotServiceV2();
                 var version = service.GetVersion();
 
-                if (version == AppSettings.AppVersion || Debugger.IsAttached)
+                if (version == AppSettings.AppVersion)
                 {
                     Application.Run(new LoginForm());
                 }
                 else
                 {
-                    if (MessageBox.Show($"Приложение устарело , текущая версия: {AppSettings.AppVersion} -  новый версия: {version}. Пожалуйста, обновите сейчас!", "Проверка", MessageBoxButtons.OKCancel) != DialogResult.OK)
+                    if (MessageBox.Show($"Приложение устарело, текущая версия: {AppSettings.AppVersion} -  новый версия: {version}. Пожалуйста, обновите сейчас!", "Проверка", MessageBoxButtons.OKCancel) != DialogResult.OK)
                     {
                         return;
                     }

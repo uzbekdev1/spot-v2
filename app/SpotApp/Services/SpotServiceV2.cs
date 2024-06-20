@@ -480,5 +480,20 @@ namespace SpotApp.Services
 
             return response;
         }
+
+        public string CheckConnection(int? requestTimeOut = null)
+        {
+            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/common/checkconnection", "", requestTimeOut);
+
+            if (content.Length == 0)
+                throw new Exception("Connection error");
+
+            var response = JsonConvert.DeserializeObject<ApiResponse<string>>(content);
+
+            if (!response.Success)
+                return "";
+
+            return response.Data;
+        }
     }
 }

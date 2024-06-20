@@ -6,6 +6,7 @@ using SpotApp.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -49,15 +50,6 @@ namespace SpotApp.Forms
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        private void ShowErrorMessageBox(ErrorMessage error)
-        {
-            _errorMessage = new ErrorMessage() { haveError = false };
-
-            _logger.Error($"{error.ErrorKeyName} Error:{error.AppException.Message} - {error.ErrorText}({error.ExceptionTypeName}) diff({error.ApiElapsedTime})");
-
-            MessageBox.Show(this, $"{error.ErrorText} ({error.ExceptionTypeName})", $"{Text}", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
         private void FetchList()
         {
             if (_searchIsWorking)
@@ -72,7 +64,7 @@ namespace SpotApp.Forms
             {
                 _searchIsWorking = true;
                 var service = new SpotServiceV2();
-                _orders = service.MyOrders(_token, 3000);
+                _orders = service.MyOrders(_token, 5000);
             }
             catch (Exception ex)
             {
@@ -101,6 +93,9 @@ namespace SpotApp.Forms
 
         private void ReloadList()
         {
+            if (_searchIsWorking)
+                return;
+
             var results = new List<MyOrderDesignV2>();
 
             foreach (var item in _orders)
@@ -117,23 +112,38 @@ namespace SpotApp.Forms
                 });
             }
 
+            var msgText = "Успешно обновлено";
+            var msgColor = Color.Green;
+
+            if (_errorMessage.haveError)
+            {
+                msgText = $"{_errorMessage.ErrorText} ({_errorMessage.ExceptionTypeName})";
+                msgColor = Color.Red;
+            }
+
             UIHelper.SafeInvokeForm(this, (form) =>
             {
                 LblTotalBids.Text = $"{_orders.Count}";
                 myBidsGridV2.DataSource = results;
                 myBidsGridV2.Refresh();
+
+                msgLabel.Text = msgText;
+                msgLabel.ForeColor = msgColor;
             });
 
             if (_errorMessage.haveError)
-                ShowErrorMessageBox(_errorMessage);
+            {
+                _logger.Error($"{_errorMessage.ErrorKeyName} Error:{_errorMessage.AppException.Message} - {_errorMessage.ErrorText}({_errorMessage.ExceptionTypeName}) diff({_errorMessage.ApiElapsedTime})");
+                _errorMessage = new ErrorMessage() { haveError = false };
+            }
         }
 
         public void UpdateOrders()
         {
-            UIHelper.RunAsyncForm(this, form =>
+            UIHelper.RunAsyncForm(this, start =>
             {
                 FetchList();
-            }, form =>
+            }, end =>
             {
                 ReloadList();
             });
@@ -187,10 +197,21 @@ namespace SpotApp.Forms
                     return;
                 }
 
-                var service = new SpotServiceV2();
-                service.DeleteOrder(orderId, _token);
-
-                UpdateOrders();
+                try
+                {
+                    var service = new SpotServiceV2();
+                    service.DeleteOrder(orderId, _token);
+                }
+                catch (Exception ex)
+                {
+                    var exp = new ErrorMessage() { AppException = ex };
+                    _logger.Error($"PC~MyBidsForm.DeleteOrder Error:{exp.AppException.Message} - {exp.ErrorText}({exp.ExceptionTypeName})");
+                    MessageBox.Show(this, $"{exp.ErrorText} ({exp.ExceptionTypeName})", $"{Text}", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    UpdateOrders();
+                }
             }
         }
     }

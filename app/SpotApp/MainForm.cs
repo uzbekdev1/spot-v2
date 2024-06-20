@@ -166,7 +166,7 @@ namespace SpotApp
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             _timer.Stop();
-            _networkSpeedTimer.Stop();
+            //_networkSpeedTimer.Stop();
             Application.Exit();
         }
 
@@ -243,7 +243,7 @@ namespace SpotApp
                 LoadClients();
             }, 500);
 
-            InitializeNetworkSpeedTimer();
+            //InitializeNetworkSpeedTimer();
         }
 
         private void LoadClients()
@@ -740,83 +740,122 @@ namespace SpotApp
             _networkSpeed.Show();
         }
 
-        private string _networkSpeedError = "";
+        //private string _networkSpeedError = "";
 
-        private double? _networkSpeedElapsedMilliSeconds = null;
+        //private double? _networkSpeedElapsedMilliSeconds = null;
 
-        private Timer _networkSpeedTimer;
+        //private Timer _networkSpeedTimer;
 
-        private const int _networkSpeedTimerUpdate = 5000;
+        //private const int _networkSpeedTimerUpdate = 10000;
 
-        private void FetchNetworkSpeed()
-        {
-            _networkSpeedElapsedMilliSeconds = null;
-            _networkSpeedError = "";
+        //private int _checkInternetEach30Second = 0;
 
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
+        //private bool _checkNetworkIsWorking = false;
 
-            try
-            {
-                var service = new SpotServiceV2();
-                var appVersion = service.GetVersion(1000);
+        //private void FetchNetworkSpeed()
+        //{
+        //    if (_checkNetworkIsWorking)
+        //        return;
 
-                stopWatch.Stop();
-                _networkSpeedElapsedMilliSeconds = stopWatch.Elapsed.TotalMilliseconds;
-            }
-            catch (Exception ex)
-            {
-                _networkSpeedError = (new ErrorMessage { AppException = ex }).ErrorText;
-                _networkSpeedElapsedMilliSeconds = null;
-            }
-            finally
-            {
-                if (stopWatch.IsRunning)
-                    stopWatch.Stop();
-            }
-        }
+        //    _networkSpeedElapsedMilliSeconds = null;
+        //    _networkSpeedError = "";
 
-        private void ReloadNetworkSpeed()
-        {
-            UIHelper.SafeInvokeForm(this, form =>
-            {
-                if (_networkSpeedElapsedMilliSeconds.HasValue && _networkSpeedElapsedMilliSeconds.Value <= 100d)
-                {
-                    netSpeedLabel.ForeColor = Color.Green;
-                    internetSpeedToolTip.SetToolTip(netSpeedLabel, "Скорость интернета высокая");
-                }
-                else if (_networkSpeedElapsedMilliSeconds.HasValue && _networkSpeedElapsedMilliSeconds.Value <= 300d)
-                {
-                    netSpeedLabel.ForeColor = Color.FromArgb(196, 160, 15);
-                    internetSpeedToolTip.SetToolTip(netSpeedLabel, "Скорость интернета средняя");
-                }
-                else
-                {
-                    netSpeedLabel.ForeColor = Color.Red;
-                    internetSpeedToolTip.SetToolTip(netSpeedLabel, _networkSpeedError);
-                }
-            });
-        }
+        //    var stopWatch = new Stopwatch();
+        //    stopWatch.Start();
 
-        private void NetworkSpeed_Timer_Tick(object sender, EventArgs e)
-        {
-            UIHelper.RunAsyncForm(this, start =>
-            {
-                FetchNetworkSpeed();
-            }, end =>
-            {
-                ReloadNetworkSpeed();
-            });
-        }
+        //    try
+        //    {
+        //        _checkNetworkIsWorking = true;
+        //        var service = new SpotServiceV2();
+        //        var appVersion = service.CheckConnection(10000);
 
-        private void InitializeNetworkSpeedTimer()
-        {
-            _networkSpeedTimer = new Timer
-            {
-                Interval = _networkSpeedTimerUpdate
-            };
-            _networkSpeedTimer.Tick += new EventHandler(NetworkSpeed_Timer_Tick);
-            _networkSpeedTimer.Start();
-        }
+        //        stopWatch.Stop();
+        //        _networkSpeedElapsedMilliSeconds = stopWatch.Elapsed.TotalMilliseconds;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _networkSpeedError = (new ErrorMessage { AppException = ex }).ErrorText;
+        //        _networkSpeedElapsedMilliSeconds = null;
+        //        _logger.Error($"PC~MainForm.FetchNetworkSpeed Error:{ex.Message} - {_networkSpeedError}");
+        //    }
+        //    finally
+        //    {
+        //        _checkNetworkIsWorking = false;
+
+        //        if (stopWatch.IsRunning)
+        //            stopWatch.Stop();
+        //    }
+        //}
+
+        //private void ReloadNetworkSpeed()
+        //{
+        //    if (_checkNetworkIsWorking)
+        //        return;
+
+        //    UIHelper.SafeInvokeForm(this, form =>
+        //    {
+        //        if (_networkSpeedElapsedMilliSeconds.HasValue && _networkSpeedElapsedMilliSeconds.Value <= 100d)
+        //        {
+        //            netSpeedLabel.ForeColor = Color.Green;
+        //            internetSpeedToolTip.SetToolTip(netSpeedLabel, "Скорость интернета хорошая");
+        //        }
+        //        else if (_networkSpeedElapsedMilliSeconds.HasValue && _networkSpeedElapsedMilliSeconds.Value <= 300d)
+        //        {
+        //            netSpeedLabel.ForeColor = Color.FromArgb(196, 160, 15);
+        //            internetSpeedToolTip.SetToolTip(netSpeedLabel, "Скорость интернета средняя");
+        //        }
+        //        else
+        //        {
+        //            netSpeedLabel.ForeColor = Color.Red;
+        //            if (string.IsNullOrEmpty(_networkSpeedError))
+        //                _networkSpeedError = "Скорость интернета низкая";
+        //            internetSpeedToolTip.SetToolTip(netSpeedLabel, _networkSpeedError);
+        //        }
+        //    });
+        //}
+
+        //private void NetworkSpeed_Timer_Tick(object sender, EventArgs e)
+        //{
+        //    if (Win32Helper.InternetIsConnected())
+        //    {
+        //        ++_checkInternetEach30Second;
+        //        if (_checkInternetEach30Second >= 3)
+        //        {
+        //            _checkInternetEach30Second = 0;
+
+        //            UIHelper.RunAsyncForm(this, start =>
+        //            {
+        //                FetchNetworkSpeed();
+        //            }, end =>
+        //            {
+        //                ReloadNetworkSpeed();
+        //            });
+        //        }
+        //    }
+        //    else
+        //    {
+        //        _logger.Error("PC~MainForm.NetworkSpeed_Timer_Tick Internet Is Not Connected");
+
+        //        _checkInternetEach30Second = 0;
+
+        //        UIHelper.RunAsyncForm(this, start =>
+        //        {
+        //            FetchNetworkSpeed();
+        //        }, end =>
+        //        {
+        //            ReloadNetworkSpeed();
+        //        });
+        //    }
+        //}
+
+        //private void InitializeNetworkSpeedTimer()
+        //{
+        //    //_networkSpeedTimer = new Timer
+        //    //{
+        //    //    Interval = _networkSpeedTimerUpdate
+        //    //};
+        //    //_networkSpeedTimer.Tick += new EventHandler(NetworkSpeed_Timer_Tick);
+        //    //_networkSpeedTimer.Start();
+        //}
     }
 }

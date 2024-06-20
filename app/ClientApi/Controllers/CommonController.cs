@@ -1,5 +1,6 @@
 ﻿using ClientApi.Core;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Serilog;
 using System.Reflection;
 
@@ -16,15 +17,15 @@ namespace ClientApi.Controllers
         }
 
         [HttpGet]
-        [ProducesDefaultResponseType(typeof(ApiResponse<string>))]
+        [ProducesDefaultResponseType(typeof(ApiResponse<string>))]        
         public IActionResult CheckVersion()
         {
             var version = _configuration["AppVersion"];
 
             return Ok(version);
         }
-         
-        [HttpGet]
+
+        [HttpGet]        
         public IActionResult DownloadClient([FromQuery] bool test)
         {
             var version = _configuration["AppVersion"];
@@ -37,5 +38,11 @@ namespace ClientApi.Controllers
             return File(bytes, "application/octet-stream", "SpotLauncher.exe");
         }
 
+        [HttpGet]
+        [ProducesDefaultResponseType(typeof(ApiResponse<string>))]        
+        public IActionResult CheckConnection()
+        {
+            return Ok($"{DateTime.Now:dd-MM-yyyy HH:mm:ss.fff}");
+        }
     }
 }

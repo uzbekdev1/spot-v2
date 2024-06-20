@@ -6,6 +6,7 @@ using SpotApp.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -43,15 +44,6 @@ namespace SpotApp.Forms
             InitializeComponent();
         }
 
-        private void ShowErrorMessageBox(ErrorMessage error)
-        {
-            _errorMessage = new ErrorMessage() { haveError = false };
-
-            _logger.Error($"{error.ErrorKeyName} Error:{error.AppException.Message} - {error.ErrorText}({error.ExceptionTypeName}) diff({error.ApiElapsedTime})");
-
-            MessageBox.Show(this, $"{error.ErrorText} ({error.ExceptionTypeName})", $"{Text}", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
         private void FetchList()
         {
             if (_searchIsWorking)
@@ -66,7 +58,7 @@ namespace SpotApp.Forms
             {
                 _searchIsWorking = true;
                 var service = new SpotServiceV2();
-                _quotes = service.Quotes(_contractId, _token, 3000);
+                _quotes = service.Quotes(_contractId, _token, 5000);
             }
             catch (Exception ex)
             {
@@ -95,6 +87,9 @@ namespace SpotApp.Forms
 
         private void ReloadList()
         {
+            if (_searchIsWorking)
+                return;
+
             var results = new List<QuoteDesign>();
             foreach (var item in _quotes)
             {
@@ -109,14 +104,28 @@ namespace SpotApp.Forms
                 });
             }
 
+            var msgText = "Успешно обновлено";
+            var msgColor = Color.Green;
+
+            if (_errorMessage.haveError)
+            {
+                msgText = $"{_errorMessage.ErrorText} ({_errorMessage.ExceptionTypeName})";
+                msgColor = Color.Red;
+            }
+
             UIHelper.SafeInvokeForm(this, (form) =>
             {
                 contractQuoteGridView.DataSource = results;
                 contractQuoteGridView.Refresh();
+                msgLabel.Text = msgText;
+                msgLabel.ForeColor = msgColor;
             });
 
             if (_errorMessage.haveError)
-                ShowErrorMessageBox(_errorMessage);
+            {
+                _logger.Error($"{_errorMessage.ErrorKeyName} Error:{_errorMessage.AppException.Message} - {_errorMessage.ErrorText}({_errorMessage.ExceptionTypeName}) diff({_errorMessage.ApiElapsedTime})");
+                _errorMessage = new ErrorMessage() { haveError = false };
+            }
         }
 
         public void UpdateContractQuotes()
@@ -178,6 +187,21 @@ namespace SpotApp.Forms
         }
 
         private void contractQuoteGridView_Click(object sender, EventArgs e)
+        {
+            ShowBidForms();
+        }
+
+        private void msgLabel_Click(object sender, EventArgs e)
+        {
+            ShowBidForms();
+        }
+
+        private void panel1_Click(object sender, EventArgs e)
+        {
+            ShowBidForms();
+        }
+
+        private void ContractQuoteForm_Click(object sender, EventArgs e)
         {
             ShowBidForms();
         }

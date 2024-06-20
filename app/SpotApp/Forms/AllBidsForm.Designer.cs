@@ -34,15 +34,20 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AllBidsForm));
             this.allBidGridView = new System.Windows.Forms.DataGridView();
+            this.sellingColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cntMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.sellingColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.msgLabel = new System.Windows.Forms.Label();
+            this.panel2 = new System.Windows.Forms.Panel();
             this.mineColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.buyingColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cenaColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.allBidsSource = new System.Windows.Forms.BindingSource(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.allBidGridView)).BeginInit();
             this.cntMenuStrip.SuspendLayout();
+            this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.allBidsSource)).BeginInit();
             this.SuspendLayout();
             // 
@@ -79,9 +84,19 @@
             this.allBidGridView.ShowCellErrors = false;
             this.allBidGridView.ShowEditingIcon = false;
             this.allBidGridView.ShowRowErrors = false;
-            this.allBidGridView.Size = new System.Drawing.Size(384, 561);
+            this.allBidGridView.Size = new System.Drawing.Size(384, 530);
             this.allBidGridView.TabIndex = 0;
             this.allBidGridView.Click += new System.EventHandler(this.allBidGridView_Click);
+            // 
+            // sellingColumn
+            // 
+            this.sellingColumn.DataPropertyName = "selling";
+            this.sellingColumn.FillWeight = 14.65721F;
+            this.sellingColumn.HeaderText = "Продажа";
+            this.sellingColumn.Name = "sellingColumn";
+            this.sellingColumn.ReadOnly = true;
+            this.sellingColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.sellingColumn.Width = 119;
             // 
             // cntMenuStrip
             // 
@@ -99,15 +114,38 @@
             this.refreshToolStripMenuItem.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
             // 
-            // sellingColumn
+            // panel1
             // 
-            this.sellingColumn.DataPropertyName = "selling";
-            this.sellingColumn.FillWeight = 14.65721F;
-            this.sellingColumn.HeaderText = "Продажа";
-            this.sellingColumn.Name = "sellingColumn";
-            this.sellingColumn.ReadOnly = true;
-            this.sellingColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.sellingColumn.Width = 119;
+            this.panel1.Controls.Add(this.msgLabel);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(384, 25);
+            this.panel1.TabIndex = 1;
+            this.panel1.Click += new System.EventHandler(this.panel1_Click);
+            // 
+            // msgLabel
+            // 
+            this.msgLabel.AutoSize = true;
+            this.msgLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.msgLabel.ForeColor = System.Drawing.Color.Black;
+            this.msgLabel.Location = new System.Drawing.Point(5, 4);
+            this.msgLabel.Name = "msgLabel";
+            this.msgLabel.Size = new System.Drawing.Size(91, 17);
+            this.msgLabel.TabIndex = 1;
+            this.msgLabel.Text = "Message text";
+            this.msgLabel.Click += new System.EventHandler(this.msgLabel_Click);
+            // 
+            // panel2
+            // 
+            this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel2.Controls.Add(this.allBidGridView);
+            this.panel2.Location = new System.Drawing.Point(0, 31);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(384, 530);
+            this.panel2.TabIndex = 2;
             // 
             // mineColumn
             // 
@@ -157,7 +195,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(384, 561);
-            this.Controls.Add(this.allBidGridView);
+            this.Controls.Add(this.panel2);
+            this.Controls.Add(this.panel1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "AllBidsForm";
@@ -165,8 +204,12 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Заявок на контракт";
             this.Load += new System.EventHandler(this.AllBidsForm_Load);
+            this.Click += new System.EventHandler(this.AllBidsForm_Click);
             ((System.ComponentModel.ISupportInitialize)(this.allBidGridView)).EndInit();
             this.cntMenuStrip.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
+            this.panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.allBidsSource)).EndInit();
             this.ResumeLayout(false);
 
@@ -182,5 +225,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn buyingColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn cenaColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn sellingColumn;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Label msgLabel;
     }
 }
