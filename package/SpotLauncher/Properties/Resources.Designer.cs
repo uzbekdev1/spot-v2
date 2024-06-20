@@ -61,7 +61,7 @@ namespace SpotLauncher.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 19062024.
+        ///   Looks up a localized string similar to 20062024.
         /// </summary>
         internal static string AppVersion {
             get {
