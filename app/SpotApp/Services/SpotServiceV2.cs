@@ -46,7 +46,7 @@ namespace SpotApp.Services
             return response.Data;
         }
 
-        public UserInfo GetUser(string login, string password)
+        public UserInfo GetUser(string login, string password, int? requestTimeOut = null)
         {
             _logger.Info($"getuser login:{login} create post data");
             var data = new
@@ -60,7 +60,7 @@ namespace SpotApp.Services
             };
 
             _logger.Info($"getuser login:{login} post data");
-            var content = RequestHelper.Post($"{AppSettings.ApiUrl}/api/account/login", data);
+            var content = RequestHelper.Post($"{AppSettings.ApiUrl}/api/account/login", data, "", requestTimeOut);
 
             if (content.Length == 0) throw new Exception("Connection error");
 
@@ -89,7 +89,7 @@ namespace SpotApp.Services
 
                 var client = new WebClient()
                 {
-                    BaseAddress = AppSettings.ApiUrl
+                    BaseAddress = AppSettings.ApiUrlDomen
                 };
                 client.Headers[HttpRequestHeader.ContentType] = "application/octet-stream";
 
@@ -494,6 +494,68 @@ namespace SpotApp.Services
                 return "";
 
             return response.Data;
+        }
+
+        public ApiResponse DeleteOrderTemplate(int templateId, string token)
+        {
+            var content = RequestHelper.Post($"{AppSettings.ApiUrl}/api/Cabinet/DeleteOrderTemplate", templateId, token, 3000);
+
+            if (content.Length == 0)
+                return new ApiResponse { Success = false, Error = "Connection error" };
+
+            var response = JsonConvert.DeserializeObject<ApiResponse>(content);
+
+            return response;
+        }
+
+        public ApiResponse<string> CreatePostOrderV2(OrderForm model, string token)
+        {
+            var resultPostOrders = new ApiResponse<string>
+            {
+                Success = true,
+                Data = null,
+                Error = null
+            };
+
+            var startDate = DateTime.Now;
+
+            string methodStage = "";
+
+            try
+            {
+                methodStage = "Create raw";
+                var data = new { raw = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(model))) };
+
+                methodStage = "Upload data";
+                var content = RequestHelper.Post($"{AppSettings.ApiUrl}/api/Cabinet/CreatePostOrderV2/{model.uid}", data, token);
+
+                methodStage = "Check request";
+                if (content.Length == 0)
+                    throw new Exception("Connection error");
+
+                methodStage = "Read content";
+                resultPostOrders = JsonConvert.DeserializeObject<ApiResponse<string>>(content);
+
+                if (resultPostOrders.Success)
+                {
+                    var endDate = DateTime.Now;
+                    _logger.Info($"PC~SpotServiceV2.CreatePostOrderV2 {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds}) - uid: {model.uid}");
+                }
+                else
+                {
+                    var endDate = DateTime.Now;
+                    _logger.Error($"PC~SpotServiceV2.CreatePostOrderV2 Err:{resultPostOrders.Error}; {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds}) - uid: {model.uid}");
+                }
+            }
+            catch (Exception ex)
+            {
+                resultPostOrders.Success = false;
+                resultPostOrders.Error = ex.Message;
+                var endDate = DateTime.Now;
+                _logger.Error($"PC~SpotServiceV2.CreatePostOrderV2 {methodStage} - Err:{ex.Message} {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds}) - uid: {model.uid}");
+            }
+
+            return resultPostOrders;
         }
     }
 }

@@ -16,7 +16,7 @@
         public string ip { get; set; }
 
         public string clientDate { get; set; }
-        
+
         public string serverDate { get; set; }
 
         public string newId { get; set; }
@@ -26,5 +26,7 @@
         public string clientVersion { get; set; }
 
         public string dbDate { get; set; }
+
+        public int orderType { get; set; }
     }
 }

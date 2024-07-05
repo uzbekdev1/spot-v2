@@ -7,6 +7,7 @@ namespace ClientApi.Services
 {
     public class NewSpotService
     {
+        private readonly int _apiTimedOut = 6000; // 6000 msec = 6 sec
 
         public readonly string _apiUrl;
 
@@ -15,7 +16,7 @@ namespace ClientApi.Services
             _apiUrl = apiUrl;
         }
 
-        public IEnumerable<NewSpotMainContact> MainContracts(string search)
+        public async Task<IEnumerable<NewSpotMainContact>> MainContracts(string search)
         {
             var client = new RestClient(_apiUrl);
             var request = new RestRequest($"/Contract/GetSellBids?search={search}&type=0", Method.Post);
@@ -23,7 +24,14 @@ namespace ClientApi.Services
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
 
-            var response = client.Execute(request);
+            request.Timeout = _apiTimedOut;
+
+            var response = await client.ExecuteAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                throw new Exception($"{response.ErrorException?.Message} {response.ResponseStatus}");
+            }
 
             if (string.IsNullOrWhiteSpace(response.Content))
             {
@@ -39,6 +47,5 @@ namespace ClientApi.Services
 
             return resut.Data;
         }
-
     }
 }

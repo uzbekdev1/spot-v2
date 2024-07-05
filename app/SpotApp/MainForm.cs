@@ -7,11 +7,9 @@ using SpotApp.Models;
 using SpotApp.Services;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Windows.Forms;
 
 namespace SpotApp
@@ -30,6 +28,8 @@ namespace SpotApp
 
         private NewBidForm _newBid;
 
+        private NewPostBidForm _newPostBid;
+
         private MyClientsForm _myClientsForm;
 
         private ContractQuoteForm _contractQuoteForm;
@@ -43,6 +43,8 @@ namespace SpotApp
         private List<ClientItem> _clients = new List<ClientItem>();
 
         private int _bidsWindowCounter = 1;
+
+        private int _postBidsWindowCounter = 1;
 
         private bool _toggleTimerBlock;
 
@@ -195,6 +197,10 @@ namespace SpotApp
             contractsControl1.OpenNewBid += () =>
             {
                 MenuItemNewBid_Click(null, null);
+            };
+            contractsControl1.OpenNewPostBid += () =>
+            {
+                MenuItemNewPostBid_Click(null, null);
             };
 
             contractsControl1.AllBidsListF1Key += () =>
@@ -548,6 +554,8 @@ namespace SpotApp
 
             SettingsHelper.SetForm(_contractQuoteForm);
 
+            SettingsHelper.SetForm(_newPostBid);
+
             MessageBox.Show("Все формы успешно сохранены", "Настройки");
         }
 
@@ -740,122 +748,82 @@ namespace SpotApp
             _networkSpeed.Show();
         }
 
-        //private string _networkSpeedError = "";
+        private void MenuItemNewPostBid_Click(object sender, EventArgs e)
+        {
+            if (!CheckTradingTime())
+            {
+                MessageBox.Show(this, "Нет торговли, попробуйте позже.");
 
-        //private double? _networkSpeedElapsedMilliSeconds = null;
+                return;
+            }
 
-        //private Timer _networkSpeedTimer;
+            if (_newPostBid != null)
+            {
+                if (_newPostBid.WindowState == FormWindowState.Minimized)
+                    _newPostBid.WindowState = FormWindowState.Normal;
 
-        //private const int _networkSpeedTimerUpdate = 10000;
+                Application.OpenForms[_newPostBid.Name].Activate();
 
-        //private int _checkInternetEach30Second = 0;
+                return;
+            }
 
-        //private bool _checkNetworkIsWorking = false;
+            _newPostBid = new NewPostBidForm(_userInfo.Token)
+            {
+                WindowOrder = _postBidsWindowCounter,
+                Tag = $"newPostBidForm{_postBidsWindowCounter}",
+                Name = SettingsHelper.GenerateOrderName("newPostBidForm", _postBidsWindowCounter)
+            };
 
-        //private void FetchNetworkSpeed()
-        //{
-        //    if (_checkNetworkIsWorking)
-        //        return;
+            if (contractsControl1.SelectedTemplate != null)
+            {
+                _newPostBid.SetTemplate(contractsControl1.SelectedTemplate);
+            }
 
-        //    _networkSpeedElapsedMilliSeconds = null;
-        //    _networkSpeedError = "";
+            _newPostBid.SetClients(_clients);
 
-        //    var stopWatch = new Stopwatch();
-        //    stopWatch.Start();
+            _newPostBid.SetContact(contractsControl1.SelectedContract);
 
-        //    try
-        //    {
-        //        _checkNetworkIsWorking = true;
-        //        var service = new SpotServiceV2();
-        //        var appVersion = service.CheckConnection(10000);
+            _newPostBid.FormClosing += (object sender1, FormClosingEventArgs e1) =>
+            {
+                _newPostBid = null;
+            };
 
-        //        stopWatch.Stop();
-        //        _networkSpeedElapsedMilliSeconds = stopWatch.Elapsed.TotalMilliseconds;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _networkSpeedError = (new ErrorMessage { AppException = ex }).ErrorText;
-        //        _networkSpeedElapsedMilliSeconds = null;
-        //        _logger.Error($"PC~MainForm.FetchNetworkSpeed Error:{ex.Message} - {_networkSpeedError}");
-        //    }
-        //    finally
-        //    {
-        //        _checkNetworkIsWorking = false;
+            _newPostBid.ReloadMyBids += (string formTag) =>
+            {
+                if (_myBids == null || !_myBids.Visible)
+                {
+                    return;
+                }
 
-        //        if (stopWatch.IsRunning)
-        //            stopWatch.Stop();
-        //    }
-        //}
+                try
+                {
+                    if (_myBids.WindowState == FormWindowState.Minimized)
+                    {
+                        _myBids.WindowState = FormWindowState.Normal;
+                    }
 
-        //private void ReloadNetworkSpeed()
-        //{
-        //    if (_checkNetworkIsWorking)
-        //        return;
+                    Application.OpenForms[_myBids.Name].Activate();
 
-        //    UIHelper.SafeInvokeForm(this, form =>
-        //    {
-        //        if (_networkSpeedElapsedMilliSeconds.HasValue && _networkSpeedElapsedMilliSeconds.Value <= 100d)
-        //        {
-        //            netSpeedLabel.ForeColor = Color.Green;
-        //            internetSpeedToolTip.SetToolTip(netSpeedLabel, "Скорость интернета хорошая");
-        //        }
-        //        else if (_networkSpeedElapsedMilliSeconds.HasValue && _networkSpeedElapsedMilliSeconds.Value <= 300d)
-        //        {
-        //            netSpeedLabel.ForeColor = Color.FromArgb(196, 160, 15);
-        //            internetSpeedToolTip.SetToolTip(netSpeedLabel, "Скорость интернета средняя");
-        //        }
-        //        else
-        //        {
-        //            netSpeedLabel.ForeColor = Color.Red;
-        //            if (string.IsNullOrEmpty(_networkSpeedError))
-        //                _networkSpeedError = "Скорость интернета низкая";
-        //            internetSpeedToolTip.SetToolTip(netSpeedLabel, _networkSpeedError);
-        //        }
-        //    });
-        //}
+                    _myBids.Focus();
 
-        //private void NetworkSpeed_Timer_Tick(object sender, EventArgs e)
-        //{
-        //    if (Win32Helper.InternetIsConnected())
-        //    {
-        //        ++_checkInternetEach30Second;
-        //        if (_checkInternetEach30Second >= 3)
-        //        {
-        //            _checkInternetEach30Second = 0;
+                    UIHelper.RunAsync(this, form => { _myBids.UpdateOrders(); }, 0);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error($"MainForm newPostBid reload my bids throw {ex.Message}");
+                }
+                finally
+                {
 
-        //            UIHelper.RunAsyncForm(this, start =>
-        //            {
-        //                FetchNetworkSpeed();
-        //            }, end =>
-        //            {
-        //                ReloadNetworkSpeed();
-        //            });
-        //        }
-        //    }
-        //    else
-        //    {
-        //        _logger.Error("PC~MainForm.NetworkSpeed_Timer_Tick Internet Is Not Connected");
+                }
+            };
 
-        //        _checkInternetEach30Second = 0;
+            _newPostBid.NewPostBidFormF1Key += () =>
+            {
+                ReloadSomePagesOnF1Event();
+            };
 
-        //        UIHelper.RunAsyncForm(this, start =>
-        //        {
-        //            FetchNetworkSpeed();
-        //        }, end =>
-        //        {
-        //            ReloadNetworkSpeed();
-        //        });
-        //    }
-        //}
-
-        //private void InitializeNetworkSpeedTimer()
-        //{
-        //    //_networkSpeedTimer = new Timer
-        //    //{
-        //    //    Interval = _networkSpeedTimerUpdate
-        //    //};
-        //    //_networkSpeedTimer.Tick += new EventHandler(NetworkSpeed_Timer_Tick);
-        //    //_networkSpeedTimer.Start();
-        //}
+            _newPostBid.Show();
+        }
     }
 }

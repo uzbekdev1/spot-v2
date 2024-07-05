@@ -1,31 +1,22 @@
 using ClientApi.Core;
 using ClientApi.Helpers;
-using ClientApi.Middlewares;
 using ClientApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Prometheus;
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System.Net;
 using System.Text;
-using System.Threading.RateLimiting;
 
 namespace ClientApi
 {
     public class Program
     {
-
         public static void Main(string[] args)
         {
             Console.Title = "Client Api";
-
-            Log.Logger = new LoggerConfiguration()
-          .MinimumLevel.Debug()
-          .WriteTo.File("Logs/api.log", rollingInterval: RollingInterval.Day)
-          .CreateLogger();
 
             var builder = WebApplication.CreateBuilder(args);
             var apiUrl = builder.Configuration["ApiUrl"];
@@ -33,33 +24,41 @@ namespace ClientApi
             var apiUrlNewSpot = builder.Configuration["NewSpotApiUrl"];
             var serverHost = builder.Configuration["ServerHost"];
 
+            builder.Host.UseSerilog((hst, cnf) =>
+            {
+                cnf.ReadFrom.Configuration(hst.Configuration);
+                cnf.Enrich.FromLogContext();
+                cnf.Enrich.WithProperty("ApplicationName", hst.HostingEnvironment.ApplicationName);
+                cnf.MinimumLevel.Debug();
+                cnf.WriteTo.Console();
+                cnf.WriteTo.File("Logs/api.log", rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true);
+            });
+
             builder.Services.AddSingleton<CryptographyHelper>();
+
             builder.Services.AddSingleton((a) =>
             {
-                var service = new SpotService(apiUrl);
-
-                service.RenewToken();
-
+                var service = new SpotService(apiUrl, a.GetRequiredService<ILogger<SpotService>>());                
                 return service;
             });
+
             builder.Services.AddSingleton((a) =>
             {
-                var service = new AmqpService();
-
+                var service = new AmqpService(a.GetRequiredService<ILogger<AmqpService>>());
                 service.CreateConnection();
-
                 return service;
             });
+
             builder.Services.AddSingleton((a) =>
             {
                 var service = new NewSpotService(apiUrlNewSpot);
-
                 return service;
             });
 
             builder.Services.AddControllers();
 
             var key = Encoding.ASCII.GetBytes(AppSettings.JwtKey);
+
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -71,11 +70,13 @@ namespace ClientApi
                         ValidateAudience = false
                     };
                 });
+
             builder.Services.AddAuthorization();
 
             if (builder.Environment.IsDevelopment())
             {
                 builder.Services.AddEndpointsApiExplorer();
+
                 builder.Services.AddSwaggerGen(options =>
                 {
                     options.SwaggerDoc($"v{appVersion}", new OpenApiInfo
@@ -83,6 +84,7 @@ namespace ClientApi
                         Title = $"Client Api",
                         Description = "Legacy Spot Trading Platform integration API"
                     });
+
                     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                     {
                         In = ParameterLocation.Header,
@@ -92,6 +94,7 @@ namespace ClientApi
                         BearerFormat = "JWT",
                         Scheme = "Bearer"
                     });
+
                     options.AddSecurityRequirement(new OpenApiSecurityRequirement
                     {
                         {
@@ -108,6 +111,7 @@ namespace ClientApi
                     });
                 });
             }
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll",
@@ -115,63 +119,7 @@ namespace ClientApi
                         .AllowCredentials());
             });
 
-            builder.Services.AddRateLimiter(options =>
-            {
-                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-                options.AddPolicy(RateLimiterPolicies.fixed_1_limit_in_1_sec, httpContent =>
-                RateLimitPartition.GetFixedWindowLimiter(
-                    partitionKey: httpContent.Connection.RemoteIpAddress?.ToString(),
-                    factory: partition => new FixedWindowRateLimiterOptions
-                    {
-                        PermitLimit = 1,
-                        Window = TimeSpan.FromSeconds(1)
-                    }));
-            });
-
-            builder.Services.AddRateLimiter(options =>
-            {
-                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-                options.AddPolicy(RateLimiterPolicies.fixed_2_limit_in_1_sec, httpContent =>
-                RateLimitPartition.GetFixedWindowLimiter(
-                    partitionKey: httpContent.Connection.RemoteIpAddress?.ToString(),
-                    factory: partition => new FixedWindowRateLimiterOptions
-                    {
-                        PermitLimit = 2,
-                        Window = TimeSpan.FromSeconds(1)
-                    }));
-            });
-
-            builder.Services.AddRateLimiter(options =>
-            {
-                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-                options.AddPolicy(RateLimiterPolicies.fixed_3_limit_in_1_sec, httpContent =>
-                RateLimitPartition.GetFixedWindowLimiter(
-                    partitionKey: httpContent.Connection.RemoteIpAddress?.ToString(),
-                    factory: partition => new FixedWindowRateLimiterOptions
-                    {
-                        PermitLimit = 3,
-                        Window = TimeSpan.FromSeconds(1)
-                    }));
-            });
-
-            builder.Services.AddRateLimiter(options =>
-            {
-                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-                options.AddPolicy(RateLimiterPolicies.fixed_5_limit_in_1_sec, httpContent =>
-                RateLimitPartition.GetFixedWindowLimiter(
-                    partitionKey: httpContent.Connection.RemoteIpAddress?.ToString(),
-                    factory: partition => new FixedWindowRateLimiterOptions
-                    {
-                        PermitLimit = 5,
-                        Window = TimeSpan.FromSeconds(1)
-                    }));
-            });
-
             var app = builder.Build();
-
-            app.UseMetricServer();
-
-            app.UseMiddleware<ExceptionMiddleware>();
 
             if (app.Environment.IsProduction())
             {
@@ -220,22 +168,12 @@ namespace ClientApi
 
             app.UseCors("AllowAll");
 
-            app.UseHttpMetrics(options =>
-            {
-                options.AddCustomLabel("host", context => context.Request.Host.Host);
-            });
-
-            app.UseRateLimiter();
-
             app.UseAuthorization();
             app.UseAuthentication();
 
             app.MapControllers();
 
             app.Run();
-
-            Log.CloseAndFlush();
         }
-
     }
 }

@@ -134,15 +134,19 @@ namespace SpotApp.Forms
             {
                 uid = _id,
                 inp = selectedClient,
-                kolvo = bidamount,
-                price = bidprice,
                 contractId = contractnumber,
                 clientVersion = AppSettings.AppVersion,
 
                 contractName = TxtConractName.Text,
                 inpName = cbxClientInp.Text,
                 windowOrder = WindowOrder,
-                contractStartPrice = _selectContact.price
+                contractStartPrice = _selectContact.price,
+
+                kolvo = bidamount,
+                price = bidprice,
+
+                kolvoStr = CryptographyHelper.EncryptV2(bidamount.ToString()),
+                priceStr = CryptographyHelper.EncryptV2(bidprice.ToString())
             };
 
             return true;

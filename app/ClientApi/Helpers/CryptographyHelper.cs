@@ -30,7 +30,31 @@ namespace ClientApi.Helpers
                 rsa.PersistKeyInCsp = false;
             }
         }
-         
+
+        public string DecryptV2(string text)
+        {
+            var rsa = new RSACryptoServiceProvider(512);
+
+            try
+            {
+                var privateKey = @"<RSAKeyValue><Modulus>l2LEmHZboKriygRXmuFj60yueqIGQVXcRT8L0yEiLZHaoP7gyvb2nXv/wJmwF+HFpZKsNLNFNEJjbuydDoq5mQ==</Modulus><Exponent>AQAB</Exponent><P>xK5JTV8/1dFOZX1xupTrhwJ8cwML3Y6NmBtkmUGXIc8=</P><Q>xQtB/TAA1sDA8xQ4NFg9n/t/6Fcgfk0+D4UTAnG6UBc=</Q><DP>e2B1PSLt8Vv+GK4rZIa8hJGrrZ4QmGgvLGaqoXTCsIM=</DP><DQ>TsOaRC/tFesE9eXONbZUI+Avl9tEBNixhxilqaN2W08=</DQ><InverseQ>b5vM68tmOQaYvosZW5PqIvRi4qpgIpqgTP7rNF2JJBU=</InverseQ><D>c/AJXjYu4DJfc5W1vgDltBvK+FJD9h+ajVHGbZBPi5Od0lQ8d0iZFnzE4PZu+pffsbs1+tYduUlddbU4L7QDjQ==</D></RSAKeyValue>";
+
+                rsa.FromXmlString(privateKey);
+
+                var bytesToDescrypt = Convert.FromBase64String(text);
+                var decryptedBytes = rsa.Decrypt(bytesToDescrypt, true);
+
+                return Encoding.UTF8.GetString(decryptedBytes);
+            }
+            catch
+            {
+                return null;
+            }
+            finally
+            {
+                rsa.PersistKeyInCsp = false;
+            }
+        }
     }
 
 }

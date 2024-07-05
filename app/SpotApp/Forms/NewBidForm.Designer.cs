@@ -174,6 +174,7 @@
             // 
             this.TxtBidAmount.Location = new System.Drawing.Point(85, 121);
             this.TxtBidAmount.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.TxtBidAmount.MaxLength = 12;
             this.TxtBidAmount.Name = "TxtBidAmount";
             this.TxtBidAmount.Size = new System.Drawing.Size(134, 21);
             this.TxtBidAmount.TabIndex = 2;
@@ -184,6 +185,7 @@
             // 
             this.TxtBidPrice.Location = new System.Drawing.Point(84, 157);
             this.TxtBidPrice.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.TxtBidPrice.MaxLength = 12;
             this.TxtBidPrice.Name = "TxtBidPrice";
             this.TxtBidPrice.Size = new System.Drawing.Size(134, 21);
             this.TxtBidPrice.TabIndex = 3;
@@ -206,6 +208,7 @@
             // 
             this.TxtContractNumber.Location = new System.Drawing.Point(83, 8);
             this.TxtContractNumber.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.TxtContractNumber.MaxLength = 64;
             this.TxtContractNumber.Name = "TxtContractNumber";
             this.TxtContractNumber.Size = new System.Drawing.Size(136, 21);
             this.TxtContractNumber.TabIndex = 0;

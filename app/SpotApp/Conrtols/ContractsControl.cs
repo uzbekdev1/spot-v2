@@ -19,6 +19,8 @@ namespace SpotApp.Controls
 
     public delegate void AllBidsFormBidListFormEventHandler(int contractId);
 
+    public delegate void OpenNewPostBidEventHandler();
+
     partial class ContractsControl : UserControl
     {
         private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -32,6 +34,8 @@ namespace SpotApp.Controls
         private List<OrderTemplate> _orderTemplate = new List<OrderTemplate>();
 
         public event OpenNewBidEventHandler OpenNewBid;
+
+        public event OpenNewPostBidEventHandler OpenNewPostBid;
 
         public event AllBidsFormListF1KeyEventHandler AllBidsListF1Key;
 
@@ -563,6 +567,13 @@ namespace SpotApp.Controls
                     OpenNewBid();
                 }
             }
+            else if (saleContractDtGrView.Columns[e.ColumnIndex].Name == "saleNewPostBidActionColumn")
+            {
+                if (OpenNewPostBid != null)
+                {
+                    OpenNewPostBid();
+                }
+            }
         }
 
         private void allContractDtGrView_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -640,6 +651,31 @@ namespace SpotApp.Controls
                 if (OpenNewBid != null)
                 {
                     OpenNewBid();
+                }
+            }
+            else if (bidTemplateDtGrView.Columns[e.ColumnIndex].Name == "bidTemplateDeleteActionColumn")
+            {
+                if (MessageBox.Show($"Вы уверены, что хотите удалить шаблон №{SelectedTemplate.id} ?", "Шаблон заявок", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) != DialogResult.OK)
+                {
+                    return;
+                }
+
+                try
+                {
+                    var service = new SpotServiceV2();
+                    var result = service.DeleteOrderTemplate(SelectedTemplate.id, _token);
+                }
+                catch (Exception ex)
+                {
+                    var exp = new ErrorMessage() { AppException = ex };
+                    _logger.Error($"PC~ContractsControl.DeleteOrderTemplate Error:{exp.AppException.Message} - {exp.ErrorText}({exp.ExceptionTypeName})");
+                    MessageBox.Show(this, $"{exp.ErrorText} ({exp.ExceptionTypeName})", $"{Text}", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    SelectedTemplate = null;
+                    SelectedContract = 0;
+                    UpdateList();
                 }
             }
         }

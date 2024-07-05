@@ -49,7 +49,7 @@ namespace SpotApp
                 AppendToFile = true,
                 File = Path.Combine(version, "log"),
                 Layout = patternLayout,
-                DatePattern = "yyyyMMdd", 
+                DatePattern = "yyyyMMdd",
                 RollingStyle = RollingFileAppender.RollingMode.Date,
                 StaticLogFileName = false
             };
@@ -105,7 +105,7 @@ namespace SpotApp
                 Application.ApplicationExit += Application_ApplicationExit;
 
                 var service = new SpotServiceV2();
-                var version = service.GetVersion();
+                var version = service.GetVersion(5000);
 
                 if (version == AppSettings.AppVersion)
                 {
@@ -127,9 +127,9 @@ namespace SpotApp
                         }
                         else
                         {
-                            MessageBox.Show("Приложение не обновляется, попробуйте в следующий раз!", "Проверка");
+                            MessageBox.Show("Приложение не обновляется, попробуйте через некоторое время или загрузите установщик с сайта http://time.uzex.uz", "Проверка");
 
-                            Application.Run(new LoginForm());
+                            Application.Exit();
                         }
                     }
                 }

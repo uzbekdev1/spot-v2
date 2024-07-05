@@ -185,6 +185,7 @@
             // InpTextBox
             // 
             this.InpTextBox.Location = new System.Drawing.Point(103, 17);
+            this.InpTextBox.MaxLength = 64;
             this.InpTextBox.Name = "InpTextBox";
             this.InpTextBox.Size = new System.Drawing.Size(117, 20);
             this.InpTextBox.TabIndex = 1;

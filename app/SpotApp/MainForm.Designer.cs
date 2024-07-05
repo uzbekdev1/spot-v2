@@ -33,6 +33,7 @@
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.файлToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItemNewBid = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItemNewPostBid = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitApp = new System.Windows.Forms.ToolStripMenuItem();
             this.окнаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -84,6 +85,7 @@
             // 
             this.файлToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuItemNewBid,
+            this.MenuItemNewPostBid,
             this.toolStripSeparator1,
             this.exitApp});
             this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
@@ -95,19 +97,26 @@
             this.MenuItemNewBid.Name = "MenuItemNewBid";
             this.MenuItemNewBid.ShortcutKeyDisplayString = "F4";
             this.MenuItemNewBid.ShortcutKeys = System.Windows.Forms.Keys.F4;
-            this.MenuItemNewBid.Size = new System.Drawing.Size(165, 22);
+            this.MenuItemNewBid.Size = new System.Drawing.Size(216, 22);
             this.MenuItemNewBid.Text = "Новая заявка";
             this.MenuItemNewBid.Click += new System.EventHandler(this.MenuItemNewBid_Click);
+            // 
+            // MenuItemNewPostBid
+            // 
+            this.MenuItemNewPostBid.Name = "MenuItemNewPostBid";
+            this.MenuItemNewPostBid.Size = new System.Drawing.Size(216, 22);
+            this.MenuItemNewPostBid.Text = "Новая отложенная заявка";
+            this.MenuItemNewPostBid.Click += new System.EventHandler(this.MenuItemNewPostBid_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(162, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(213, 6);
             // 
             // exitApp
             // 
             this.exitApp.Name = "exitApp";
-            this.exitApp.Size = new System.Drawing.Size(165, 22);
+            this.exitApp.Size = new System.Drawing.Size(216, 22);
             this.exitApp.Text = "Выход";
             this.exitApp.Click += new System.EventHandler(this.ExitApp_Click);
             // 
@@ -415,5 +424,6 @@
         private System.Windows.Forms.ToolStripMenuItem networkSpeedToolStripMenuItem;
         private System.Windows.Forms.Label netSpeedLabel;
         private System.Windows.Forms.ToolTip internetSpeedToolTip;
+        private System.Windows.Forms.ToolStripMenuItem MenuItemNewPostBid;
     }
 }

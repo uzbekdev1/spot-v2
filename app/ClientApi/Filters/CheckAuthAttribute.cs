@@ -9,7 +9,6 @@ namespace ClientApi.Filters
 {
     public class CheckAuthAttribute : ActionFilterAttribute
     {
-        
         private static bool ValidateJwtToken(string token)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.JwtKey));
@@ -47,6 +46,5 @@ namespace ClientApi.Filters
                 });
             }
         }
-
     }
 }

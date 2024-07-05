@@ -63,6 +63,7 @@
             // 
             this.tbxUser.Location = new System.Drawing.Point(145, 33);
             this.tbxUser.Margin = new System.Windows.Forms.Padding(2);
+            this.tbxUser.MaxLength = 50;
             this.tbxUser.Name = "tbxUser";
             this.tbxUser.Size = new System.Drawing.Size(193, 21);
             this.tbxUser.TabIndex = 0;
@@ -83,6 +84,7 @@
             // 
             this.tbxPassword.Location = new System.Drawing.Point(145, 70);
             this.tbxPassword.Margin = new System.Windows.Forms.Padding(2);
+            this.tbxPassword.MaxLength = 50;
             this.tbxPassword.Name = "tbxPassword";
             this.tbxPassword.PasswordChar = '*';
             this.tbxPassword.Size = new System.Drawing.Size(193, 21);

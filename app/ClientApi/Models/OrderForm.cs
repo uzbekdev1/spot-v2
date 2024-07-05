@@ -37,6 +37,15 @@ namespace ClientApi.Models
 
         [JsonProperty(PropertyName = "l")]
         public string dbDate { get; set; }
+
+        [JsonProperty(PropertyName = "m")]
+        public string serverDate { get; set; }
+
+        [JsonProperty(PropertyName = "n")]
+        public string kolvoStr { get; set; }
+
+        [JsonProperty(PropertyName = "o")]
+        public string priceStr { get; set; }
     }
 
 }

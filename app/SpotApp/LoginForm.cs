@@ -2,7 +2,6 @@
 using SpotApp.Core;
 using SpotApp.Services;
 using System;
-using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -47,8 +46,8 @@ namespace SpotApp
                 var psw = tbxPassword.Text.Trim();
 
                 _logger.Info($"Credentials: {tbxUser.Text}");
-                 
-                var userInfo = service.GetUser(usr, psw);
+
+                var userInfo = service.GetUser(usr, psw, 5000);
 
                 _logger.Info($"show mainform");
                 new MainForm(userInfo).Show();

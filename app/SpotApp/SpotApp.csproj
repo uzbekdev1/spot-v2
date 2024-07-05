@@ -144,6 +144,7 @@
     <Compile Include="Dtos\RangeContract.cs" />
     <Compile Include="Dtos\SaleContract.cs" />
     <Compile Include="Dtos\SelectItem.cs" />
+    <Compile Include="Enums\TimeTypes.cs" />
     <Compile Include="Exceptions\TooManyRequestsException.cs" />
     <Compile Include="Forms\AllBidsForm.cs">
       <SubType>Form</SubType>
@@ -168,6 +169,12 @@
     </Compile>
     <Compile Include="Forms\NetworkSpeedForm.Designer.cs">
       <DependentUpon>NetworkSpeedForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\NewPostBidForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NewPostBidForm.Designer.cs">
+      <DependentUpon>NewPostBidForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\SendAllNewBidForm.cs">
       <SubType>Form</SubType>
@@ -248,6 +255,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\NetworkSpeedForm.resx">
       <DependentUpon>NetworkSpeedForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NewPostBidForm.resx">
+      <DependentUpon>NewPostBidForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SendAllNewBidForm.resx">
       <DependentUpon>SendAllNewBidForm.cs</DependentUpon>

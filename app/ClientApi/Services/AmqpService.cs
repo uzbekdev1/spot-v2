@@ -1,14 +1,20 @@
-﻿using Newtonsoft.Json;
+﻿using ClientApi.Helpers;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
-using Serilog;
 using System.Text;
 
 namespace ClientApi.Services
 {
     public class AmqpService
     {
-
         private IModel _channel;
+
+        private readonly ILogger<AmqpService> _logger;
+
+        public AmqpService(ILogger<AmqpService> logger)
+        {
+            _logger = logger;
+        }
 
         public void CreateConnection()
         {
@@ -28,11 +34,11 @@ namespace ClientApi.Services
             }
             catch (Exception exp)
             {
-                Log.Error($"Exception CreateConnection: {exp.Message}");
+                _logger.LogError(LogGenerate.Instance.GenerateLogError("", exp.Message, exp.InnerException, exp.StackTrace, new { }));
             }
         }
 
-        public void PushMessage(int traderId, int contractId, int kolvo, int inp, decimal price, string ip, string clientDate, string serverDate, string newId, string clientVersion, string token, string dbDate)
+        public void PushMessage(int traderId, int contractId, int kolvo, int inp, decimal price, string ip, string clientDate, string serverDate, string newId, string clientVersion, string token, string dbDate, int orderType)
         {
             var methodStage = "";
 
@@ -51,11 +57,13 @@ namespace ClientApi.Services
                     newId,
                     clientVersion,
                     token,
-                    dbDate
+                    dbDate,
+                    orderType
                 });
                 var body = Encoding.UTF8.GetBytes(message);
 
                 methodStage = "channel BasicPublish";
+
                 _channel.BasicPublish(exchange: "bids", routingKey: string.Empty, basicProperties: null, body: body);
             }
             catch (Exception exp)

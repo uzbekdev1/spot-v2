@@ -9,23 +9,27 @@ namespace MessageBroker
         {
             Console.Title = "Message Broker";
 
-            Log.Logger = new LoggerConfiguration()
-          .MinimumLevel.Debug()
-          .WriteTo.File("Logs/broker.log", rollingInterval: RollingInterval.Day)
-          .CreateLogger();
+            IHost host = Host.CreateDefaultBuilder(args)
+                .UseSerilog((hst, cnf) =>
+                {
+                    cnf.ReadFrom.Configuration(hst.Configuration);
+                    cnf.Enrich.FromLogContext();
+                    cnf.Enrich.WithProperty("ApplicationName", hst.HostingEnvironment.ApplicationName);
+                    cnf.MinimumLevel.Debug();
+                    cnf.WriteTo.Console();
+                    cnf.WriteTo.File("Logs/broker.log", rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true);
+                })
+                .ConfigureServices(services =>
+                {
+                    services.Configure<HostOptions>(hostOptions =>
+                    {
+                        hostOptions.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
+                    });
+                    services.AddHostedService<BidWorker>();
+                })
+                .Build();
 
-            var builder = Host.CreateApplicationBuilder(args);
-
-            builder.Services.Configure<HostOptions>(hostOptions =>
-            {
-                hostOptions.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
-            });
-            builder.Services.AddHostedService<BidWorker>();
-
-            var host = builder.Build();
             host.Run();
-
-            Log.CloseAndFlush();
         }
     }
 }

@@ -1,102 +1,42 @@
 ﻿using ClientApi.Core;
 using ClientApi.Dtos;
+using ClientApi.Helpers;
 using Newtonsoft.Json;
 using RestSharp;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace ClientApi.Services
 {
     public class SpotService
     {
-
-        private string _apiKey;
+        private readonly int _apiTimedOut = 5000; // 5000 msec = 5 sec
 
         public readonly string _apiUrl;
 
-        private static bool ValidationAccessToken(string token)
-        {
-            JwtSecurityToken jwtSecurityToken;
+        private readonly ILogger<SpotService> _logger;
 
-            try
-            {
-                jwtSecurityToken = new JwtSecurityToken(token);
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-
-            return jwtSecurityToken.ValidTo > DateTime.Now;
-        }
-
-        private string GetToken()
-        {
-            var client = new RestClient(_apiUrl);
-            var request = new RestRequest("/api/user/authenticate", Method.Post);
-
-            request.AddHeader("Accept", "application/json");
-            request.AddHeader("Content-Type", "application/json");
-
-            request.AddJsonBody(new
-            {
-                username = "test",
-                password = "test"
-            });
-
-            var response = client.Execute(request);
-
-            if (string.IsNullOrWhiteSpace(response.Content))
-            {
-                throw new Exception("Server error");
-            }
-
-            var resut = JsonConvert.DeserializeObject<ApiResponse<string>>(response.Content);
-
-            if (!resut.Success)
-            {
-                throw new Exception(resut.Error);
-            }
-
-            return resut.Data;
-        }
-
-        public SpotService(string apiUrl)
+        public SpotService(string apiUrl, ILogger<SpotService> logger)
         {
             _apiUrl = apiUrl;
+            _logger = logger;
         }
 
-        public void RenewToken()
-        {
-            if (string.IsNullOrWhiteSpace(_apiKey))
-            {
-                _apiKey = GetToken();
-            }
-            else
-            {
-                if (!ValidationAccessToken(_apiKey))
-                {
-                    _apiKey = GetToken();
-                }
-            }
-        }
-
-        public string LatestToken()
-        {
-            return _apiKey;
-        }
-
-        public DateTime GetDate()
+        public async Task<DateTime> GetDate()
         {
             var client = new RestClient(_apiUrl);
             var request = new RestRequest("/api/spot/time-now", Method.Get);
 
-            RenewToken();
-
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", $"Bearer {_apiKey}");
 
-            var response = client.Execute(request);
+            request.Timeout = _apiTimedOut;
+
+            var response = await client.ExecuteAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{response.ErrorException?.Message} {response.ResponseStatus}", response.ErrorException?.InnerException, response.ErrorException?.StackTrace, new { }));
+                throw new Exception($"{response.ErrorException?.Message} {response.ResponseStatus}");
+            }
 
             if (string.IsNullOrWhiteSpace(response.Content))
             {
@@ -113,16 +53,15 @@ namespace ClientApi.Services
             return resut.Data;
         }
 
-        public UserResponse GetUser(string username, string password, string newId)
+        public async Task<UserResponse> GetUser(string username, string password, string newId)
         {
             var client = new RestClient(_apiUrl);
             var request = new RestRequest("/api/spot/gettraderdata", Method.Post);
 
-            RenewToken();
-
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", $"Bearer {_apiKey}");
+
+            request.Timeout = _apiTimedOut;
 
             request.AddJsonBody(new
             {
@@ -131,7 +70,13 @@ namespace ClientApi.Services
                 newId
             });
 
-            var response = client.Execute(request);
+            var response = await client.ExecuteAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{response.ErrorException?.Message} {response.ResponseStatus}", response.ErrorException?.InnerException, response.ErrorException?.StackTrace, new { username, password, newId }));
+                throw new Exception($"{response.ErrorException?.Message} {response.ResponseStatus}");
+            }
 
             if (string.IsNullOrWhiteSpace(response.Content))
             {
@@ -148,18 +93,23 @@ namespace ClientApi.Services
             return resut.Data;
         }
 
-        public UserResponse GetUser(int id)
+        public async Task<UserResponse> GetUser(int id)
         {
             var client = new RestClient(_apiUrl);
             var request = new RestRequest($"/api/spot/gettraderdata/{id}", Method.Get);
 
-            RenewToken();
-
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", $"Bearer {_apiKey}");
 
-            var response = client.Execute(request);
+            request.Timeout = _apiTimedOut;
+
+            var response = await client.ExecuteAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{response.ErrorException?.Message} {response.ResponseStatus}", response.ErrorException?.InnerException, response.ErrorException?.StackTrace, new { id }));
+                throw new Exception($"{response.ErrorException?.Message} {response.ResponseStatus}");
+            }
 
             if (string.IsNullOrWhiteSpace(response.Content))
             {
@@ -176,23 +126,28 @@ namespace ClientApi.Services
             return resut.Data;
         }
 
-        public IEnumerable<ContactItem> GetContracts(string search)
+        public async Task<IEnumerable<ContactItem>> GetContracts(string search)
         {
             var client = new RestClient(_apiUrl);
             var request = new RestRequest("/api/spot/getcontracts", Method.Post);
 
-            RenewToken();
-
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", $"Bearer {_apiKey}");
+
+            request.Timeout = _apiTimedOut;
 
             request.AddJsonBody(new
             {
                 search
             });
 
-            var response = client.Execute(request);
+            var response = await client.ExecuteAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{response.ErrorException?.Message} {response.ResponseStatus}", response.ErrorException?.InnerException, response.ErrorException?.StackTrace, new { search }));
+                throw new Exception($"{response.ErrorException?.Message} {response.ResponseStatus}");
+            }
 
             if (string.IsNullOrWhiteSpace(response.Content))
             {
@@ -209,16 +164,15 @@ namespace ClientApi.Services
             return resut.Data;
         }
 
-        public IEnumerable<MainContact> MainContracts(int traderId, int partId, string search, bool isProd)
+        public async Task<IEnumerable<MainContact>> MainContracts(int traderId, int partId, string search, bool isProd)
         {
             var client = new RestClient(_apiUrl);
             var request = new RestRequest("/api/spot/getpartcontracts", Method.Post);
 
-            RenewToken();
-
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", $"Bearer {_apiKey}");
+
+            request.Timeout = _apiTimedOut;
 
             request.AddJsonBody(new
             {
@@ -228,7 +182,13 @@ namespace ClientApi.Services
                 isprod = isProd ? 1 : 0
             });
 
-            var response = client.Execute(request);
+            var response = await client.ExecuteAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{response.ErrorException?.Message} {response.ResponseStatus}", response.ErrorException?.InnerException, response.ErrorException?.StackTrace, new { traderId, partId, search, isProd }));
+                throw new Exception($"{response.ErrorException?.Message} {response.ResponseStatus}");
+            }
 
             if (string.IsNullOrWhiteSpace(response.Content))
             {
@@ -245,23 +205,28 @@ namespace ClientApi.Services
             return resut.Data;
         }
 
-        public IEnumerable<MyOrderResult> MyOrders(int traderId)
+        public async Task<IEnumerable<MyOrderResult>> MyOrders(int traderId)
         {
             var client = new RestClient(_apiUrl);
             var request = new RestRequest("/api/spot/myorders", Method.Post);
 
-            RenewToken();
-
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", $"Bearer {_apiKey}");
+
+            request.Timeout = _apiTimedOut;
 
             request.AddJsonBody(new
             {
                 traderId
             });
 
-            var response = client.Execute(request);
+            var response = await client.ExecuteAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{response.ErrorException?.Message} {response.ResponseStatus}", response.ErrorException?.InnerException, response.ErrorException?.StackTrace, new { traderId }));
+                throw new Exception($"{response.ErrorException?.Message} {response.ResponseStatus}");
+            }
 
             if (string.IsNullOrWhiteSpace(response.Content))
             {
@@ -278,16 +243,15 @@ namespace ClientApi.Services
             return resut.Data;
         }
 
-        public IEnumerable<OrderItem> GetOrders(int contractId, int traderId)
+        public async Task<IEnumerable<OrderItem>> GetOrders(int contractId, int traderId)
         {
             var client = new RestClient(_apiUrl);
             var request = new RestRequest("api/spot/orderswithconrtact", Method.Post);
 
-            RenewToken();
-
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", $"Bearer {_apiKey}");
+
+            request.Timeout = _apiTimedOut;
 
             request.AddJsonBody(new
             {
@@ -295,7 +259,13 @@ namespace ClientApi.Services
                 traderId
             });
 
-            var response = client.Execute(request);
+            var response = await client.ExecuteAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{response.ErrorException?.Message} {response.ResponseStatus}", response.ErrorException?.InnerException, response.ErrorException?.StackTrace, new { contractId, traderId }));
+                throw new Exception($"{response.ErrorException?.Message} {response.ResponseStatus}");
+            }
 
             if (string.IsNullOrWhiteSpace(response.Content))
             {
@@ -312,16 +282,15 @@ namespace ClientApi.Services
             return resut.Data;
         }
 
-        public void DeleteOrder(int orderId, int traderId, string traderIp)
+        public async Task DeleteOrder(int orderId, int traderId, string traderIp)
         {
             var client = new RestClient(_apiUrl);
             var request = new RestRequest("api/Spot/deleteorder", Method.Post);
 
-            RenewToken();
-
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", $"Bearer {_apiKey}");
+
+            request.Timeout = _apiTimedOut;
 
             request.AddJsonBody(new
             {
@@ -330,7 +299,13 @@ namespace ClientApi.Services
                 traderIp
             });
 
-            var response = client.Execute(request);
+            var response = await client.ExecuteAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{response.ErrorException?.Message} {response.ResponseStatus}", response.ErrorException?.InnerException, response.ErrorException?.StackTrace, new { orderId, traderId, traderIp }));
+                throw new Exception($"{response.ErrorException?.Message} {response.ResponseStatus}");
+            }
 
             if (string.IsNullOrWhiteSpace(response.Content))
             {
@@ -345,23 +320,28 @@ namespace ClientApi.Services
             }
         }
 
-        public IEnumerable<PetroClient> GetClients(int traderId)
+        public async Task<IEnumerable<PetroClient>> GetClients(int traderId)
         {
             var client = new RestClient(_apiUrl);
             var request = new RestRequest("/api/spot/getclients", Method.Post);
 
-            RenewToken();
-
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", $"Bearer {_apiKey}");
+
+            request.Timeout = _apiTimedOut;
 
             request.AddJsonBody(new
             {
                 traderId,
             });
 
-            var response = client.Execute(request);
+            var response = await client.ExecuteAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{response.ErrorException?.Message} {response.ResponseStatus}", response.ErrorException?.InnerException, response.ErrorException?.StackTrace, new { traderId }));
+                throw new Exception($"{response.ErrorException?.Message} {response.ResponseStatus}");
+            }
 
             if (string.IsNullOrWhiteSpace(response.Content))
             {
@@ -378,18 +358,23 @@ namespace ClientApi.Services
             return resut.Data;
         }
 
-        public IEnumerable<ContractPart> GetParts()
+        public async Task<IEnumerable<ContractPart>> GetParts()
         {
             var client = new RestClient(_apiUrl);
             var request = new RestRequest("/api/spot/getcontractparts");
 
-            RenewToken();
-
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", $"Bearer {_apiKey}");
 
-            var response = client.Execute(request);
+            request.Timeout = _apiTimedOut;
+
+            var response = await client.ExecuteAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{response.ErrorException?.Message} {response.ResponseStatus}", response.ErrorException?.InnerException, response.ErrorException?.StackTrace, new { }));
+                throw new Exception($"{response.ErrorException?.Message} {response.ResponseStatus}");
+            }
 
             if (string.IsNullOrWhiteSpace(response.Content))
             {
@@ -406,23 +391,28 @@ namespace ClientApi.Services
             return resut.Data;
         }
 
-        public IEnumerable<ContactItem> GetContractsWithId(string search)
+        public async Task<IEnumerable<ContactItem>> GetContractsWithId(string search)
         {
             var client = new RestClient(_apiUrl);
             var request = new RestRequest("/api/spot/getcontractswithid", Method.Post);
 
-            RenewToken();
-
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", $"Bearer {_apiKey}");
+
+            request.Timeout = _apiTimedOut;
 
             request.AddJsonBody(new
             {
                 search
             });
 
-            var response = client.Execute(request);
+            var response = await client.ExecuteAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{response.ErrorException?.Message} {response.ResponseStatus}", response.ErrorException?.InnerException, response.ErrorException?.StackTrace, new { search }));
+                throw new Exception($"{response.ErrorException?.Message} {response.ResponseStatus}");
+            }
 
             if (string.IsNullOrWhiteSpace(response.Content))
             {
@@ -439,16 +429,15 @@ namespace ClientApi.Services
             return resut.Data;
         }
 
-        public IEnumerable<PetroClient> SearchClient(int traderId, int inp)
+        public async Task<IEnumerable<PetroClient>> SearchClient(int traderId, int inp)
         {
             var client = new RestClient(_apiUrl);
             var request = new RestRequest("/api/spot/searchclient", Method.Post);
 
-            RenewToken();
-
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", $"Bearer {_apiKey}");
+
+            request.Timeout = _apiTimedOut;
 
             request.AddJsonBody(new
             {
@@ -456,7 +445,13 @@ namespace ClientApi.Services
                 inp
             });
 
-            var response = client.Execute(request);
+            var response = await client.ExecuteAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{response.ErrorException?.Message} {response.ResponseStatus}", response.ErrorException?.InnerException, response.ErrorException?.StackTrace, new { traderId, inp }));
+                throw new Exception($"{response.ErrorException?.Message} {response.ResponseStatus}");
+            }
 
             if (string.IsNullOrWhiteSpace(response.Content))
             {
@@ -473,16 +468,15 @@ namespace ClientApi.Services
             return resut.Data;
         }
 
-        public IEnumerable<PetroClient> SetClient(int traderId, int inp)
+        public async Task<IEnumerable<PetroClient>> SetClient(int traderId, int inp)
         {
             var client = new RestClient(_apiUrl);
             var request = new RestRequest("/api/spot/setclient", Method.Post);
 
-            RenewToken();
-
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", $"Bearer {_apiKey}");
+
+            request.Timeout = _apiTimedOut;
 
             request.AddJsonBody(new
             {
@@ -490,7 +484,13 @@ namespace ClientApi.Services
                 inp
             });
 
-            var response = client.Execute(request);
+            var response = await client.ExecuteAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{response.ErrorException?.Message} {response.ResponseStatus}", response.ErrorException?.InnerException, response.ErrorException?.StackTrace, new { traderId, inp }));
+                throw new Exception($"{response.ErrorException?.Message} {response.ResponseStatus}");
+            }
 
             if (string.IsNullOrWhiteSpace(response.Content))
             {
@@ -507,16 +507,15 @@ namespace ClientApi.Services
             return resut.Data;
         }
 
-        public IEnumerable<PetroClient> RemoveClient(int traderId, int inp)
+        public async Task<IEnumerable<PetroClient>> RemoveClient(int traderId, int inp)
         {
             var client = new RestClient(_apiUrl);
             var request = new RestRequest("/api/spot/removeclient", Method.Post);
 
-            RenewToken();
-
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", $"Bearer {_apiKey}");
+
+            request.Timeout = _apiTimedOut;
 
             request.AddJsonBody(new
             {
@@ -524,7 +523,13 @@ namespace ClientApi.Services
                 inp
             });
 
-            var response = client.Execute(request);
+            var response = await client.ExecuteAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{response.ErrorException?.Message} {response.ResponseStatus}", response.ErrorException?.InnerException, response.ErrorException?.StackTrace, new { traderId, inp }));
+                throw new Exception($"{response.ErrorException?.Message} {response.ResponseStatus}");
+            }
 
             if (string.IsNullOrWhiteSpace(response.Content))
             {
@@ -541,16 +546,15 @@ namespace ClientApi.Services
             return resut.Data;
         }
 
-        public IEnumerable<Quote> GetQuotes(int traderId, int contractId)
+        public async Task<IEnumerable<Quote>> GetQuotes(int traderId, int contractId)
         {
             var client = new RestClient(_apiUrl);
             var request = new RestRequest("/api/spot/getquote", Method.Post);
 
-            RenewToken();
-
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", $"Bearer {_apiKey}");
+
+            request.Timeout = _apiTimedOut;
 
             request.AddJsonBody(new
             {
@@ -558,7 +562,13 @@ namespace ClientApi.Services
                 contractId
             });
 
-            var response = client.Execute(request);
+            var response = await client.ExecuteAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{response.ErrorException?.Message} {response.ResponseStatus}", response.ErrorException?.InnerException, response.ErrorException?.StackTrace, new { traderId, contractId }));
+                throw new Exception($"{response.ErrorException?.Message} {response.ResponseStatus}");
+            }
 
             if (string.IsNullOrWhiteSpace(response.Content))
             {
@@ -575,16 +585,15 @@ namespace ClientApi.Services
             return resut.Data;
         }
 
-        public IEnumerable<RangeContract> GetRangeContracts(int traderId, int contractId)
+        public async Task<IEnumerable<RangeContract>> GetRangeContracts(int traderId, int contractId)
         {
             var client = new RestClient(_apiUrl);
             var request = new RestRequest("/api/spot/getrangecontract", Method.Post);
 
-            RenewToken();
-
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", $"Bearer {_apiKey}");
+
+            request.Timeout = _apiTimedOut;
 
             request.AddJsonBody(new
             {
@@ -592,7 +601,13 @@ namespace ClientApi.Services
                 contractId
             });
 
-            var response = client.Execute(request);
+            var response = await client.ExecuteAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{response.ErrorException?.Message} {response.ResponseStatus}", response.ErrorException?.InnerException, response.ErrorException?.StackTrace, new { traderId, contractId }));
+                throw new Exception($"{response.ErrorException?.Message} {response.ResponseStatus}");
+            }
 
             if (string.IsNullOrWhiteSpace(response.Content))
             {
@@ -609,23 +624,28 @@ namespace ClientApi.Services
             return resut.Data;
         }
 
-        public IEnumerable<OrderTemplate> GetOrderTemplates(int traderId, string search)
+        public async Task<IEnumerable<OrderTemplate>> GetOrderTemplates(int traderId, string search)
         {
             var client = new RestClient(_apiUrl);
             var request = new RestRequest("/api/spot/getordertemplate", Method.Post);
 
-            RenewToken();
-
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", $"Bearer {_apiKey}");
+
+            request.Timeout = _apiTimedOut;
 
             request.AddJsonBody(new
             {
                 traderId
             });
 
-            var response = client.Execute(request);
+            var response = await client.ExecuteAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{response.ErrorException?.Message} {response.ResponseStatus}", response.ErrorException?.InnerException, response.ErrorException?.StackTrace, new { traderId, search }));
+                throw new Exception($"{response.ErrorException?.Message} {response.ResponseStatus}");
+            }
 
             if (string.IsNullOrWhiteSpace(response.Content))
             {
@@ -642,16 +662,15 @@ namespace ClientApi.Services
             return resut.Data;
         }
 
-        public ApiResponse CreateOrderTemplate(int userId, OrderTemplate order)
+        public async Task<ApiResponse> CreateOrderTemplate(int userId, OrderTemplate order)
         {
             var client = new RestClient(_apiUrl);
             var request = new RestRequest("api/Spot/createordertemplate", Method.Post);
 
-            RenewToken();
-
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", $"Bearer {_apiKey}");
+
+            request.Timeout = _apiTimedOut;
 
             request.AddJsonBody(new
             {
@@ -663,7 +682,47 @@ namespace ClientApi.Services
                 MaxPriceCount = order.maxPriceCount
             });
 
-            var response = client.Execute(request);
+            var response = await client.ExecuteAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{response.ErrorException?.Message} {response.ResponseStatus}", response.ErrorException?.InnerException, response.ErrorException?.StackTrace, new { userId, order }));
+                throw new Exception($"{response.ErrorException?.Message} {response.ResponseStatus}");
+            }
+
+            if (string.IsNullOrWhiteSpace(response.Content))
+            {
+                return new ApiResponse { Success = false, Error = "Server error", Data = null };
+            }
+
+            var resut = JsonConvert.DeserializeObject<ApiResponse>(response.Content);
+
+            return resut;
+        }
+
+        public async Task<ApiResponse> DeleteOrderTemplate(int traderId, int templateId)
+        {
+            var client = new RestClient(_apiUrl);
+            var request = new RestRequest("api/Spot/deleteordertemplate", Method.Post);
+
+            request.AddHeader("Accept", "application/json");
+            request.AddHeader("Content-Type", "application/json");
+
+            request.Timeout = _apiTimedOut;
+
+            request.AddJsonBody(new
+            {
+                TraderId = traderId,
+                Id = templateId
+            });
+
+            var response = await client.ExecuteAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{response.ErrorException?.Message} {response.ResponseStatus}", response.ErrorException?.InnerException, response.ErrorException?.StackTrace, new { traderId, templateId }));
+                throw new Exception($"{response.ErrorException?.Message} {response.ResponseStatus}");
+            }
 
             if (string.IsNullOrWhiteSpace(response.Content))
             {

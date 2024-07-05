@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SpotApp.Enums;
+using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -132,6 +133,28 @@ namespace SpotApp.Helpers
         public static string DateTimeFullTextFormat(DateTime d)
         {
             return d.ToString("yyyy-MM-dd HH:mm:ss.fff");
+        }
+
+        public static string TimePadLeft(int timeValue, TimeTypes timeType)
+        {
+            if (timeType == TimeTypes.Hours)
+            {
+                return timeValue.ToString().PadLeft(2, '0');
+            }
+            else if (timeType == TimeTypes.Minutes)
+            {
+                return timeValue.ToString().PadLeft(2, '0');
+            }
+            else if (timeType == TimeTypes.Seconds)
+            {
+                return timeValue.ToString().PadLeft(2, '0');
+            }
+            else if (timeType == TimeTypes.Milliseconds)
+            {
+                return timeValue.ToString().PadLeft(3, '0');
+            }
+
+            return timeValue.ToString();
         }
     }
 }

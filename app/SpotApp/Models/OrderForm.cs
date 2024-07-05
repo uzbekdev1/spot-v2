@@ -14,9 +14,11 @@ namespace SpotApp.Models
         [JsonProperty(PropertyName = "c")]
         public int inp { get; set; }
 
+        [JsonIgnore]
         [JsonProperty(PropertyName = "d")]
         public int kolvo { get; set; }
 
+        [JsonIgnore]
         [JsonProperty(PropertyName = "e")]
         public decimal price { get; set; }
 
@@ -44,5 +46,14 @@ namespace SpotApp.Models
 
         [JsonProperty(PropertyName = "l")]
         public string dbDate { get; set; }
+
+        [JsonProperty(PropertyName = "m")]
+        public string serverDate { get; set; }
+        
+        [JsonProperty(PropertyName = "n")]
+        public string kolvoStr { get; set; }
+
+        [JsonProperty(PropertyName = "o")]
+        public string priceStr { get; set; }
     }
 }
