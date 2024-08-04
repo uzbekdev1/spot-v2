@@ -60,15 +60,15 @@
             this.BtnSendAllBidOk = new System.Windows.Forms.Button();
             this.contractRangeCheckBox = new System.Windows.Forms.CheckBox();
             this.contrRangeDataGridView = new System.Windows.Forms.DataGridView();
-            this.priceDateColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.startPriceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.minPriceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.avgPriceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.maxPriceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.pricePercentColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.errLabel = new System.Windows.Forms.Label();
             this.createOrderTemplateCheckBox = new System.Windows.Forms.CheckBox();
             this.contractRangeBndSource = new System.Windows.Forms.BindingSource(this.components);
+            this.priceDateColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.minPriceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.maxPriceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.startPriceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.avgPriceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.pricePercentColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.contrRangeDataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.contractRangeBndSource)).BeginInit();
             this.SuspendLayout();
@@ -331,10 +331,10 @@
             this.contrRangeDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.contrRangeDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.priceDateColumn,
-            this.startPriceColumn,
             this.minPriceColumn,
-            this.avgPriceColumn,
             this.maxPriceColumn,
+            this.startPriceColumn,
+            this.avgPriceColumn,
             this.pricePercentColumn});
             this.contrRangeDataGridView.Location = new System.Drawing.Point(14, 258);
             this.contrRangeDataGridView.MultiSelect = false;
@@ -349,68 +349,6 @@
             this.contrRangeDataGridView.Size = new System.Drawing.Size(430, 112);
             this.contrRangeDataGridView.TabIndex = 36;
             this.contrRangeDataGridView.Visible = false;
-            // 
-            // priceDateColumn
-            // 
-            this.priceDateColumn.DataPropertyName = "priceDate";
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.priceDateColumn.DefaultCellStyle = dataGridViewCellStyle1;
-            this.priceDateColumn.HeaderText = "Дата сделки";
-            this.priceDateColumn.Name = "priceDateColumn";
-            this.priceDateColumn.ReadOnly = true;
-            // 
-            // startPriceColumn
-            // 
-            this.startPriceColumn.DataPropertyName = "startPrice";
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.startPriceColumn.DefaultCellStyle = dataGridViewCellStyle2;
-            this.startPriceColumn.HeaderText = "Старт.цена";
-            this.startPriceColumn.Name = "startPriceColumn";
-            this.startPriceColumn.ReadOnly = true;
-            // 
-            // minPriceColumn
-            // 
-            this.minPriceColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.minPriceColumn.DataPropertyName = "minPrice";
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.minPriceColumn.DefaultCellStyle = dataGridViewCellStyle3;
-            this.minPriceColumn.FillWeight = 20.61856F;
-            this.minPriceColumn.HeaderText = "Мин.цена";
-            this.minPriceColumn.Name = "minPriceColumn";
-            this.minPriceColumn.ReadOnly = true;
-            // 
-            // avgPriceColumn
-            // 
-            this.avgPriceColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.avgPriceColumn.DataPropertyName = "avgPrice";
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.avgPriceColumn.DefaultCellStyle = dataGridViewCellStyle4;
-            this.avgPriceColumn.FillWeight = 20.61856F;
-            this.avgPriceColumn.HeaderText = "Сред.цена";
-            this.avgPriceColumn.Name = "avgPriceColumn";
-            this.avgPriceColumn.ReadOnly = true;
-            // 
-            // maxPriceColumn
-            // 
-            this.maxPriceColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.maxPriceColumn.DataPropertyName = "maxPrice";
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.maxPriceColumn.DefaultCellStyle = dataGridViewCellStyle5;
-            this.maxPriceColumn.FillWeight = 20.61856F;
-            this.maxPriceColumn.HeaderText = "Макс.цена";
-            this.maxPriceColumn.Name = "maxPriceColumn";
-            this.maxPriceColumn.ReadOnly = true;
-            // 
-            // pricePercentColumn
-            // 
-            this.pricePercentColumn.DataPropertyName = "pricePercent";
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.pricePercentColumn.DefaultCellStyle = dataGridViewCellStyle6;
-            this.pricePercentColumn.FillWeight = 50F;
-            this.pricePercentColumn.HeaderText = "Процент";
-            this.pricePercentColumn.Name = "pricePercentColumn";
-            this.pricePercentColumn.ReadOnly = true;
-            this.pricePercentColumn.Width = 60;
             // 
             // errLabel
             // 
@@ -437,6 +375,68 @@
             // contractRangeBndSource
             // 
             this.contractRangeBndSource.DataSource = typeof(SpotApp.Models.RangeContractDesign);
+            // 
+            // priceDateColumn
+            // 
+            this.priceDateColumn.DataPropertyName = "priceDate";
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.priceDateColumn.DefaultCellStyle = dataGridViewCellStyle1;
+            this.priceDateColumn.HeaderText = "Дата сделки";
+            this.priceDateColumn.Name = "priceDateColumn";
+            this.priceDateColumn.ReadOnly = true;
+            // 
+            // minPriceColumn
+            // 
+            this.minPriceColumn.DataPropertyName = "minPrice";
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.minPriceColumn.DefaultCellStyle = dataGridViewCellStyle2;
+            this.minPriceColumn.FillWeight = 20.61856F;
+            this.minPriceColumn.HeaderText = "Мин.цена";
+            this.minPriceColumn.Name = "minPriceColumn";
+            this.minPriceColumn.ReadOnly = true;
+            this.minPriceColumn.Width = 56;
+            // 
+            // maxPriceColumn
+            // 
+            this.maxPriceColumn.DataPropertyName = "maxPrice";
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.maxPriceColumn.DefaultCellStyle = dataGridViewCellStyle3;
+            this.maxPriceColumn.FillWeight = 20.61856F;
+            this.maxPriceColumn.HeaderText = "Макс.цена";
+            this.maxPriceColumn.Name = "maxPriceColumn";
+            this.maxPriceColumn.ReadOnly = true;
+            this.maxPriceColumn.Width = 55;
+            // 
+            // startPriceColumn
+            // 
+            this.startPriceColumn.DataPropertyName = "startPrice";
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.startPriceColumn.DefaultCellStyle = dataGridViewCellStyle4;
+            this.startPriceColumn.HeaderText = "Старт.цена";
+            this.startPriceColumn.Name = "startPriceColumn";
+            this.startPriceColumn.ReadOnly = true;
+            // 
+            // avgPriceColumn
+            // 
+            this.avgPriceColumn.DataPropertyName = "avgPrice";
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.avgPriceColumn.DefaultCellStyle = dataGridViewCellStyle5;
+            this.avgPriceColumn.FillWeight = 20.61856F;
+            this.avgPriceColumn.HeaderText = "Сред.цена";
+            this.avgPriceColumn.Name = "avgPriceColumn";
+            this.avgPriceColumn.ReadOnly = true;
+            this.avgPriceColumn.Width = 56;
+            // 
+            // pricePercentColumn
+            // 
+            this.pricePercentColumn.DataPropertyName = "pricePercent";
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.pricePercentColumn.DefaultCellStyle = dataGridViewCellStyle6;
+            this.pricePercentColumn.FillWeight = 50F;
+            this.pricePercentColumn.HeaderText = "Процент";
+            this.pricePercentColumn.Name = "pricePercentColumn";
+            this.pricePercentColumn.ReadOnly = true;
+            this.pricePercentColumn.Width = 60;
             // 
             // NewBidForm
             // 
@@ -508,13 +508,13 @@
         private System.Windows.Forms.Button BtnSendAllBidOk;
         private System.Windows.Forms.CheckBox contractRangeCheckBox;
         private System.Windows.Forms.DataGridView contrRangeDataGridView;
-        private System.Windows.Forms.DataGridViewTextBoxColumn priceDateColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn startPriceColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn minPriceColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn avgPriceColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn maxPriceColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn pricePercentColumn;
         private System.Windows.Forms.Label errLabel;
         private System.Windows.Forms.CheckBox createOrderTemplateCheckBox;
+        private System.Windows.Forms.DataGridViewTextBoxColumn priceDateColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn minPriceColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn maxPriceColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn startPriceColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn avgPriceColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn pricePercentColumn;
     }
 }

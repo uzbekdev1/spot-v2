@@ -133,6 +133,7 @@
     <Compile Include="Core\AppSettings.cs" />
     <Compile Include="Core\FormSettings.cs" />
     <Compile Include="Dtos\AllContract.cs" />
+    <Compile Include="Dtos\Bargain.cs" />
     <Compile Include="Dtos\ContractItem.cs" />
     <Compile Include="Dtos\MyOrderResult.cs" />
     <Compile Include="Dtos\NewSpotContract.cs" />
@@ -151,6 +152,12 @@
     </Compile>
     <Compile Include="Forms\AllBidsForm.Designer.cs">
       <DependentUpon>AllBidsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\BargainsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\BargainsForm.Designer.cs">
+      <DependentUpon>BargainsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ContractQuoteForm.cs">
       <SubType>Form</SubType>
@@ -212,6 +219,7 @@
       <DependentUpon>NewBidForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\AllContractDesign.cs" />
+    <Compile Include="Models\BargainDesign.cs" />
     <Compile Include="Models\ErrorMessage.cs" />
     <Compile Include="Models\ClientItemDesign.cs" />
     <Compile Include="Models\MainTabs.cs" />
@@ -247,6 +255,9 @@
     <EmbeddedResource Include="Forms\AllBidsForm.resx">
       <DependentUpon>AllBidsForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\BargainsForm.resx">
+      <DependentUpon>BargainsForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ContractQuoteForm.resx">
       <DependentUpon>ContractQuoteForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -276,6 +287,7 @@
       <DependentUpon>MyBidsForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\DataSources\SpotApp.Models.AllContractDesign.datasource" />
+    <None Include="Properties\DataSources\SpotApp.Models.BargainDesign.datasource" />
     <None Include="Properties\DataSources\SpotApp.Models.ClientItemDesign.datasource" />
     <None Include="Properties\DataSources\SpotApp.Models.MainContractDesign.datasource" />
     <None Include="Properties\DataSources\SpotApp.Models.MyOrderDesign.datasource" />

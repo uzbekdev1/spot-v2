@@ -80,7 +80,7 @@
             this.allBidGridView.Name = "allBidGridView";
             this.allBidGridView.ReadOnly = true;
             this.allBidGridView.RowHeadersVisible = false;
-            this.allBidGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            this.allBidGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.allBidGridView.ShowCellErrors = false;
             this.allBidGridView.ShowEditingIcon = false;
             this.allBidGridView.ShowRowErrors = false;

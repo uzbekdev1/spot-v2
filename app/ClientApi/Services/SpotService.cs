@@ -733,5 +733,43 @@ namespace ClientApi.Services
 
             return resut;
         }
+
+        public async Task<IEnumerable<BargainsModel>> GetBargains(int traderId)
+        {
+            var client = new RestClient(_apiUrl);
+            var request = new RestRequest("/api/spot/getbargains", Method.Post);
+
+            request.AddHeader("Accept", "application/json");
+            request.AddHeader("Content-Type", "application/json");
+
+            request.Timeout = _apiTimedOut;
+
+            request.AddJsonBody(new
+            {
+                traderId
+            });
+
+            var response = await client.ExecuteAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{response.ErrorException?.Message} {response.ResponseStatus}", response.ErrorException?.InnerException, response.ErrorException?.StackTrace, new { traderId }));
+                throw new Exception($"{response.ErrorException?.Message} {response.ResponseStatus}");
+            }
+
+            if (string.IsNullOrWhiteSpace(response.Content))
+            {
+                throw new Exception("Server error");
+            }
+
+            var resut = JsonConvert.DeserializeObject<ApiResponse<IEnumerable<BargainsModel>>>(response.Content);
+
+            if (!resut.Success)
+            {
+                throw new Exception(resut.Error);
+            }
+
+            return resut.Data;
+        }
     }
 }

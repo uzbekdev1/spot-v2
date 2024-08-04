@@ -718,5 +718,14 @@ namespace SpotApp.Controls
 
             SelectedContract = SelectedTemplate.contractId;
         }
+
+        private void tbxSearch_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            if (e.KeyData == Keys.Tab)
+            {
+                btnRefresh.Focus();
+                e.IsInputKey = true;
+            }
+        }
     }
 }

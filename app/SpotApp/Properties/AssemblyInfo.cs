@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Узбекская республиканская товарно-сырьевая биржа")]
 [assembly: AssemblyProduct("Spot Система Торговли")]
-[assembly: AssemblyCopyright("©  2023")]
+[assembly: AssemblyCopyright("©  2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

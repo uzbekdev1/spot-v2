@@ -41,6 +41,7 @@
             this.quotationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allBidsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.myClientsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.myBargainsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.окноToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveSetingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -49,8 +50,8 @@
             this.помощьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutProgramMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.networkSpeedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.updateVersionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timeBlock = new System.Windows.Forms.Panel();
-            this.netSpeedLabel = new System.Windows.Forms.Label();
             this.btnTimeUpdate = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -127,7 +128,8 @@
             this.MenuItemMyBids,
             this.quotationsToolStripMenuItem,
             this.allBidsToolStripMenuItem,
-            this.myClientsToolStripMenuItem});
+            this.myClientsToolStripMenuItem,
+            this.myBargainsToolStripMenuItem});
             this.окнаToolStripMenuItem.Name = "окнаToolStripMenuItem";
             this.окнаToolStripMenuItem.Size = new System.Drawing.Size(95, 22);
             this.окнаToolStripMenuItem.Text = "&Инструменты";
@@ -164,6 +166,13 @@
             this.myClientsToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.myClientsToolStripMenuItem.Text = "Мои клиенты";
             this.myClientsToolStripMenuItem.Click += new System.EventHandler(this.MyClientsToolStripMenuItem_Click);
+            // 
+            // myBargainsToolStripMenuItem
+            // 
+            this.myBargainsToolStripMenuItem.Name = "myBargainsToolStripMenuItem";
+            this.myBargainsToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.myBargainsToolStripMenuItem.Text = "Сделки";
+            this.myBargainsToolStripMenuItem.Click += new System.EventHandler(this.myBargainsToolStripMenuItem_Click);
             // 
             // окноToolStripMenuItem
             // 
@@ -207,7 +216,8 @@
             // 
             this.помощьToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.aboutProgramMenu,
-            this.networkSpeedToolStripMenuItem});
+            this.networkSpeedToolStripMenuItem,
+            this.updateVersionToolStripMenuItem});
             this.помощьToolStripMenuItem.Name = "помощьToolStripMenuItem";
             this.помощьToolStripMenuItem.Size = new System.Drawing.Size(68, 22);
             this.помощьToolStripMenuItem.Text = "Помощь";
@@ -215,7 +225,7 @@
             // aboutProgramMenu
             // 
             this.aboutProgramMenu.Name = "aboutProgramMenu";
-            this.aboutProgramMenu.Size = new System.Drawing.Size(153, 22);
+            this.aboutProgramMenu.Size = new System.Drawing.Size(180, 22);
             this.aboutProgramMenu.Text = "&О программе";
             this.aboutProgramMenu.Click += new System.EventHandler(this.AboutProgramMenu_Click);
             // 
@@ -223,13 +233,20 @@
             // 
             this.networkSpeedToolStripMenuItem.Enabled = false;
             this.networkSpeedToolStripMenuItem.Name = "networkSpeedToolStripMenuItem";
-            this.networkSpeedToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.networkSpeedToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.networkSpeedToolStripMenuItem.Text = "Скорость сети";
+            this.networkSpeedToolStripMenuItem.Visible = false;
             this.networkSpeedToolStripMenuItem.Click += new System.EventHandler(this.networkSpeedToolStripMenuItem_Click);
+            // 
+            // updateVersionToolStripMenuItem
+            // 
+            this.updateVersionToolStripMenuItem.Name = "updateVersionToolStripMenuItem";
+            this.updateVersionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.updateVersionToolStripMenuItem.Text = "Обновить версию";
+            this.updateVersionToolStripMenuItem.Click += new System.EventHandler(this.updateVersionToolStripMenuItem_Click);
             // 
             // timeBlock
             // 
-            this.timeBlock.Controls.Add(this.netSpeedLabel);
             this.timeBlock.Controls.Add(this.btnTimeUpdate);
             this.timeBlock.Controls.Add(this.label4);
             this.timeBlock.Controls.Add(this.label2);
@@ -246,22 +263,10 @@
             this.timeBlock.Size = new System.Drawing.Size(984, 35);
             this.timeBlock.TabIndex = 10;
             // 
-            // netSpeedLabel
-            // 
-            this.netSpeedLabel.AutoSize = true;
-            this.netSpeedLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.netSpeedLabel.ForeColor = System.Drawing.Color.Red;
-            this.netSpeedLabel.Location = new System.Drawing.Point(8, 9);
-            this.netSpeedLabel.Name = "netSpeedLabel";
-            this.netSpeedLabel.Size = new System.Drawing.Size(113, 17);
-            this.netSpeedLabel.TabIndex = 9;
-            this.netSpeedLabel.Text = "Скорость инт.";
-            this.netSpeedLabel.Visible = false;
-            // 
             // btnTimeUpdate
             // 
             this.btnTimeUpdate.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.btnTimeUpdate.Location = new System.Drawing.Point(854, 7);
+            this.btnTimeUpdate.Location = new System.Drawing.Point(739, 7);
             this.btnTimeUpdate.Name = "btnTimeUpdate";
             this.btnTimeUpdate.Size = new System.Drawing.Size(115, 23);
             this.btnTimeUpdate.TabIndex = 8;
@@ -272,7 +277,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(641, 6);
+            this.label4.Location = new System.Drawing.Point(526, 6);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(14, 24);
             this.label4.TabIndex = 7;
@@ -282,7 +287,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(402, 6);
+            this.label2.Location = new System.Drawing.Point(287, 6);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(14, 24);
             this.label2.TabIndex = 6;
@@ -293,7 +298,7 @@
             // 
             this.lblDiffTime.AutoSize = true;
             this.lblDiffTime.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblDiffTime.Location = new System.Drawing.Point(747, 7);
+            this.lblDiffTime.Location = new System.Drawing.Point(632, 7);
             this.lblDiffTime.Name = "lblDiffTime";
             this.lblDiffTime.Size = new System.Drawing.Size(90, 24);
             this.lblDiffTime.TabIndex = 5;
@@ -303,7 +308,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(651, 7);
+            this.label5.Location = new System.Drawing.Point(536, 7);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(90, 24);
             this.label5.TabIndex = 4;
@@ -314,7 +319,7 @@
             // 
             this.lblLocaleTime.AutoSize = true;
             this.lblLocaleTime.ForeColor = System.Drawing.Color.Green;
-            this.lblLocaleTime.Location = new System.Drawing.Point(520, 6);
+            this.lblLocaleTime.Location = new System.Drawing.Point(405, 6);
             this.lblLocaleTime.Name = "lblLocaleTime";
             this.lblLocaleTime.Size = new System.Drawing.Size(115, 24);
             this.lblLocaleTime.TabIndex = 3;
@@ -324,7 +329,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(412, 7);
+            this.label3.Location = new System.Drawing.Point(297, 7);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(102, 24);
             this.label3.TabIndex = 2;
@@ -335,7 +340,7 @@
             // 
             this.lblServerTime.AutoSize = true;
             this.lblServerTime.ForeColor = System.Drawing.Color.Red;
-            this.lblServerTime.Location = new System.Drawing.Point(281, 6);
+            this.lblServerTime.Location = new System.Drawing.Point(166, 6);
             this.lblServerTime.Name = "lblServerTime";
             this.lblServerTime.Size = new System.Drawing.Size(115, 24);
             this.lblServerTime.TabIndex = 1;
@@ -345,7 +350,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(123, 6);
+            this.label1.Location = new System.Drawing.Point(8, 6);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(152, 24);
             this.label1.TabIndex = 0;
@@ -422,8 +427,9 @@
         private System.Windows.Forms.ToolStripMenuItem myClientsToolStripMenuItem;
         private System.Windows.Forms.Button btnTimeUpdate;
         private System.Windows.Forms.ToolStripMenuItem networkSpeedToolStripMenuItem;
-        private System.Windows.Forms.Label netSpeedLabel;
         private System.Windows.Forms.ToolTip internetSpeedToolTip;
         private System.Windows.Forms.ToolStripMenuItem MenuItemNewPostBid;
+        private System.Windows.Forms.ToolStripMenuItem myBargainsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem updateVersionToolStripMenuItem;
     }
 }

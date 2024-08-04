@@ -557,5 +557,20 @@ namespace SpotApp.Services
 
             return resultPostOrders;
         }
+
+        public List<Bargain> GetBargains(string token, int? requestTimeOut = null)
+        {
+            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/GetBargains", token, requestTimeOut);
+
+            if (content.Length == 0)
+                throw new Exception("Connection error");
+
+            var response = JsonConvert.DeserializeObject<ApiResponse<List<Bargain>>>(content);
+
+            if (!response.Success)
+                throw new Exception(response.Error);
+
+            return response.Data;
+        }
     }
 }

@@ -35,20 +35,22 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ContractQuoteForm));
             this.contractQuoteGridView = new System.Windows.Forms.DataGridView();
-            this.AmountBuyColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CenaColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.AmountSellColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CountPriceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CountOrderColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.BrokerIdColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.contxtMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.msgLabel = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.contractQuoteSource = new System.Windows.Forms.BindingSource(this.components);
+            this.mineColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.AmountBuyColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CenaColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.AmountSellColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CountPriceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CountOrderColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.BrokerIdColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.contractQuoteGridView)).BeginInit();
             this.contxtMenuStrip.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -73,6 +75,7 @@
             this.contractQuoteGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.contractQuoteGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.contractQuoteGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.mineColumn,
             this.AmountBuyColumn,
             this.CenaColumn,
             this.AmountSellColumn,
@@ -93,71 +96,6 @@
             this.contractQuoteGridView.Size = new System.Drawing.Size(384, 530);
             this.contractQuoteGridView.TabIndex = 0;
             this.contractQuoteGridView.Click += new System.EventHandler(this.contractQuoteGridView_Click);
-            // 
-            // AmountBuyColumn
-            // 
-            this.AmountBuyColumn.DataPropertyName = "amountBuy";
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.AmountBuyColumn.DefaultCellStyle = dataGridViewCellStyle2;
-            this.AmountBuyColumn.FillWeight = 152.6677F;
-            this.AmountBuyColumn.Frozen = true;
-            this.AmountBuyColumn.HeaderText = "Покупка";
-            this.AmountBuyColumn.Name = "AmountBuyColumn";
-            this.AmountBuyColumn.ReadOnly = true;
-            this.AmountBuyColumn.Width = 117;
-            // 
-            // CenaColumn
-            // 
-            this.CenaColumn.DataPropertyName = "cena";
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.CenaColumn.DefaultCellStyle = dataGridViewCellStyle3;
-            this.CenaColumn.FillWeight = 142.1992F;
-            this.CenaColumn.HeaderText = "Цена";
-            this.CenaColumn.Name = "CenaColumn";
-            this.CenaColumn.ReadOnly = true;
-            this.CenaColumn.Width = 108;
-            // 
-            // AmountSellColumn
-            // 
-            this.AmountSellColumn.DataPropertyName = "amountSell";
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.AmountSellColumn.DefaultCellStyle = dataGridViewCellStyle4;
-            this.AmountSellColumn.FillWeight = 51.598F;
-            this.AmountSellColumn.HeaderText = "Продажа";
-            this.AmountSellColumn.Name = "AmountSellColumn";
-            this.AmountSellColumn.ReadOnly = true;
-            this.AmountSellColumn.Width = 70;
-            // 
-            // CountPriceColumn
-            // 
-            this.CountPriceColumn.DataPropertyName = "countPrice";
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.CountPriceColumn.DefaultCellStyle = dataGridViewCellStyle5;
-            this.CountPriceColumn.FillWeight = 51.598F;
-            this.CountPriceColumn.HeaderText = "Свои";
-            this.CountPriceColumn.Name = "CountPriceColumn";
-            this.CountPriceColumn.ReadOnly = true;
-            this.CountPriceColumn.Width = 70;
-            // 
-            // CountOrderColumn
-            // 
-            this.CountOrderColumn.DataPropertyName = "countOrder";
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.CountOrderColumn.DefaultCellStyle = dataGridViewCellStyle6;
-            this.CountOrderColumn.FillWeight = 51.598F;
-            this.CountOrderColumn.HeaderText = "Заявки";
-            this.CountOrderColumn.Name = "CountOrderColumn";
-            this.CountOrderColumn.ReadOnly = true;
-            this.CountOrderColumn.Width = 70;
-            // 
-            // BrokerIdColumn
-            // 
-            this.BrokerIdColumn.DataPropertyName = "brokerId";
-            this.BrokerIdColumn.FillWeight = 51.598F;
-            this.BrokerIdColumn.HeaderText = "Брокер";
-            this.BrokerIdColumn.Name = "BrokerIdColumn";
-            this.BrokerIdColumn.ReadOnly = true;
-            this.BrokerIdColumn.Width = 70;
             // 
             // contxtMenuStrip
             // 
@@ -210,6 +148,80 @@
             this.contractQuoteSource.AllowNew = false;
             this.contractQuoteSource.DataSource = typeof(SpotApp.Models.QuoteDesign);
             // 
+            // mineColumn
+            // 
+            this.mineColumn.DataPropertyName = "mine";
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.mineColumn.DefaultCellStyle = dataGridViewCellStyle2;
+            this.mineColumn.HeaderText = "";
+            this.mineColumn.Name = "mineColumn";
+            this.mineColumn.ReadOnly = true;
+            this.mineColumn.Width = 30;
+            // 
+            // AmountBuyColumn
+            // 
+            this.AmountBuyColumn.DataPropertyName = "amountBuy";
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.AmountBuyColumn.DefaultCellStyle = dataGridViewCellStyle3;
+            this.AmountBuyColumn.FillWeight = 152.6677F;
+            this.AmountBuyColumn.HeaderText = "Покупка";
+            this.AmountBuyColumn.Name = "AmountBuyColumn";
+            this.AmountBuyColumn.ReadOnly = true;
+            this.AmountBuyColumn.Width = 117;
+            // 
+            // CenaColumn
+            // 
+            this.CenaColumn.DataPropertyName = "cena";
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.CenaColumn.DefaultCellStyle = dataGridViewCellStyle4;
+            this.CenaColumn.FillWeight = 142.1992F;
+            this.CenaColumn.HeaderText = "Цена";
+            this.CenaColumn.Name = "CenaColumn";
+            this.CenaColumn.ReadOnly = true;
+            this.CenaColumn.Width = 108;
+            // 
+            // AmountSellColumn
+            // 
+            this.AmountSellColumn.DataPropertyName = "amountSell";
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.AmountSellColumn.DefaultCellStyle = dataGridViewCellStyle5;
+            this.AmountSellColumn.FillWeight = 51.598F;
+            this.AmountSellColumn.HeaderText = "Продажа";
+            this.AmountSellColumn.Name = "AmountSellColumn";
+            this.AmountSellColumn.ReadOnly = true;
+            this.AmountSellColumn.Width = 70;
+            // 
+            // CountPriceColumn
+            // 
+            this.CountPriceColumn.DataPropertyName = "countPrice";
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.CountPriceColumn.DefaultCellStyle = dataGridViewCellStyle6;
+            this.CountPriceColumn.FillWeight = 51.598F;
+            this.CountPriceColumn.HeaderText = "Свои";
+            this.CountPriceColumn.Name = "CountPriceColumn";
+            this.CountPriceColumn.ReadOnly = true;
+            this.CountPriceColumn.Width = 70;
+            // 
+            // CountOrderColumn
+            // 
+            this.CountOrderColumn.DataPropertyName = "countOrder";
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.CountOrderColumn.DefaultCellStyle = dataGridViewCellStyle7;
+            this.CountOrderColumn.FillWeight = 51.598F;
+            this.CountOrderColumn.HeaderText = "Заявки";
+            this.CountOrderColumn.Name = "CountOrderColumn";
+            this.CountOrderColumn.ReadOnly = true;
+            this.CountOrderColumn.Width = 70;
+            // 
+            // BrokerIdColumn
+            // 
+            this.BrokerIdColumn.DataPropertyName = "brokerId";
+            this.BrokerIdColumn.FillWeight = 51.598F;
+            this.BrokerIdColumn.HeaderText = "Брокер";
+            this.BrokerIdColumn.Name = "BrokerIdColumn";
+            this.BrokerIdColumn.ReadOnly = true;
+            this.BrokerIdColumn.Width = 70;
+            // 
             // ContractQuoteForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -238,14 +250,15 @@
         private System.Windows.Forms.DataGridView contractQuoteGridView;
         private System.Windows.Forms.ContextMenuStrip contxtMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem refreshToolStripMenuItem;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Label msgLabel;
+        private System.Windows.Forms.DataGridViewTextBoxColumn mineColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn AmountBuyColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn CenaColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn AmountSellColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn CountPriceColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn CountOrderColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn BrokerIdColumn;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Label msgLabel;
     }
 }

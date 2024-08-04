@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 
 namespace ClientApi.Controllers
@@ -351,69 +352,6 @@ namespace ClientApi.Controllers
         [ProducesDefaultResponseType(typeof(ApiResponse))]
         public IActionResult CreateOrderV2([FromRoute] string orderId, [FromBody] OrderEmbed model, [FromServices] AmqpService amqpService)
         {
-            #region Old code in comment
-            //var stopWatch = new Stopwatch();
-            //stopWatch.Start();
-
-            //try
-            //{
-            //    if (!ModelState.IsValid)
-            //    {
-            //        throw new Exception("Bad data");
-            //    }
-
-            //    var decode = Encoding.UTF8.GetString(Convert.FromBase64String(model.raw));
-
-            //    if (string.IsNullOrEmpty(decode))
-            //    {
-            //        throw new Exception("Invalid format");
-            //    }
-
-            //    var result = JsonConvert.DeserializeObject<OrderForm>(decode);
-
-            //    if (result == null)
-            //    {
-            //        throw new Exception("Invalid data");
-            //    }
-
-            //    if (!Guid.TryParse(result.uid, out var uid) || uid == Guid.Empty)
-            //    {
-            //        throw new Exception("Invalid key");
-            //    }
-
-            //    var serverDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-
-            //    try
-            //    {
-            //        amqpService.PushMessage(UserId, result.contractId, result.kolvo, result.inp, result.price, GetIPAddress(), result.clientDate, serverDate, result.uid, result.clientVersion, "", result.dbDate, (int)OrderTypes.CreateOrderV2);
-            //        stopWatch.Stop();
-            //        _logger.LogInformation($"CreateOrderV2 time: {serverDate}; UserId: {UserId}; totalMilliseconds:{stopWatch.Elapsed.TotalMilliseconds} msec; Send order: {JsonConvert.SerializeObject(result, Formatting.None)}");
-            //    }
-            //    catch (Exception exp)
-            //    {
-            //        if (stopWatch.IsRunning)
-            //            stopWatch.Stop();
-
-            //        _logger.LogError(LogGenerate.Instance.GenerateLogError("CreateOrderV2", $"{exp.Message}; totalMilliseconds:{stopWatch.Elapsed.TotalMilliseconds} msec;", exp.InnerException, exp.StackTrace, new { UserId, result }));
-            //    }
-
-            //    return Ok();
-            //}
-            //catch (Exception exp)
-            //{
-            //    if (stopWatch.IsRunning)
-            //        stopWatch.Stop();
-
-            //    _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{exp.Message}; totalMilliseconds:{stopWatch.Elapsed.TotalMilliseconds} msec;", exp.InnerException, exp.StackTrace, new { UserId, orderId, model }));
-            //    return BadRequest(exp.Message);
-            //}
-            //finally
-            //{
-            //    if (stopWatch.IsRunning)
-            //        stopWatch.Stop();
-            //} 
-            #endregion
-
             var stopWatch = new Stopwatch();
             stopWatch.Start();
 
@@ -450,7 +388,7 @@ namespace ClientApi.Controllers
 
                 result.kolvo = _kolvo;
 
-                if (!decimal.TryParse(_cryptographyHelper.DecryptV2(result.priceStr), out decimal _price))
+                if (!decimal.TryParse(_cryptographyHelper.DecryptV2(result.priceStr).CleanAsDecimal(), NumberStyles.Any, null, out decimal _price))
                 {
                     throw new Exception("Invalid price");
                 }
@@ -494,93 +432,6 @@ namespace ClientApi.Controllers
         [ProducesDefaultResponseType(typeof(ApiResponse))]
         public IActionResult BulkOrders([FromRoute] string orderId, [FromBody] OrderEmbed model, [FromServices] AmqpService amqpService)
         {
-            #region Odl code in comment
-            //var stopWatch = new Stopwatch();
-            //stopWatch.Start();
-            //try
-            //{
-            //    _logger.LogInformation($"CabinetController.BulkOrders orderId={orderId}");
-
-            //    if (!ModelState.IsValid)
-            //    {
-            //        throw new Exception("Bad data");
-            //    }
-
-            //    var decode = Encoding.UTF8.GetString(Convert.FromBase64String(model.raw));
-
-            //    if (string.IsNullOrEmpty(decode))
-            //    {
-            //        throw new Exception("Invalid format");
-            //    }
-
-            //    var orders = JsonConvert.DeserializeObject<List<OrderForm>>(decode);
-
-            //    if (orders == null || orders.Count == 0)
-            //    {
-            //        throw new Exception("Invalid data");
-            //    }
-
-            //    var resultOrders = new List<string>();
-            //    var logOrders = new List<string>();
-
-            //    for (int i = 0; i < orders.Count; i++)
-            //    {
-            //        if (!Guid.TryParse(orders[i].uid, out var uid) || uid == Guid.Empty)
-            //        {
-            //            resultOrders.Add($"{orders[i].uid} - ERR: Invalid uid");
-            //            continue;
-            //        }
-
-            //        var serverDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-            //        try
-            //        {
-            //            amqpService.PushMessage(UserId, orders[i].contractId, orders[i].kolvo, orders[i].inp, orders[i].price, GetIPAddress(), orders[i].clientDate, serverDate, orders[i].uid, orders[i].clientVersion, "", orders[i].dbDate, (int)OrderTypes.BulkOrder);
-            //            resultOrders.Add($"{orders[i].uid} - OK");
-            //            logOrders.Add($"BulkOrders time: {serverDate}; Status:OK; Send order: {JsonConvert.SerializeObject(orders[i], Formatting.None)}");
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            resultOrders.Add($"{orders[i].uid} - ERR: {ex.Message}");
-            //            logOrders.Add($"BulkOrders time: {serverDate}; Status:ERR; ExceptionMessage:{ex.Message}; Send order: {JsonConvert.SerializeObject(orders[i], Formatting.None)}");
-            //        }
-            //    }
-
-            //    stopWatch.Stop();
-
-            //    var totalMilliseconds = stopWatch.Elapsed.TotalMilliseconds;
-
-            //    Task.Factory.StartNew(() =>
-            //    {
-            //        foreach (var log in logOrders)
-            //        {
-            //            if (log.Contains("ERR"))
-            //            {
-            //                _logger.LogError($"totalMilliseconds: {totalMilliseconds} msec; {log}");
-            //            }
-            //            else
-            //            {
-            //                _logger.LogInformation($"totalMilliseconds: {totalMilliseconds} msec; {log}");
-            //            }
-            //        }
-            //    });
-
-            //    return Ok(resultOrders);
-            //}
-            //catch (Exception exp)
-            //{
-            //    if (stopWatch.IsRunning)
-            //        stopWatch.Stop();
-
-            //    _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{exp.Message}; totalMilliseconds:{stopWatch.Elapsed.TotalMilliseconds} msec;", exp.InnerException, exp.StackTrace, new { UserId, orderId, model }));
-            //    return BadRequest(exp.Message);
-            //}
-            //finally
-            //{
-            //    if (stopWatch.IsRunning)
-            //        stopWatch.Stop();
-            //} 
-            #endregion
-
             var stopWatch = new Stopwatch();
             stopWatch.Start();
             try
@@ -628,7 +479,7 @@ namespace ClientApi.Controllers
 
                     orders[i].kolvo = _kolvo;
 
-                    if (!decimal.TryParse(_cryptographyHelper.DecryptV2(orders[i].priceStr), out decimal _price))
+                    if (!decimal.TryParse(_cryptographyHelper.DecryptV2(orders[i].priceStr).CleanAsDecimal(), NumberStyles.Any, null, out decimal _price))
                     {
                         resultOrders.Add($"{orders[i].uid} - ERR: Invalid price");
                         continue;
@@ -748,81 +599,6 @@ namespace ClientApi.Controllers
         [ProducesDefaultResponseType(typeof(ApiResponse))]
         public IActionResult CreatePostOrderV2([FromRoute] string orderId, [FromBody] OrderEmbed model, [FromServices] AmqpService amqpService)
         {
-            #region Old code in comment
-            //var stopWatch = new Stopwatch();
-            //stopWatch.Start();
-
-            //try
-            //{
-            //    if (!ModelState.IsValid)
-            //    {
-            //        throw new Exception("Bad data");
-            //    }
-
-            //    var decode = Encoding.UTF8.GetString(Convert.FromBase64String(model.raw));
-
-            //    if (string.IsNullOrEmpty(decode))
-            //    {
-            //        throw new Exception("Invalid format");
-            //    }
-
-            //    var result = JsonConvert.DeserializeObject<OrderForm>(decode);
-
-            //    if (result == null)
-            //    {
-            //        throw new Exception("Invalid data");
-            //    }
-
-            //    if (!Guid.TryParse(result.uid, out var uid) || uid == Guid.Empty)
-            //    {
-            //        throw new Exception("Invalid key");
-            //    }
-
-            //    var serverDate = DateTime.Now;
-
-            //    DateTime? postDate = DateTime.TryParse(result.serverDate, out var _postDate) ? _postDate : null;
-
-            //    if (!postDate.HasValue)
-            //    {
-            //        throw new Exception("Время подачи не введен");
-            //    }
-
-            //    if (serverDate.Year != postDate.Value.Year || serverDate.Month != postDate.Value.Month || serverDate.Day != postDate.Value.Day)
-            //    {
-            //        throw new Exception($"Неправильный время подачи {postDate.Value:dd.MM.yyyy HH:mm:ss.fff}");
-            //    }
-
-            //    try
-            //    {
-            //        amqpService.PushMessage(UserId, result.contractId, result.kolvo, result.inp, result.price, GetIPAddress(), result.clientDate, postDate.Value.ToString("yyyy-MM-dd HH:mm:ss.fff"), result.uid, result.clientVersion, "", result.dbDate, (int)OrderTypes.CreatePostOrderV2);
-            //        stopWatch.Stop();
-            //        _logger.LogInformation($"CreatePostOrderV2 time: {serverDate:yyyy-MM-dd HH:mm:ss.fff}; Post time: {postDate.Value:yyyy-MM-dd HH:mm:ss.fff} UserId: {UserId}; totalMilliseconds:{stopWatch.Elapsed.TotalMilliseconds} msec; Send order: {JsonConvert.SerializeObject(result, Formatting.None)}");
-            //    }
-            //    catch (Exception exp)
-            //    {
-            //        if (stopWatch.IsRunning)
-            //            stopWatch.Stop();
-
-            //        _logger.LogError(LogGenerate.Instance.GenerateLogError("CreatePostOrderV2", $"{exp.Message}; totalMilliseconds:{stopWatch.Elapsed.TotalMilliseconds} msec;", exp.InnerException, exp.StackTrace, new { UserId, result }));
-            //    }
-
-            //    return Ok();
-            //}
-            //catch (Exception exp)
-            //{
-            //    if (stopWatch.IsRunning)
-            //        stopWatch.Stop();
-
-            //    _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{exp.Message}; totalMilliseconds:{stopWatch.Elapsed.TotalMilliseconds} msec;", exp.InnerException, exp.StackTrace, new { UserId, orderId, model }));
-            //    return BadRequest(exp.Message);
-            //}
-            //finally
-            //{
-            //    if (stopWatch.IsRunning)
-            //        stopWatch.Stop();
-            //} 
-            #endregion
-
             var stopWatch = new Stopwatch();
             stopWatch.Start();
 
@@ -873,7 +649,7 @@ namespace ClientApi.Controllers
 
                 result.kolvo = _kolvo;
 
-                if (!decimal.TryParse(_cryptographyHelper.DecryptV2(result.priceStr), out decimal _price))
+                if (!decimal.TryParse(_cryptographyHelper.DecryptV2(result.priceStr).CleanAsDecimal(), NumberStyles.Any, null, out decimal _price))
                 {
                     throw new Exception("Invalid price");
                 }
@@ -908,6 +684,22 @@ namespace ClientApi.Controllers
             {
                 if (stopWatch.IsRunning)
                     stopWatch.Stop();
+            }
+        }
+
+        [HttpGet]
+        [ProducesDefaultResponseType(typeof(ApiResponse<List<BargainsModel>>))]
+        public async Task<IActionResult> GetBargains()
+        {
+            try
+            {
+                var result = await _spotService.GetBargains(UserId);
+                return Ok(result);
+            }
+            catch (Exception exp)
+            {
+                _logger.LogError(LogGenerate.Instance.GenerateLogError("", exp.Message, exp.InnerException, exp.StackTrace, new { UserId }));
+                return BadRequest(exp.Message);
             }
         }
     }

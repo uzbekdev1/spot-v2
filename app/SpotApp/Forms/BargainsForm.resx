@@ -112,12 +112,37 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="myBidsSourceV2.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+  <metadata name="bargainsSource.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABILAAASCwAAAAAAAAAA
+        AACdaFIAnWlTJL2ZitG0i3r9sYh3+7GId/uyiHf7s4p5+7KId/u0i3r7tIt7+7GId/u5k4P6t5CAhwAA
+        AAKBPSAAqXtoAK2BcD2ziXj0q35r/72Ziv+8mIn/upWG/6JwXP+zi3n/j1I5/4hILf+xh3X/qXpn/7iS
+        g7FsHQAIgj8jAKp8agCtgnA9sol39NjCuf/TvLL/t5CA/7eQgP+aZE7/1L2z/8WlmP+0jHz/4M/I/6Fu
+        Wf+4kYGxbiEBCYI/JACqfGoArYJwPbKJd/TXwbj/wJ6Q/5liS/+XX0j/g0El/5liS//n2dT/7eTg/6d4
+        ZP+QVDz/uZOEsW4hAQmCPyMAqnxqAK2CcD2yiXf018K5/+LSzP/Ptar/xKWX/4pLMf+GRSr/28jA/+zi
+        3v+PUjn/kVU9/7mThLFvIgMJgj8jAKp8agCtgnA9sol39NjCuf/CoZP/m2VO/5xmUP+IRy3/sYd2/+LS
+        y//cysL/wqKU/5NZQf+5k4OxbiAACII/JACqfGoAroJxPbGHdfTBn5H/18K5/9K6sP/OtKn/nGdR/8ao
+        m/+ldF//ll5G/8uvpP+hb1r/t5CBsW8hAgiDPyQApX9mAKeDaz27mon1onFc/6JyXf+icl3/onJd/6Bv
+        Wf+icVz/nWpU/51qU/+gb1n/q4Bs/7udirFeHgAJfEYhAIGeUwCFoVc+oLqC9XafUf97olj/g6hj/3mh
+        Vv91n0//e6JY/32kXP99pFz/fKNa/4qtav+guH+zJFUACUp0DAB7plEAgqpZP4KrXvVglTb/t8+j/8LX
+        sf+tyJb/V48p/6fEj/+/1K3/tc6h/7XOof+IsGb/jrRssydsAAlBfggAfKVRAIKqWT+ErWH1rsmY/7DL
+        mv9glTP/x9m2/5C1cv+kwor/2ubP/3KhTP9iljX/Z5o6/5K2b7MlagAJQX4IAHylUQCBqVg/h65k9b3T
+        qv+IsGX/OHoA/6rGkP+dvX//SIUU/77Uq/+nxI7/Pn8H/1WOIv+TtnGzJWkACUF+CAB8pVEAgalYP4eu
+        ZfW906v/ibFm/zp7AP+qxpD/n7+B/zh6AP9Xjyf/zN2+/42zbf9Wjyb/k7ZwsyVpAAlBfggAfKVRAIGp
+        WD+HrmX1vtSs/4qxZv86ewD/q8eR/56+gf9omjv/krZy/73Tqv/p8OL/gKtd/4+0bLMmagAJQX4IAHql
+        UACAqVc+ibBn9X6pXP9lmDn/QH8I/3SiTf9unkX/b59H/5y9gv+Zu37/mLp9/3qmVf+RtW+yIWcACUF9
+        CABnlzgAZ5c4Ipe5eMyMs2v6jLJp+I2za/iLsWj4i7Jp+IuyafiJsGf4ibBn+ImwZvmTt3P3jrJrgwAA
+        AAI+egcAgAEAAIABAACAAQAAgAEAAIABAACAAQAAgAEAAIABAACAAQAAgAEAAIABAACAAQAAgAEAAIAB
+        AACAAQAAgAEAAA==
+</value>
+  </data>
 </root>

@@ -7,6 +7,7 @@ using SpotApp.Models;
 using SpotApp.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
@@ -31,6 +32,8 @@ namespace SpotApp
         private NewPostBidForm _newPostBid;
 
         private MyClientsForm _myClientsForm;
+
+        private BargainsForm _myBargainsForm;
 
         private ContractQuoteForm _contractQuoteForm;
 
@@ -556,6 +559,8 @@ namespace SpotApp
 
             SettingsHelper.SetForm(_newPostBid);
 
+            SettingsHelper.SetForm(_myBargainsForm);
+
             MessageBox.Show("Все формы успешно сохранены", "Настройки");
         }
 
@@ -824,6 +829,38 @@ namespace SpotApp
             };
 
             _newPostBid.Show();
+        }
+
+        private void myBargainsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_myBargainsForm == null || !_myBargainsForm.Visible)
+            {
+                _myBargainsForm = new BargainsForm(_userInfo.Token);
+            }
+
+            if (_myBargainsForm.Visible)
+            {
+                return;
+            }
+
+            _myBargainsForm.Show();
+        }
+
+        private void updateVersionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var service = new SpotServiceV2();
+            if (service.DownloadLatest(out var executionPath))
+            {
+                Process.Start(executionPath);
+
+                Application.Exit();
+            }
+            else
+            {
+                MessageBox.Show("Приложение не обновляется, попробуйте через некоторое время или загрузите установщик с сайта http://time.uzex.uz", "Проверка");
+
+                Application.Exit();
+            }
         }
     }
 }

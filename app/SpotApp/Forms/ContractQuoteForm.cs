@@ -95,6 +95,7 @@ namespace SpotApp.Forms
             {
                 results.Add(new QuoteDesign
                 {
+                    mine = item.countPrice > 0 ? "•" : "",
                     cena = UIHelper.NumberFormat(item.cena),
                     amountBuy = item.amountBuy,
                     amountSell = item._amountSell,

@@ -181,7 +181,7 @@
             this.saleContractIdColumn.HeaderText = "Контракт";
             this.saleContractIdColumn.Name = "saleContractIdColumn";
             this.saleContractIdColumn.ReadOnly = true;
-            this.saleContractIdColumn.Width = 120;
+            this.saleContractIdColumn.Width = 80;
             // 
             // saleContractNameColumn
             // 
@@ -191,7 +191,7 @@
             this.saleContractNameColumn.HeaderText = "Наименование";
             this.saleContractNameColumn.Name = "saleContractNameColumn";
             this.saleContractNameColumn.ReadOnly = true;
-            this.saleContractNameColumn.Width = 500;
+            this.saleContractNameColumn.Width = 435;
             // 
             // saleContractDemandColumn
             // 
@@ -580,6 +580,7 @@
             this.tbxSearch.Name = "tbxSearch";
             this.tbxSearch.Size = new System.Drawing.Size(187, 20);
             this.tbxSearch.TabIndex = 0;
+            this.tbxSearch.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.tbxSearch_PreviewKeyDown);
             // 
             // btnRefresh
             // 

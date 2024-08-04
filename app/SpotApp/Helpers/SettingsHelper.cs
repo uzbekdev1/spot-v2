@@ -23,6 +23,16 @@ namespace SpotApp.Helpers
             if (string.IsNullOrEmpty(control.Name))
                 return;
 
+            try
+            {
+                if (((Form)control).WindowState == FormWindowState.Minimized)
+                    return;
+            }
+            finally
+            {
+
+            }
+
             var json = JsonConvert.SerializeObject(new FormSettings
             {
                 Location = control.Location,
