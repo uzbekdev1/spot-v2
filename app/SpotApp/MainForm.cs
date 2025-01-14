@@ -17,6 +17,7 @@ namespace SpotApp
 {
     partial class MainForm : Form
     {
+
         private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly UserInfo _userInfo;
@@ -64,7 +65,7 @@ namespace SpotApp
             var clientTime = DateTime.Now;
             try
             {
-                var service = new SpotServiceV2();
+                var service = new SpotService();
                 _serverTime = service.GetTimeV2(_userInfo.Token);
 
                 int compareTime = DateTime.Compare(_serverTime, clientTime);
@@ -257,7 +258,7 @@ namespace SpotApp
 
         private void LoadClients()
         {
-            var service = new SpotServiceV2();
+            var service = new SpotService();
             _clients = service.ClientsDDL(_userInfo.Token);
         }
 
@@ -848,7 +849,7 @@ namespace SpotApp
 
         private void updateVersionToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var service = new SpotServiceV2();
+            var service = new SpotService();
             if (service.DownloadLatest(out var executionPath))
             {
                 Process.Start(executionPath);
@@ -862,5 +863,6 @@ namespace SpotApp
                 Application.Exit();
             }
         }
+   
     }
 }

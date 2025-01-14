@@ -15,12 +15,14 @@ using System.Windows.Forms;
 
 namespace SpotApp.Forms
 {
-    public delegate void ReloadMyPostBidEventHandler(string formTag);
 
-    public delegate void NewPostBidFormF1KeyEventHandler();
+    internal delegate void ReloadMyPostBidEventHandler(string formTag);
+
+    internal delegate void NewPostBidFormF1KeyEventHandler();
 
     partial class NewPostBidForm : Form
     {
+
         private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly string _token;
@@ -45,8 +47,6 @@ namespace SpotApp.Forms
 
         private ContractItem _selectContact;
 
-        public int WindowOrder { get; set; }
-
         private bool _contractsWithIdIsWorking = false;
 
         private List<ContractItem> _contracts = new List<ContractItem>();
@@ -58,6 +58,8 @@ namespace SpotApp.Forms
         private TimeSpan? _endTime = null;
 
         private DateTime _postDate = DateTime.Now;
+
+        private bool _postBidIsSending = false;
 
         public void SetTemplate(OrderTemplate orderTemplate)
         {
@@ -111,7 +113,7 @@ namespace SpotApp.Forms
             try
             {
                 _refreshClientsIsWorking = true;
-                var service = new SpotServiceV2();
+                var service = new SpotService();
                 _clients = service.ClientsDDL(_token, true, 3000);
             }
             catch (Exception ex)
@@ -162,6 +164,8 @@ namespace SpotApp.Forms
 
             InitializeComponent();
         }
+
+        public int WindowOrder { get; set; }
 
         private void BntReloadClientsStyle()
         {
@@ -265,6 +269,16 @@ namespace SpotApp.Forms
             if (!decimal.TryParse(UIHelper.CleanNumber(TxtBidPrice.Text), NumberStyles.Any, null, out var bidprice) || bidprice <= 0)
             {
                 return FormNotValid("Цена не действует");
+            }
+
+            var bidPriceStr = bidprice.ToString().Replace(",", ".");
+            var dotIndex = bidPriceStr.IndexOf(".");
+            if (dotIndex != -1)
+            {
+                if (bidPriceStr.Substring(dotIndex + 1).Length > 2)
+                {
+                    return FormNotValid($"Цена {bidprice} не действует");
+                }
             }
 
             if (cbxClientInp == null)
@@ -381,23 +395,32 @@ namespace SpotApp.Forms
                 try
                 {
 
-                    var service = new SpotServiceV2();
-                    _orderForm.clientDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-                    _orderForm.dbDate = _orderForm.clientDate;
-                    var postOrders = service.CreatePostOrderV2(_orderForm, _token);
-
-                    _logger.Info("New post bid: ok...");
-
-                    var endDate = DateTime.Now;
-                    _logger.Info($"PC~NewPostBidForm.BtnOk_Click_Finally {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds})");
-
-                    if (postOrders.Success)
+                    if (!_postBidIsSending)
                     {
-                        MessageBox.Show(this, $"Успешно отправлены {postOrders.Data}", "Успешно", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        _postBidIsSending = true;
+
+                        var service = new SpotService();
+                        _orderForm.clientDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+                        _orderForm.dbDate = _orderForm.clientDate;
+                        var postOrders = service.CreatePostOrderV2(_orderForm, _token);
+
+                        _logger.Info("New post bid: ok...");
+
+                        var endDate = DateTime.Now;
+                        _logger.Info($"PC~NewPostBidForm.BtnOk_Click_Finally {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds})");
+
+                        if (postOrders.Success)
+                        {
+                            MessageBox.Show(this, $"Успешно отправлены {postOrders.Data}", "Успешно", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show(this, $"Не успешно - {postOrders.Error}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                     }
                     else
                     {
-                        MessageBox.Show(this, $"Не успешно - {postOrders.Error}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        _logger.Info($"New post bid v2 uid: {_orderForm.uid}");
                     }
                 }
                 finally
@@ -464,7 +487,7 @@ namespace SpotApp.Forms
             try
             {
                 _contractsWithIdIsWorking = true;
-                var service = new SpotServiceV2();
+                var service = new SpotService();
                 _contracts = service.GetContractsWithId($"{contractNumber}", _token, 3000);
             }
             catch (Exception ex)
@@ -779,5 +802,6 @@ namespace SpotApp.Forms
             minComboBox.ValueMember = "value";
             minComboBox.DataSource = minList;
         }
+
     }
 }

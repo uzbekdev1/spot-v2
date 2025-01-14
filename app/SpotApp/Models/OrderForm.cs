@@ -55,5 +55,6 @@ namespace SpotApp.Models
 
         [JsonProperty(PropertyName = "o")]
         public string priceStr { get; set; }
+
     }
 }

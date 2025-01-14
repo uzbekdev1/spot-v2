@@ -4,12 +4,14 @@ using MessageBroker.Services;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System.Diagnostics;
 using System.Text;
 
 namespace MessageBroker.Jobs
 {
     public class BidWorker : BackgroundService
     {
+
         private readonly ILogger<BidWorker> _logger;
 
         private readonly IConfiguration _configuration;
@@ -32,7 +34,9 @@ namespace MessageBroker.Jobs
                 HostName = "localhost",
                 Port = 5672,
                 UserName = "guest",
-                Password = "ClLbxh7qmq7h_s"
+                Password = "ClLbxh7qmq7h_s",
+                //DispatchConsumersAsync = true,
+                ConsumerDispatchConcurrency = 20
             };
             using var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
@@ -41,9 +45,13 @@ namespace MessageBroker.Jobs
             var queueName = channel.QueueDeclare().QueueName;
             channel.QueueBind(queue: queueName, exchange: "bids", routingKey: string.Empty);
 
+            //var consumer = new AsyncEventingBasicConsumer(channel);
             var consumer = new EventingBasicConsumer(channel);
+            //consumer.Received += async (sender, e) =>
             consumer.Received += (sender, e) =>
             {
+                var stopWatch = new Stopwatch();
+                stopWatch.Start();
                 var uid = "";
                 try
                 {
@@ -66,10 +74,12 @@ namespace MessageBroker.Jobs
 
                     if (payload.orderType == (int)OrderTypes.CreateOrderV2 || payload.orderType == (int)OrderTypes.BulkOrder)
                     {
+                        //await service.CreateOrderAsync(payload.traderId, payload.contractId, payload.kolvo, payload.inp, payload.price, payload.ip, payload.clientDate, payload.serverDate, jobDate, payload.newId, serverHost, payload.clientVersion, payload.dbDate);
                         service.CreateOrder(payload.traderId, payload.contractId, payload.kolvo, payload.inp, payload.price, payload.ip, payload.clientDate, payload.serverDate, jobDate, payload.newId, serverHost, payload.clientVersion, payload.dbDate);
                     }
                     else if (payload.orderType == (int)OrderTypes.CreatePostOrderV2)
                     {
+                        //await service.CreatePostOrderAsync(payload.traderId, payload.contractId, payload.kolvo, payload.inp, payload.price, payload.ip, payload.clientDate, payload.serverDate, jobDate, payload.newId, serverHost, payload.clientVersion, payload.dbDate);
                         service.CreatePostOrder(payload.traderId, payload.contractId, payload.kolvo, payload.inp, payload.price, payload.ip, payload.clientDate, payload.serverDate, jobDate, payload.newId, serverHost, payload.clientVersion, payload.dbDate);
                     }
                     else
@@ -84,6 +94,11 @@ namespace MessageBroker.Jobs
                 {
                     _logger.LogError($"uid: {uid}; Error: {ex.Message}");
                 }
+                finally
+                {
+                    stopWatch.Stop();
+                    _logger.LogInformation($"SendBidToDb uid: {uid}; totalMilliseconds:{stopWatch.Elapsed.TotalMilliseconds} msec;");
+                }
             };
             channel.BasicConsume(queue: queueName, autoAck: true, consumer: consumer);
 
@@ -92,5 +107,6 @@ namespace MessageBroker.Jobs
                 await Task.Delay(1000, stoppingToken);
             }
         }
+
     }
 }

@@ -5,6 +5,7 @@ namespace SpotApp.Models
 {
     internal class ErrorMessage
     {
+    
         public Exception AppException { get; set; } = new Exception("");
 
         public bool haveError { get; set; }
@@ -52,5 +53,6 @@ namespace SpotApp.Models
                 return AppException.GetType().Name;
             }
         }
+    
     }
 }

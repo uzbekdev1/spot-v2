@@ -5,6 +5,8 @@ VisualStudioVersion = 17.8.34322.80
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpotApp", "SpotApp\SpotApp.csproj", "{3095281D-8329-4082-AD75-0FCFB6BF17D3}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SpotInstaller", "SpotInstaller\SpotInstaller.vdproj", "{FD27C8CB-6BD0-48AE-A4F3-DF22D1A3AEFA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,12 @@ Global
 		{3095281D-8329-4082-AD75-0FCFB6BF17D3}.Release|x64.Build.0 = Release|x64
 		{3095281D-8329-4082-AD75-0FCFB6BF17D3}.Release|x86.ActiveCfg = Release|x86
 		{3095281D-8329-4082-AD75-0FCFB6BF17D3}.Release|x86.Build.0 = Release|x86
+		{FD27C8CB-6BD0-48AE-A4F3-DF22D1A3AEFA}.Debug|Any CPU.ActiveCfg = Debug
+		{FD27C8CB-6BD0-48AE-A4F3-DF22D1A3AEFA}.Debug|x64.ActiveCfg = Debug
+		{FD27C8CB-6BD0-48AE-A4F3-DF22D1A3AEFA}.Debug|x86.ActiveCfg = Debug
+		{FD27C8CB-6BD0-48AE-A4F3-DF22D1A3AEFA}.Release|Any CPU.ActiveCfg = Release
+		{FD27C8CB-6BD0-48AE-A4F3-DF22D1A3AEFA}.Release|x64.ActiveCfg = Release
+		{FD27C8CB-6BD0-48AE-A4F3-DF22D1A3AEFA}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

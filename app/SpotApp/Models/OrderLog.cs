@@ -4,6 +4,7 @@ namespace SpotApp.Models
 {
     internal class OrderLog
     {
+
         [JsonProperty(PropertyName = "b")]
         public string uid { get; set; }
 
@@ -12,5 +13,6 @@ namespace SpotApp.Models
 
         [JsonProperty(PropertyName = "g")]
         public string clientVersion { get; set; }
+
     }
 }

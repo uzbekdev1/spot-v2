@@ -4,6 +4,7 @@ namespace ClientApi.Helpers
 {
     public sealed class LogGenerate
     {
+
         private static LogGenerate _instance = null;
 
         public static LogGenerate Instance
@@ -34,5 +35,6 @@ namespace ClientApi.Helpers
                     formatting: Formatting.None
                 );
         }
+
     }
 }

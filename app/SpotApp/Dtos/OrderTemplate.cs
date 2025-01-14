@@ -2,6 +2,7 @@
 {
     internal class OrderTemplate
     {
+
         public int id { get; set; }
 
         public int contractId { get; set; }
@@ -17,5 +18,6 @@
         public decimal price { get; set; }
 
         public int maxPriceCount { get; set; }
+
     }
 }

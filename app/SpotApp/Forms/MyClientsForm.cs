@@ -13,16 +13,14 @@ using System.Windows.Forms;
 namespace SpotApp.Forms
 {
 
-    public delegate void ReloadMyClientsEventHandler(bool reloadMyClient);
+    internal delegate void ReloadMyClientsEventHandler(bool reloadMyClient);
 
-    public partial class MyClientsForm : Form
+    partial class MyClientsForm : Form
     {
 
         private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly string _token;
-
-        public event ReloadMyClientsEventHandler ReloadMyClients;
 
         private List<ClientItem> _myClients = new List<ClientItem>();
 
@@ -67,7 +65,7 @@ namespace SpotApp.Forms
             try
             {
                 _searchIsWorking = true;
-                var service = new SpotServiceV2();
+                var service = new SpotService();
                 _myClients = service.Clients(_token, 3000);
             }
             catch (Exception ex)
@@ -136,6 +134,8 @@ namespace SpotApp.Forms
             InitializeComponent();
         }
 
+        public event ReloadMyClientsEventHandler ReloadMyClients;
+
         private void MyClientsForm_Load(object sender, EventArgs e)
         {
             var settings = SettingsHelper.GetForm(this);
@@ -169,7 +169,7 @@ namespace SpotApp.Forms
 
             try
             {
-                var service = new SpotServiceV2();
+                var service = new SpotService();
                 var clientItems = service.SetClient(_selectClient.inp, _token);
 
                 if (clientItems.Count > 0)
@@ -207,7 +207,7 @@ namespace SpotApp.Forms
             try
             {
                 _searchClientIsWorking = true;
-                var service = new SpotServiceV2();
+                var service = new SpotService();
                 _clientItems = service.SearchClient(inpNumber, _token, 3000);
             }
             catch (Exception ex)
@@ -331,7 +331,7 @@ namespace SpotApp.Forms
 
                 try
                 {
-                    var service = new SpotServiceV2();
+                    var service = new SpotService();
                     var result = service.RemoveClient(inp, _token);
 
                     if (result.Count > 0)

@@ -13,15 +13,17 @@ using System.Text;
 
 namespace SpotApp.Services
 {
-
     internal class SpotService
     {
+
         private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private static void EnableNetFeatures()
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
             ServicePointManager.ServerCertificateValidationCallback = (a, b, c, d) => true;
+            ServicePointManager.DefaultConnectionLimit = int.MaxValue;
+            ServicePointManager.Expect100Continue = false;
         }
 
         public SpotService()
@@ -29,37 +31,25 @@ namespace SpotApp.Services
             EnableNetFeatures();
         }
 
-        public string GetVersion()
+        public string GetVersion(int? requestTimeOut = null)
         {
-            var client = new WebClient()
-            {
-                BaseAddress = AppSettings.ApiUrl
-            };
-            client.Headers[HttpRequestHeader.ContentType] = "application/json";
-            client.Headers[HttpRequestHeader.Accept] = "application/json";
+            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/common/checkversion", "", requestTimeOut);
 
-            var request = client.DownloadData("api/common/checkversion");
-            var content = Encoding.UTF8.GetString(request, 0, request.Length);
+            if (content.Length == 0)
+                throw new Exception("Connection error");
+
             var response = JsonConvert.DeserializeObject<ApiResponse<string>>(content);
 
             if (!response.Success)
-            {
                 return "";
-            }
 
             return response.Data;
         }
 
-        public UserInfo GetUser(string login, string password)
+        public UserInfo GetUser(string login, string password, int? requestTimeOut = null)
         {
-            var client = new WebClient()
-            {
-                BaseAddress = AppSettings.ApiUrl
-            };
-            client.Headers[HttpRequestHeader.ContentType] = "application/json";
-            client.Headers[HttpRequestHeader.Accept] = "application/json";
-
-            var data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new
+            _logger.Info($"getuser login:{login} create post data");
+            var data = new
             {
                 raw = CryptographyHelper.Encrypt(JsonConvert.SerializeObject(new
                 {
@@ -67,43 +57,23 @@ namespace SpotApp.Services
                     password,
                     uid = Guid.NewGuid().ToString()
                 }))
-            }));
-            var request = client.UploadData("api/account/login", "POST", data);
-            var content = Encoding.UTF8.GetString(request, 0, request.Length);
+            };
+
+            _logger.Info($"getuser login:{login} post data");
+            var content = RequestHelper.Post($"{AppSettings.ApiUrl}/api/account/login", data, "", requestTimeOut);
+
+            if (content.Length == 0) throw new Exception("Connection error");
+
+            _logger.Info($"getuser login:{login} deserialize user data");
             var response = JsonConvert.DeserializeObject<ApiResponse<UserInfo>>(content);
 
             if (!response.Success)
             {
+                _logger.Info($"getuser login:{login} is not success");
                 throw new Exception(response.Error);
             }
 
             return response.Data;
-        }
-
-        public UserInfo GetUserV2(string login, string password)
-        {
-            try
-            {
-                var data = new
-                {
-                    login,
-                    password,
-                    uid = Guid.NewGuid().ToString()
-                };
-                var content = RequestHelper.Post($"{AppSettings.ApiUrl}/api/account/login", data);
-                var response = JsonConvert.DeserializeObject<ApiResponse<UserInfo>>(content);
-
-                if (!response.Success)
-                {
-                    throw new Exception(response.Error);
-                }
-
-                return response.Data;
-            }
-            catch
-            {
-                return null;
-            }
         }
 
         public bool DownloadLatest(out string executionPath)
@@ -119,7 +89,7 @@ namespace SpotApp.Services
 
                 var client = new WebClient()
                 {
-                    BaseAddress = AppSettings.ApiUrl
+                    BaseAddress = AppSettings.ApiUrlDomen
                 };
                 client.Headers[HttpRequestHeader.ContentType] = "application/octet-stream";
 
@@ -139,54 +109,13 @@ namespace SpotApp.Services
             }
         }
 
-        public DateTime GetTime(string token)
-        {
-            var client = new WebClient()
-            {
-                BaseAddress = AppSettings.ApiUrl
-            };
-            client.Headers[HttpRequestHeader.ContentType] = "application/json";
-            client.Headers[HttpRequestHeader.Accept] = "application/json";
-            client.Headers[HttpRequestHeader.Authorization] = $"Bearer {token}";
-
-            var request = client.DownloadData("api/cabinet/checktime");
-            if (request.Length == 0)
-            {
-                throw new Exception("Connection error");
-            }
-
-            var content = Encoding.UTF8.GetString(request, 0, request.Length);
-            var response = JsonConvert.DeserializeObject<ApiResponse>(content);
-
-            if (!response.Success)
-            {
-                return DateTime.Now;
-            }
-
-            return (DateTime)response.Data;
-        }
-
         public DateTime GetTimeV2(string token)
         {
-            var startDate = DateTime.Now;
             string methodStage = "";
             try
             {
-                var client = new WebClient()
-                {
-                    BaseAddress = AppSettings.ApiUrl
-                };
-                client.Headers[HttpRequestHeader.ContentType] = "application/json";
-                client.Headers[HttpRequestHeader.Accept] = "application/json";
-                client.Headers[HttpRequestHeader.Authorization] = $"Bearer {token}";
-
-                var request = client.DownloadData("api/cabinet/checktimev2");
-                if (request.Length == 0)
-                {
-                    throw new Exception("Connection error");
-                }
-
-                var content = Encoding.UTF8.GetString(request, 0, request.Length);
+                var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/cabinet/checktimev2", token, 3000);
+                if (content.Length == 0) throw new Exception("Connection error");
                 var response = JsonConvert.DeserializeObject<ApiResponse>(content);
 
                 if (!response.Success)
@@ -200,412 +129,244 @@ namespace SpotApp.Services
             }
             catch (Exception ex)
             {
-                _logger.Error($"{methodStage} - {ex.Message}");
+                _logger.Error($"PC~SpotServiceV2.GetTimeV2 {methodStage} - {ex.Message}");
                 return DateTime.Now;
-            }
-            finally
-            {
-                var endDate = DateTime.Now;
-                _logger.Info($"PC~SpotService.GetTimeV2 {startDate.ToString("yyyy-MM-dd HH:mm:ss.fff")} - {endDate.ToString("yyyy-MM-dd HH:mm:ss.fff")} diff({endDate.Subtract(startDate).TotalMilliseconds})");
-            }
-        }
-
-        public DateTime GetTimeV3(string token)
-        {
-            var startDate = DateTime.Now;
-            var methodStage = "";
-
-            try
-            {
-                var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/cabinet/checktimev2", token);
-                var response = JsonConvert.DeserializeObject<ApiResponse>(content);
-
-                if (!response.Success)
-                {
-                    return DateTime.Now;
-                }
-
-                var tick = Convert.ToDouble(response.Data);
-
-                return new DateTime(1970, 1, 1) + TimeSpan.FromMilliseconds(tick);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error($"{methodStage} - {ex.Message}");
-                return DateTime.Now;
-            }
-            finally
-            {
-                var endDate = DateTime.Now;
-                _logger.Info($"PC~SpotService.GetTimeV2 {startDate.ToString("yyyy-MM-dd HH:mm:ss.fff")} - {endDate.ToString("yyyy-MM-dd HH:mm:ss.fff")} diff({endDate.Subtract(startDate).TotalMilliseconds})");
-            }
-        }
-
-        public void CreateOrder(OrderForm model, string token)
-        {
-            var client = new WebClient()
-            {
-                BaseAddress = AppSettings.ApiUrl,
-            };
-            client.Headers[HttpRequestHeader.ContentType] = "application/json";
-            client.Headers[HttpRequestHeader.Accept] = "application/json";
-            client.Headers[HttpRequestHeader.Authorization] = $"Bearer {token}";
-
-            var data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new
-            {
-                raw = CryptographyHelper.Encrypt(JsonConvert.SerializeObject(model))
-            }));
-            var request = client.UploadData("api/Cabinet/CreateOrder", "POST", data);
-
-            if (request.Length == 0)
-            {
-                throw new Exception("Connection error");
-            }
-
-            var content = Encoding.UTF8.GetString(request, 0, request.Length);
-            var response = JsonConvert.DeserializeObject<ApiResponse>(content);
-
-            if (!response.Success)
-            {
-                throw new Exception(response.Error);
             }
         }
 
         public void DeleteOrder(int orderId, string token)
         {
-            var client = new WebClient()
-            {
-                BaseAddress = AppSettings.ApiUrl
-            };
-            client.Headers[HttpRequestHeader.ContentType] = "application/json";
-            client.Headers[HttpRequestHeader.Accept] = "application/json";
-            client.Headers[HttpRequestHeader.Authorization] = $"Bearer {token}";
+            var data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new { }));
 
-            var data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new
-            {
-            }));
-            var request = client.UploadData($"api/Cabinet/DeleteOrder/{orderId}", "POST", data);
-            if (request.Length == 0)
-            {
+            var content = RequestHelper.Post($"{AppSettings.ApiUrl}/api/Cabinet/DeleteOrder/{orderId}", data, token);
+
+            if (content.Length == 0)
                 throw new Exception("Connection error");
-            }
 
-            var content = Encoding.UTF8.GetString(request, 0, request.Length);
             var response = JsonConvert.DeserializeObject<ApiResponse>(content);
 
             if (!response.Success)
-            {
                 throw new Exception(response.Error);
-            }
         }
 
-        public List<MyOrderResult> MyOrders(string token)
+        public List<MyOrderResult> MyOrders(string token, int? requestTimeOut = null)
         {
-            var client = new WebClient()
-            {
-                BaseAddress = AppSettings.ApiUrl
-            };
-            client.Headers[HttpRequestHeader.ContentType] = "application/json";
-            client.Headers[HttpRequestHeader.Accept] = "application/json";
-            client.Headers[HttpRequestHeader.Authorization] = $"Bearer {token}";
+            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/MyOrders", token, requestTimeOut);
 
-            var request = client.DownloadData("api/Cabinet/MyOrders");
-            if (request.Length == 0)
-            {
+            if (content.Length == 0)
                 throw new Exception("Connection error");
-            }
 
-            var content = Encoding.UTF8.GetString(request, 0, request.Length);
             var response = JsonConvert.DeserializeObject<ApiResponse<List<MyOrderResult>>>(content);
 
             if (!response.Success)
-            {
                 throw new Exception(response.Error);
-            }
 
             return response.Data;
         }
 
-        public List<ContractItem> AllContracts(string search, string token)
+        public List<AllContract> AllContracts(int partId, string search, bool isProd, string token, int? requestTimeOut = null)
         {
-            var client = new WebClient()
-            {
-                BaseAddress = AppSettings.ApiUrl
-            };
-            client.Headers[HttpRequestHeader.ContentType] = "application/json";
-            client.Headers[HttpRequestHeader.Accept] = "application/json";
-            client.Headers[HttpRequestHeader.Authorization] = $"Bearer {token}";
+            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/MainContracts/{partId}?search={search}&isProd={isProd}", token, requestTimeOut);
 
-            var request = client.DownloadData($"api/Cabinet/GetContracts?search={search}");
-            if (request.Length == 0)
-            {
+            if (content.Length == 0)
                 throw new Exception("Connection error");
-            }
 
-            var content = Encoding.UTF8.GetString(request, 0, request.Length);
-            var response = JsonConvert.DeserializeObject<ApiResponse<List<ContractItem>>>(content);
+            var response = JsonConvert.DeserializeObject<ApiResponse<List<AllContract>>>(content);
 
             if (!response.Success)
-            {
                 throw new Exception(response.Error);
-            }
 
             return response.Data;
         }
 
-        public List<ClientItem> Clients(string token)
+        public List<SaleContract> SaleContracts(int partId, string search, bool isProd, string token, int? requestTimeOut = null)
         {
-            var client = new WebClient()
-            {
-                BaseAddress = AppSettings.ApiUrl
-            };
-            client.Headers[HttpRequestHeader.ContentType] = "application/json";
-            client.Headers[HttpRequestHeader.Accept] = "application/json";
-            client.Headers[HttpRequestHeader.Authorization] = $"Bearer {token}";
+            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/MainContracts/{partId}?search={search}&isProd={isProd}", token, requestTimeOut);
 
-            var request = client.DownloadData("api/Cabinet/GetClients");
-            if (request.Length == 0)
-            {
+            if (content.Length == 0)
                 throw new Exception("Connection error");
-            }
 
-            var content = Encoding.UTF8.GetString(request, 0, request.Length);
+            var response = JsonConvert.DeserializeObject<ApiResponse<List<SaleContract>>>(content);
+
+            if (!response.Success)
+                throw new Exception(response.Error);
+
+            return response.Data;
+        }
+
+        public List<ClientItem> Clients(string token, int? requestTimeOut = null)
+        {
+            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/GetClients", token, requestTimeOut);
+
+            if (content.Length == 0)
+                throw new Exception("Connection error");
+
             var response = JsonConvert.DeserializeObject<ApiResponse<List<ClientItem>>>(content);
 
             if (!response.Success)
-            {
                 throw new Exception(response.Error);
-            }
 
             return response.Data;
         }
 
-        public List<ContactPart> Parts(string token)
+        public List<ContactPart> Parts(string token, int? requestTimeOut = null)
         {
-            var client = new WebClient()
-            {
-                BaseAddress = AppSettings.ApiUrl
-            };
-            client.Headers[HttpRequestHeader.ContentType] = "application/json";
-            client.Headers[HttpRequestHeader.Accept] = "application/json";
-            client.Headers[HttpRequestHeader.Authorization] = $"Bearer {token}";
+            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/GetParts", token, requestTimeOut);
 
-            var request = client.DownloadData("api/Cabinet/GetParts");
-            if (request.Length == 0)
-            {
+            if (content.Length == 0)
                 throw new Exception("Connection error");
-            }
 
-            var content = Encoding.UTF8.GetString(request, 0, request.Length);
             var response = JsonConvert.DeserializeObject<ApiResponse<List<ContactPart>>>(content);
 
             if (!response.Success)
-            {
                 throw new Exception(response.Error);
-            }
 
             return response.Data;
         }
 
-        public List<OrderItem> AllOrders(int contractId, string token)
+        public List<OrderItem> AllOrders(int contractId, string token, int? requestTimeOut = null)
         {
-            var client = new WebClient()
-            {
-                BaseAddress = AppSettings.ApiUrl
-            };
-            client.Headers[HttpRequestHeader.ContentType] = "application/json";
-            client.Headers[HttpRequestHeader.Accept] = "application/json";
-            client.Headers[HttpRequestHeader.Authorization] = $"Bearer {token}";
+            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/GetOrders/{contractId}", token, requestTimeOut);
 
-            var request = client.DownloadData($"api/Cabinet/GetOrders/{contractId}");
-            if (request.Length == 0)
-            {
+            if (content.Length == 0)
                 throw new Exception("Connection error");
-            }
 
-            var content = Encoding.UTF8.GetString(request, 0, request.Length);
             var response = JsonConvert.DeserializeObject<ApiResponse<List<OrderItem>>>(content);
 
             if (!response.Success)
-            {
                 throw new Exception(response.Error);
-            }
 
             return response.Data;
         }
 
-        public List<ContractItem> GetContractsWithId(string search, string token)
+        public List<ContractItem> GetContractsWithId(string search, string token, int? requestTimeOut = null)
         {
-            var client = new WebClient()
-            {
-                BaseAddress = AppSettings.ApiUrl
-            };
-            client.Headers[HttpRequestHeader.ContentType] = "application/json";
-            client.Headers[HttpRequestHeader.Accept] = "application/json";
-            client.Headers[HttpRequestHeader.Authorization] = $"Bearer {token}";
+            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/GetContractsWithId?search={search}", token, requestTimeOut);
 
-            var request = client.DownloadData($"api/Cabinet/GetContractsWithId?search={search}");
-            if (request.Length == 0)
-            {
+            if (content.Length == 0)
                 throw new Exception("Connection error");
-            }
 
-            var content = Encoding.UTF8.GetString(request, 0, request.Length);
             var response = JsonConvert.DeserializeObject<ApiResponse<List<ContractItem>>>(content);
 
             if (!response.Success)
-            {
                 throw new Exception(response.Error);
-            }
 
             return response.Data;
         }
 
-        public List<ClientItem> SearchClient(int inp, string token)
+        public List<ClientItem> SearchClient(int inp, string token, int? requestTimeOut = null)
         {
-            var client = new WebClient()
-            {
-                BaseAddress = AppSettings.ApiUrl
-            };
-            client.Headers[HttpRequestHeader.ContentType] = "application/json";
-            client.Headers[HttpRequestHeader.Accept] = "application/json";
-            client.Headers[HttpRequestHeader.Authorization] = $"Bearer {token}";
+            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/SearchClient?inp={inp}", token, requestTimeOut);
 
-            var request = client.DownloadData($"api/Cabinet/SearchClient?inp={inp}");
-            if (request.Length == 0)
-            {
+            if (content.Length == 0)
                 throw new Exception("Connection error");
-            }
 
-            var content = Encoding.UTF8.GetString(request, 0, request.Length);
             var response = JsonConvert.DeserializeObject<ApiResponse<List<ClientItem>>>(content);
 
             if (!response.Success)
-            {
                 throw new Exception(response.Error);
-            }
 
             return response.Data;
         }
 
         public List<ClientItem> SetClient(int inp, string token)
         {
-            var client = new WebClient()
-            {
-                BaseAddress = AppSettings.ApiUrl
-            };
-            client.Headers[HttpRequestHeader.ContentType] = "application/json";
-            client.Headers[HttpRequestHeader.Accept] = "application/json";
-            client.Headers[HttpRequestHeader.Authorization] = $"Bearer {token}";
+            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/SetClient?inp={inp}", token);
 
-            var request = client.DownloadData($"api/Cabinet/SetClient?inp={inp}");
-            if (request.Length == 0)
-            {
+            if (content.Length == 0)
                 throw new Exception("Connection error");
-            }
 
-            var content = Encoding.UTF8.GetString(request, 0, request.Length);
             var response = JsonConvert.DeserializeObject<ApiResponse<List<ClientItem>>>(content);
 
             if (!response.Success)
-            {
                 throw new Exception(response.Error);
-            }
 
             return response.Data;
         }
 
         public List<ClientItem> RemoveClient(int inp, string token)
         {
-            var client = new WebClient()
-            {
-                BaseAddress = AppSettings.ApiUrl
-            };
-            client.Headers[HttpRequestHeader.ContentType] = "application/json";
-            client.Headers[HttpRequestHeader.Accept] = "application/json";
-            client.Headers[HttpRequestHeader.Authorization] = $"Bearer {token}";
+            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/RemoveClient?inp={inp}", token);
 
-            var request = client.DownloadData($"api/Cabinet/RemoveClient?inp={inp}");
-            if (request.Length == 0)
-            {
+            if (content.Length == 0)
                 throw new Exception("Connection error");
-            }
 
-            var content = Encoding.UTF8.GetString(request, 0, request.Length);
             var response = JsonConvert.DeserializeObject<ApiResponse<List<ClientItem>>>(content);
 
             if (!response.Success)
-            {
                 throw new Exception(response.Error);
-            }
 
             return response.Data;
         }
 
-        public List<ClientItem> ClientsDDL(string token)
+        public List<NewSpotContract> NewSpotMainContracts(string search, string token, int? requestTimeOut = null)
         {
-            var dbClients = Clients(token);
+            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/NewSpotMainContracts?search={search}", token, requestTimeOut);
+
+            if (content.Length == 0)
+                throw new Exception("Connection error");
+
+            var response = JsonConvert.DeserializeObject<ApiResponse<List<NewSpotContract>>>(content);
+
+            if (!response.Success)
+                throw new Exception(response.Error);
+
+            return response.Data;
+        }
+
+        public List<ClientItem> ClientsDDL(string token, bool showError = false, int? requestTimeOut = null)
+        {
+            List<ClientItem> dbClients;
+
+            try
+            {
+                dbClients = Clients(token, requestTimeOut);
+            }
+            catch
+            {
+                if (showError)
+                    throw;
+                dbClients = new List<ClientItem>();
+            }
+
             var ddlClients = new List<ClientItem>
             {
                 new ClientItem { inp = 0, name = "Выберите клиента" }
             };
 
             if (dbClients != null)
-                ddlClients.AddRange(dbClients);
+                if (dbClients.Count > 0)
+                    ddlClients.AddRange(dbClients);
 
             return ddlClients;
         }
 
-        public List<Quote> Quotes(int contractId, string token)
+        public List<Quote> Quotes(int contractId, string token, int? requestTimeOut = null)
         {
-            var client = new WebClient()
-            {
-                BaseAddress = AppSettings.ApiUrl
-            };
-            client.Headers[HttpRequestHeader.ContentType] = "application/json";
-            client.Headers[HttpRequestHeader.Accept] = "application/json";
-            client.Headers[HttpRequestHeader.Authorization] = $"Bearer {token}";
+            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/GetQuotes?contractId={contractId}", token, requestTimeOut);
 
-            var request = client.DownloadData($"api/Cabinet/GetQuotes?contractId={contractId}");
-            if (request.Length == 0)
-            {
+            if (content.Length == 0)
                 throw new Exception("Connection error");
-            }
 
-            var content = Encoding.UTF8.GetString(request, 0, request.Length);
             var response = JsonConvert.DeserializeObject<ApiResponse<List<Quote>>>(content);
 
             if (!response.Success)
-            {
                 throw new Exception(response.Error);
-            }
 
             return response.Data;
         }
 
-        public List<RangeContract> RangeContracts(int contractId, string token)
+        public List<RangeContract> RangeContracts(int contractId, string token, int? requestTimeOut = null)
         {
-            var client = new WebClient()
-            {
-                BaseAddress = AppSettings.ApiUrl
-            };
-            client.Headers[HttpRequestHeader.ContentType] = "application/json";
-            client.Headers[HttpRequestHeader.Accept] = "application/json";
-            client.Headers[HttpRequestHeader.Authorization] = $"Bearer {token}";
+            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/RangeContracts?contractId={contractId}", token, requestTimeOut);
 
-            var request = client.DownloadData($"api/Cabinet/RangeContracts?contractId={contractId}");
-            if (request.Length == 0)
-            {
+            if (content.Length == 0)
                 throw new Exception("Connection error");
-            }
 
-            var content = Encoding.UTF8.GetString(request, 0, request.Length);
             var response = JsonConvert.DeserializeObject<ApiResponse<List<RangeContract>>>(content);
 
             if (!response.Success)
-            {
                 throw new Exception(response.Error);
-            }
 
             return response.Data;
         }
@@ -614,56 +375,28 @@ namespace SpotApp.Services
         {
             var startDate = DateTime.Now;
             string methodStage = "";
-            var modelJs = JsonConvert.SerializeObject(model);
             try
             {
-                methodStage = "Create web client";
-                var client = new WebClient()
-                {
-                    BaseAddress = AppSettings.ApiUrl
-                };
-                client.Headers[HttpRequestHeader.ContentType] = "application/json";
-                client.Headers[HttpRequestHeader.Accept] = "application/json";
-                client.Headers[HttpRequestHeader.Authorization] = $"Bearer {token}";
-
                 methodStage = "Create raw";
-                var data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new
-                {
-                    raw = Convert.ToBase64String(Encoding.UTF8.GetBytes(modelJs))
-                }));
+                var data = new { raw = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(model))) };
 
                 methodStage = "Upload data";
-                var request = client.UploadData($"api/Cabinet/CreateOrderV2/{model.uid}", "POST", data);
+                var content = RequestHelper.Post($"{AppSettings.ApiUrl}/api/Cabinet/CreateOrderV2/{model.uid}", data, token);
 
                 methodStage = "Check request";
-                if (request.Length == 0)
-                {
-                    throw new Exception("Connection error");
-                }
-
-                //methodStage = "Check content request";
-                //var content = Encoding.UTF8.GetString(request, 0, request.Length);
-
-                //methodStage = "Read content";
-                //var response = JsonConvert.DeserializeObject<ApiResponse>(content);
-
-                //if (!response.Success)
-                //{
-                //    methodStage = "Response not success";
-                //    throw new Exception(response.Error);
-                //}
+                if (content.Length == 0) throw new Exception("Connection error");
 
                 var endDate = DateTime.Now;
-                _logger.Info($"PC~SpotService.CreateOrderV2 {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds}) - uid: {model.uid}");
+                _logger.Info($"PC~SpotServiceV2.CreateOrderV2 {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds}) - uid: {model.uid}");
             }
             catch (Exception ex)
             {
                 var endDate = DateTime.Now;
-                _logger.Error($"PC~SpotService.CreateOrderV2 {methodStage} - Err:{ex.Message} {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds}) - uid: {model.uid}");
+                _logger.Error($"PC~SpotServiceV2.CreateOrderV2 {methodStage} - Err:{ex.Message} {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds}) - uid: {model.uid}");
             }
         }
 
-        public ApiResponse<string> BulkOrders(List<OrderForm> model, string token, string orderLogs)
+        public ApiResponse<string> BulkOrders(List<OrderForm> model, string token, string orderLogs, double _timeDifference = 0.0)
         {
             var resultBulkOrders = new ApiResponse<string>
             {
@@ -674,35 +407,15 @@ namespace SpotApp.Services
 
             var startDate = DateTime.Now;
             string methodStage = "";
-            var modelJs = JsonConvert.SerializeObject(model);
             try
             {
-                methodStage = "Create web client";
-                var client = new WebClient()
-                {
-                    BaseAddress = AppSettings.ApiUrl
-                };
-                client.Headers[HttpRequestHeader.ContentType] = "application/json";
-                client.Headers[HttpRequestHeader.Accept] = "application/json";
-                client.Headers[HttpRequestHeader.Authorization] = $"Bearer {token}";
-
                 methodStage = "Create raw";
-                var data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new
-                {
-                    raw = Convert.ToBase64String(Encoding.UTF8.GetBytes(modelJs))
-                }));
+                var data = new { raw = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(model))) };
 
                 methodStage = "Upload data";
-                var request = client.UploadData($"api/Cabinet/BulkOrders/{model[0].uid}", "POST", data);
+                var content = RequestHelper.Post($"{AppSettings.ApiUrl}/api/Cabinet/BulkOrders/{model[0].uid}-{_timeDifference}", data, token);
 
-                methodStage = "Check request";
-                if (request.Length == 0)
-                {
-                    throw new Exception("Connection error");
-                }
-
-                methodStage = "Check content request";
-                var content = Encoding.UTF8.GetString(request, 0, request.Length);
+                if (content.Length == 0) throw new Exception("Connection error");
 
                 methodStage = "Read content";
                 var response = JsonConvert.DeserializeObject<ApiResponse<object>>(content);
@@ -712,14 +425,14 @@ namespace SpotApp.Services
                     resultBulkOrders.Success = false;
                     resultBulkOrders.Error = $"Не успешно - {response.Error}";
                     var endDate = DateTime.Now;
-                    _logger.Error($"PC~SpotService.BulkOrders Err:{response.Error} {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds}) - uids: {orderLogs}");
+                    _logger.Error($"PC~SpotServiceV2.BulkOrders Err:{response.Error} {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds}) - uids: {orderLogs}");
                 }
                 else
                 {
                     resultBulkOrders.Success = true;
                     resultBulkOrders.Data = "Успешно отправлены";
                     var endDate = DateTime.Now;
-                    _logger.Info($"PC~SpotService.BulkOrders {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds}) - uids: {orderLogs}");
+                    _logger.Info($"PC~SpotServiceV2.BulkOrders {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds}) - uids: {orderLogs}");
                 }
             }
             catch (Exception ex)
@@ -727,10 +440,114 @@ namespace SpotApp.Services
                 resultBulkOrders.Success = false;
                 resultBulkOrders.Error = $"Не успешно - {ex.Message}";
                 var endDate = DateTime.Now;
-                _logger.Error($"PC~SpotService.BulkOrders {methodStage} - Err:{ex.Message} {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds}) - uids: {orderLogs}");
+                _logger.Error($"PC~SpotServiceV2.BulkOrders {methodStage} - Err:{ex.Message} {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds}) - uids: {orderLogs}");
             }
 
             return resultBulkOrders;
+        }
+
+        public List<OrderTemplate> GetOrderTemplates(string serach, string token, int? requestTimeOut = null)
+        {
+            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/GetOrderTemplates?search={serach}", token, requestTimeOut);
+
+            if (content.Length == 0)
+                throw new Exception("Connection error");
+
+            var response = JsonConvert.DeserializeObject<ApiResponse<List<OrderTemplate>>>(content);
+
+            if (!response.Success)
+                throw new Exception(response.Error);
+
+            return response.Data;
+        }
+
+        public ApiResponse CreateOrderTemplate(OrderTemplate order, string token)
+        {
+            var content = RequestHelper.Post($"{AppSettings.ApiUrl}/api/Cabinet/CreateOrderTemplate", order, token, 3000);
+
+            if (content.Length == 0)
+                return new ApiResponse { Success = false, Error = "Connection error" };
+
+            var response = JsonConvert.DeserializeObject<ApiResponse>(content);
+
+            return response;
+        }
+
+        public ApiResponse DeleteOrderTemplate(int templateId, string token)
+        {
+            var content = RequestHelper.Post($"{AppSettings.ApiUrl}/api/Cabinet/DeleteOrderTemplate", templateId, token, 3000);
+
+            if (content.Length == 0)
+                return new ApiResponse { Success = false, Error = "Connection error" };
+
+            var response = JsonConvert.DeserializeObject<ApiResponse>(content);
+
+            return response;
+        }
+
+        public ApiResponse<string> CreatePostOrderV2(OrderForm model, string token)
+        {
+            var resultPostOrders = new ApiResponse<string>
+            {
+                Success = true,
+                Data = null,
+                Error = null
+            };
+
+            var startDate = DateTime.Now;
+
+            string methodStage = "";
+
+            try
+            {
+                methodStage = "Create raw";
+                var data = new { raw = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(model))) };
+
+                methodStage = "Upload data";
+                var content = RequestHelper.Post($"{AppSettings.ApiUrl}/api/Cabinet/CreatePostOrderV2/{model.uid}", data, token);
+
+                methodStage = "Check request";
+                if (content.Length == 0)
+                    throw new Exception("Connection error");
+
+                methodStage = "Read content";
+                resultPostOrders = JsonConvert.DeserializeObject<ApiResponse<string>>(content);
+
+                if (resultPostOrders.Success)
+                {
+                    var endDate = DateTime.Now;
+                    _logger.Info($"PC~SpotServiceV2.CreatePostOrderV2 {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds}) - uid: {model.uid}");
+                }
+                else
+                {
+                    var endDate = DateTime.Now;
+                    _logger.Error($"PC~SpotServiceV2.CreatePostOrderV2 Err:{resultPostOrders.Error}; {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds}) - uid: {model.uid}");
+                }
+            }
+            catch (Exception ex)
+            {
+                resultPostOrders.Success = false;
+                resultPostOrders.Error = ex.Message;
+                var endDate = DateTime.Now;
+                _logger.Error($"PC~SpotServiceV2.CreatePostOrderV2 {methodStage} - Err:{ex.Message} {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds}) - uid: {model.uid}");
+            }
+
+            return resultPostOrders;
+        }
+
+        public List<Bargain> GetBargains(string token, int? requestTimeOut = null)
+        {
+            var content = RequestHelper.Get($"{AppSettings.ApiUrl}/api/Cabinet/GetBargains", token, requestTimeOut);
+
+            if (content.Length == 0)
+                throw new Exception("Connection error");
+
+            var response = JsonConvert.DeserializeObject<ApiResponse<List<Bargain>>>(content);
+
+            if (!response.Success)
+                throw new Exception(response.Error);
+
+            return response.Data;
         }
 
     }

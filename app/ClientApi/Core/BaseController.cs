@@ -15,14 +15,18 @@ namespace ClientApi.Core
 
         protected string GetIPAddress()
         {
-            var header = Request.Headers["CF-Connecting-IP"].FirstOrDefault() ?? Request.Headers["X-Forwarded-For"].FirstOrDefault();
-
-            if (IPAddress.TryParse(header, out var ip))
+            try
             {
-                return ip.ToString();
-            }
+                var ip = HttpContext?.Connection?.RemoteIpAddress?.ToString();
+                if (!string.IsNullOrEmpty(ip))
+                    return ip;
 
-            return HttpContext.Connection.RemoteIpAddress.ToString();
+                return HttpContext.Request.Headers.ContainsKey("X-Forwarded-For") ? IPAddress.Parse(HttpContext.Request.Headers["X-Forwarded-For"].ToString().Split(',', StringSplitOptions.RemoveEmptyEntries)[0]).ToString() : HttpContext?.Connection?.RemoteIpAddress?.ToString();
+            }
+            catch
+            {
+                return "0.0.0.0";
+            }
         }
 
         [ProducesDefaultResponseType(typeof(ApiResponse))]

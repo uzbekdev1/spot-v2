@@ -12,11 +12,11 @@ using System.Windows.Forms;
 
 namespace SpotApp.Forms
 {
-    public delegate void MyBidsFormF1KeyEventHandler();
+    
+    internal delegate void MyBidsFormF1KeyEventHandler();
 
     partial class MyBidsForm : Form
     {
-        public event MyBidsFormF1KeyEventHandler MyBidsFormF1Key;
 
         private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -34,6 +34,8 @@ namespace SpotApp.Forms
 
             InitializeComponent();
         }
+
+        public event MyBidsFormF1KeyEventHandler MyBidsFormF1Key;
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
@@ -63,7 +65,7 @@ namespace SpotApp.Forms
             try
             {
                 _searchIsWorking = true;
-                var service = new SpotServiceV2();
+                var service = new SpotService();
                 _orders = service.MyOrders(_token, 5000);
             }
             catch (Exception ex)
@@ -199,7 +201,7 @@ namespace SpotApp.Forms
 
                 try
                 {
-                    var service = new SpotServiceV2();
+                    var service = new SpotService();
                     service.DeleteOrder(orderId, _token);
                 }
                 catch (Exception ex)
@@ -214,5 +216,6 @@ namespace SpotApp.Forms
                 }
             }
         }
+    
     }
 }

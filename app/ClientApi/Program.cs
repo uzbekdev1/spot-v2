@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using System.Diagnostics;
 using System.Net;
 using System.Text;
 
@@ -30,15 +31,16 @@ namespace ClientApi
                 cnf.Enrich.FromLogContext();
                 cnf.Enrich.WithProperty("ApplicationName", hst.HostingEnvironment.ApplicationName);
                 cnf.MinimumLevel.Debug();
-                cnf.WriteTo.Console();
-                cnf.WriteTo.File("Logs/api.log", rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true);
+                if (Debugger.IsAttached)
+                    cnf.WriteTo.Console();
+                cnf.WriteTo.File($"Logs/{DateTime.Now:yyyy-MM-dd}/api.log", rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true);                
             });
 
             builder.Services.AddSingleton<CryptographyHelper>();
 
             builder.Services.AddSingleton((a) =>
             {
-                var service = new SpotService(apiUrl, a.GetRequiredService<ILogger<SpotService>>());                
+                var service = new SpotService(apiUrl, a.GetRequiredService<ILogger<SpotService>>());
                 return service;
             });
 

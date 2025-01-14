@@ -99,5 +99,6 @@ namespace SpotApp.Helpers
                 return originalName;
             }
         }
+    
     }
 }

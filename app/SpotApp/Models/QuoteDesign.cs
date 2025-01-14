@@ -16,5 +16,6 @@
         public int? brokerId { get; set; }
 
         public string mine { get; set; }
+
     }
 }

@@ -16,5 +16,6 @@
         public string starttime { get; set; }
 
         public string endtime { get; set; }
+
     }
 }

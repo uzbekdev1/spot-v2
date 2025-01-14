@@ -146,7 +146,6 @@
     <Compile Include="Dtos\SaleContract.cs" />
     <Compile Include="Dtos\SelectItem.cs" />
     <Compile Include="Enums\TimeTypes.cs" />
-    <Compile Include="Exceptions\TooManyRequestsException.cs" />
     <Compile Include="Forms\AllBidsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -189,8 +188,8 @@
     <Compile Include="Forms\SendAllNewBidForm.Designer.cs">
       <DependentUpon>SendAllNewBidForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\AsyncRequestHelper.cs" />
     <Compile Include="Helpers\CryptographyHelper.cs" />
-    <Compile Include="Helpers\LogHelper.cs" />
     <Compile Include="Helpers\RequestHelper.cs" />
     <Compile Include="Helpers\SettingsHelper.cs" />
     <Compile Include="Helpers\UIHelper.cs" />
@@ -237,9 +236,8 @@
     <Compile Include="Models\SaleContractDesign.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\AsyncSpotService.cs" />
     <Compile Include="Services\SpotService.cs" />
-    <Compile Include="Services\SpotServiceV2.cs" />
-    <Compile Include="Services\TimeService.cs" />
     <Content Include="Logs\readme.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

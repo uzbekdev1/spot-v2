@@ -40,9 +40,6 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BargainsForm));
             this.bargainsDataGridView = new System.Windows.Forms.DataGridView();
-            this.bargainsSource = new System.Windows.Forms.BindingSource(this.components);
-            this.msgLabel = new System.Windows.Forms.Label();
-            this.btnUpdate = new System.Windows.Forms.Button();
             this.bargainIdDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.datepostDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.contractIdDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -51,6 +48,9 @@
             this.cenaDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.costDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.fullNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.bargainsSource = new System.Windows.Forms.BindingSource(this.components);
+            this.msgLabel = new System.Windows.Forms.Label();
+            this.btnUpdate = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.bargainsDataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bargainsSource)).BeginInit();
             this.SuspendLayout();
@@ -60,6 +60,9 @@
             this.bargainsDataGridView.AllowUserToAddRows = false;
             this.bargainsDataGridView.AllowUserToDeleteRows = false;
             this.bargainsDataGridView.AllowUserToResizeRows = false;
+            this.bargainsDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.bargainsDataGridView.AutoGenerateColumns = false;
             this.bargainsDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.bargainsDataGridView.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
@@ -82,7 +85,6 @@
             this.costDataGridViewTextBoxColumn,
             this.fullNameDataGridViewTextBoxColumn});
             this.bargainsDataGridView.DataSource = this.bargainsSource;
-            this.bargainsDataGridView.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.bargainsDataGridView.Location = new System.Drawing.Point(0, 41);
             this.bargainsDataGridView.Name = "bargainsDataGridView";
             this.bargainsDataGridView.ReadOnly = true;
@@ -93,32 +95,6 @@
             this.bargainsDataGridView.ShowRowErrors = false;
             this.bargainsDataGridView.Size = new System.Drawing.Size(861, 409);
             this.bargainsDataGridView.TabIndex = 0;
-            // 
-            // bargainsSource
-            // 
-            this.bargainsSource.AllowNew = false;
-            this.bargainsSource.DataSource = typeof(SpotApp.Models.BargainDesign);
-            // 
-            // msgLabel
-            // 
-            this.msgLabel.AutoSize = true;
-            this.msgLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.msgLabel.Location = new System.Drawing.Point(12, 13);
-            this.msgLabel.Name = "msgLabel";
-            this.msgLabel.Size = new System.Drawing.Size(91, 17);
-            this.msgLabel.TabIndex = 1;
-            this.msgLabel.Text = "Message text";
-            // 
-            // btnUpdate
-            // 
-            this.btnUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnUpdate.Location = new System.Drawing.Point(774, 9);
-            this.btnUpdate.Name = "btnUpdate";
-            this.btnUpdate.Size = new System.Drawing.Size(75, 23);
-            this.btnUpdate.TabIndex = 2;
-            this.btnUpdate.Text = "Обновить";
-            this.btnUpdate.UseVisualStyleBackColor = true;
-            this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
             // 
             // bargainIdDataGridViewTextBoxColumn
             // 
@@ -194,6 +170,33 @@
             this.fullNameDataGridViewTextBoxColumn.Name = "fullNameDataGridViewTextBoxColumn";
             this.fullNameDataGridViewTextBoxColumn.ReadOnly = true;
             this.fullNameDataGridViewTextBoxColumn.Width = 140;
+            // 
+            // bargainsSource
+            // 
+            this.bargainsSource.AllowNew = false;
+            this.bargainsSource.DataSource = typeof(SpotApp.Models.BargainDesign);
+            this.bargainsSource.Sort = "BargainId";
+            // 
+            // msgLabel
+            // 
+            this.msgLabel.AutoSize = true;
+            this.msgLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.msgLabel.Location = new System.Drawing.Point(12, 13);
+            this.msgLabel.Name = "msgLabel";
+            this.msgLabel.Size = new System.Drawing.Size(91, 17);
+            this.msgLabel.TabIndex = 1;
+            this.msgLabel.Text = "Message text";
+            // 
+            // btnUpdate
+            // 
+            this.btnUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnUpdate.Location = new System.Drawing.Point(774, 9);
+            this.btnUpdate.Name = "btnUpdate";
+            this.btnUpdate.Size = new System.Drawing.Size(75, 23);
+            this.btnUpdate.TabIndex = 2;
+            this.btnUpdate.Text = "Обновить";
+            this.btnUpdate.UseVisualStyleBackColor = true;
+            this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
             // 
             // BargainsForm
             // 

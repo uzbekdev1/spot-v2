@@ -9,7 +9,7 @@
     <ROW Property="AI_REQUIRED_PHYSICAL_MEMORY" MultiBuildValue="x86_Release:1024" ValueLocId="-"/>
     <ROW Property="AI_REQUIRED_WINDOWS_INSTALLER_DISPLAY" MultiBuildValue="x86_Release:5.0" ValueLocId="-"/>
     <ROW Property="AI_REQUIRED_WINDOWS_INSTALLER_VERSION" MultiBuildValue="x86_Release:5.0" ValueLocId="-"/>
-    <ROW Property="ALLUSERS" Value="1"/>
+    <ROW Property="ALLUSERS" Value="1" MultiBuildValue="x86_Release:"/>
     <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install [|ProductName]." ValueLocId="*"/>
     <ROW Property="ARPPRODUCTICON" Value="favicon.exe" Type="8"/>
     <ROW Property="Manufacturer" Value="UzEx"/>
@@ -27,8 +27,6 @@
     <ROW Property="WindowsTypeNT50Display" MultiBuildValue="x86_Debug:Windows 2000#x86_Release:Windows 2000" ValueLocId="-"/>
     <ROW Property="WindowsTypeNT5X" MultiBuildValue="x86_Debug:Windows XP/2003#x86_Release:Windows XP/2003" ValueLocId="-"/>
     <ROW Property="WindowsTypeNT5XDisplay" MultiBuildValue="x86_Debug:Windows XP/2003#x86_Release:Windows XP/2003" ValueLocId="-"/>
-    <ROW Property="WindowsTypeNT64" MultiBuildValue="x86_Release:Windows XP/Vista/Windows 7/Windows 8 x64/Windows 8.1 x64/Windows 10 x64/Windows 11 x64" ValueLocId="-"/>
-    <ROW Property="WindowsTypeNT64Display" MultiBuildValue="x86_Release:64-bit Windows versions" ValueLocId="-"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiDirsComponent">
     <ROW Directory="APPDIR" Directory_Parent="TARGETDIR" DefaultDir="APPDIR:." IsPseudoRoot="1"/>
@@ -190,7 +188,6 @@
     <ROW Action="AI_DetectSoftware" Sequence="101"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiLaunchConditionsComponent">
-    <ROW Condition="( Version9X OR (VersionNT AND (NOT VersionNT64)) )" Description="[ProductName] cannot be installed on [WindowsTypeNT64Display]." DescriptionLocId="AI.LaunchCondition.NoNT64" IsPredefined="true" Builds="x86_Release"/>
     <ROW Condition="((VersionNT &lt;&gt; 501) AND (VersionNT &lt;&gt; 502))" Description="[ProductName] cannot be installed on [WindowsTypeNT5XDisplay]." DescriptionLocId="AI.LaunchCondition.NoNT5X" IsPredefined="true" Builds="x86_Debug;x86_Release"/>
     <ROW Condition="(VersionNT &lt;&gt; 400)" Description="[ProductName] cannot be installed on [WindowsTypeNT40Display]." DescriptionLocId="AI.LaunchCondition.NoNT40" IsPredefined="true" Builds="x86_Debug;x86_Release"/>
     <ROW Condition="(VersionNT &lt;&gt; 500)" Description="[ProductName] cannot be installed on [WindowsTypeNT50Display]." DescriptionLocId="AI.LaunchCondition.NoNT50" IsPredefined="true" Builds="x86_Debug;x86_Release"/>

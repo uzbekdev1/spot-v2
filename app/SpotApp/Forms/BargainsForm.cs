@@ -12,8 +12,9 @@ using System.Windows.Forms;
 
 namespace SpotApp.Forms
 {
-    public partial class BargainsForm : Form
+    partial class BargainsForm : Form
     {
+
         private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly string _token;
@@ -43,7 +44,7 @@ namespace SpotApp.Forms
             try
             {
                 _searchIsWorking = true;
-                var service = new SpotServiceV2();
+                var service = new SpotService();
                 _bargainItems = service.GetBargains(_token, 5000);
             }
             catch (Exception ex)
@@ -144,5 +145,6 @@ namespace SpotApp.Forms
         {
             UpdateBargains();
         }
+    
     }
 }

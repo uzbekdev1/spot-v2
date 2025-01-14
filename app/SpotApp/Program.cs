@@ -104,8 +104,18 @@ namespace SpotApp
                 Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
                 Application.ApplicationExit += Application_ApplicationExit;
 
-                var service = new SpotServiceV2();
-                var version = service.GetVersion(5000);
+                var version = "";
+                var service = new SpotService();
+
+                try
+                {
+                    version = service.GetVersion(5000);
+                }
+                catch (Exception ex)
+                {
+                    ShowExceptionDetails(ex);
+                    Application.Exit();
+                }
 
                 if (version == AppSettings.AppVersion)
                 {

@@ -1,5 +1,6 @@
 using MessageBroker.Jobs;
 using Serilog;
+using System.Diagnostics;
 
 namespace MessageBroker
 {
@@ -9,14 +10,15 @@ namespace MessageBroker
         {
             Console.Title = "Message Broker";
 
-            IHost host = Host.CreateDefaultBuilder(args)
+            var host = Host.CreateDefaultBuilder(args)
                 .UseSerilog((hst, cnf) =>
                 {
                     cnf.ReadFrom.Configuration(hst.Configuration);
                     cnf.Enrich.FromLogContext();
                     cnf.Enrich.WithProperty("ApplicationName", hst.HostingEnvironment.ApplicationName);
                     cnf.MinimumLevel.Debug();
-                    cnf.WriteTo.Console();
+                    if (Debugger.IsAttached)
+                        cnf.WriteTo.Console();
                     cnf.WriteTo.File("Logs/broker.log", rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true);
                 })
                 .ConfigureServices(services =>
@@ -25,6 +27,7 @@ namespace MessageBroker
                     {
                         hostOptions.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
                     });
+
                     services.AddHostedService<BidWorker>();
                 })
                 .Build();

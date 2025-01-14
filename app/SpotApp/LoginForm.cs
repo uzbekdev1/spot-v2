@@ -12,6 +12,8 @@ namespace SpotApp
 
         private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        private bool _isOpened = false;
+
         private bool ValidateForm()
         {
             var login = tbxUser.Text.Trim();
@@ -36,12 +38,17 @@ namespace SpotApp
 
         private void BtnLogin_Click(object sender, EventArgs e)
         {
+            if (_isOpened)            
+                return;
+
+            _isOpened = true;
+
             try
             {
                 Enabled = false;
                 Cursor = Cursors.WaitCursor;
 
-                var service = new SpotServiceV2();
+                var service = new SpotService();
                 var usr = tbxUser.Text.Trim();
                 var psw = tbxPassword.Text.Trim();
 
@@ -57,6 +64,7 @@ namespace SpotApp
             }
             catch (Exception exp)
             {
+                _isOpened = false;
                 throw new Exception(exp.Message);
             }
             finally

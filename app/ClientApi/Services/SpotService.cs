@@ -8,7 +8,8 @@ namespace ClientApi.Services
 {
     public class SpotService
     {
-        private readonly int _apiTimedOut = 5000; // 5000 msec = 5 sec
+
+        private readonly TimeSpan _timeOut = TimeSpan.FromMilliseconds(5 * 1000);
 
         public readonly string _apiUrl;
 
@@ -20,39 +21,6 @@ namespace ClientApi.Services
             _logger = logger;
         }
 
-        public async Task<DateTime> GetDate()
-        {
-            var client = new RestClient(_apiUrl);
-            var request = new RestRequest("/api/spot/time-now", Method.Get);
-
-            request.AddHeader("Accept", "application/json");
-            request.AddHeader("Content-Type", "application/json");
-
-            request.Timeout = _apiTimedOut;
-
-            var response = await client.ExecuteAsync(request);
-
-            if (!response.IsSuccessful)
-            {
-                _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{response.ErrorException?.Message} {response.ResponseStatus}", response.ErrorException?.InnerException, response.ErrorException?.StackTrace, new { }));
-                throw new Exception($"{response.ErrorException?.Message} {response.ResponseStatus}");
-            }
-
-            if (string.IsNullOrWhiteSpace(response.Content))
-            {
-                throw new Exception("Server error");
-            }
-
-            var resut = JsonConvert.DeserializeObject<ApiResponse<DateTime>>(response.Content);
-
-            if (!resut.Success)
-            {
-                throw new Exception(resut.Error);
-            }
-
-            return resut.Data;
-        }
-
         public async Task<UserResponse> GetUser(string username, string password, string newId)
         {
             var client = new RestClient(_apiUrl);
@@ -61,7 +29,7 @@ namespace ClientApi.Services
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
 
-            request.Timeout = _apiTimedOut;
+            request.Timeout = _timeOut;
 
             request.AddJsonBody(new
             {
@@ -93,39 +61,6 @@ namespace ClientApi.Services
             return resut.Data;
         }
 
-        public async Task<UserResponse> GetUser(int id)
-        {
-            var client = new RestClient(_apiUrl);
-            var request = new RestRequest($"/api/spot/gettraderdata/{id}", Method.Get);
-
-            request.AddHeader("Accept", "application/json");
-            request.AddHeader("Content-Type", "application/json");
-
-            request.Timeout = _apiTimedOut;
-
-            var response = await client.ExecuteAsync(request);
-
-            if (!response.IsSuccessful)
-            {
-                _logger.LogError(LogGenerate.Instance.GenerateLogError("", $"{response.ErrorException?.Message} {response.ResponseStatus}", response.ErrorException?.InnerException, response.ErrorException?.StackTrace, new { id }));
-                throw new Exception($"{response.ErrorException?.Message} {response.ResponseStatus}");
-            }
-
-            if (string.IsNullOrWhiteSpace(response.Content))
-            {
-                throw new Exception("Server error");
-            }
-
-            var resut = JsonConvert.DeserializeObject<ApiResponse<UserResponse>>(response.Content);
-
-            if (!resut.Success)
-            {
-                throw new Exception(resut.Error);
-            }
-
-            return resut.Data;
-        }
-
         public async Task<IEnumerable<ContactItem>> GetContracts(string search)
         {
             var client = new RestClient(_apiUrl);
@@ -134,7 +69,7 @@ namespace ClientApi.Services
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
 
-            request.Timeout = _apiTimedOut;
+            request.Timeout = _timeOut;
 
             request.AddJsonBody(new
             {
@@ -172,7 +107,7 @@ namespace ClientApi.Services
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
 
-            request.Timeout = _apiTimedOut;
+            request.Timeout = _timeOut;
 
             request.AddJsonBody(new
             {
@@ -213,7 +148,7 @@ namespace ClientApi.Services
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
 
-            request.Timeout = _apiTimedOut;
+            request.Timeout = _timeOut;
 
             request.AddJsonBody(new
             {
@@ -251,7 +186,7 @@ namespace ClientApi.Services
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
 
-            request.Timeout = _apiTimedOut;
+            request.Timeout = _timeOut;
 
             request.AddJsonBody(new
             {
@@ -290,7 +225,7 @@ namespace ClientApi.Services
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
 
-            request.Timeout = _apiTimedOut;
+            request.Timeout = _timeOut;
 
             request.AddJsonBody(new
             {
@@ -328,7 +263,7 @@ namespace ClientApi.Services
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
 
-            request.Timeout = _apiTimedOut;
+            request.Timeout = _timeOut;
 
             request.AddJsonBody(new
             {
@@ -366,7 +301,7 @@ namespace ClientApi.Services
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
 
-            request.Timeout = _apiTimedOut;
+            request.Timeout = _timeOut;
 
             var response = await client.ExecuteAsync(request);
 
@@ -399,7 +334,7 @@ namespace ClientApi.Services
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
 
-            request.Timeout = _apiTimedOut;
+            request.Timeout = _timeOut;
 
             request.AddJsonBody(new
             {
@@ -437,7 +372,7 @@ namespace ClientApi.Services
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
 
-            request.Timeout = _apiTimedOut;
+            request.Timeout = _timeOut;
 
             request.AddJsonBody(new
             {
@@ -476,7 +411,7 @@ namespace ClientApi.Services
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
 
-            request.Timeout = _apiTimedOut;
+            request.Timeout = _timeOut;
 
             request.AddJsonBody(new
             {
@@ -515,7 +450,7 @@ namespace ClientApi.Services
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
 
-            request.Timeout = _apiTimedOut;
+            request.Timeout = _timeOut;
 
             request.AddJsonBody(new
             {
@@ -554,7 +489,7 @@ namespace ClientApi.Services
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
 
-            request.Timeout = _apiTimedOut;
+            request.Timeout = _timeOut;
 
             request.AddJsonBody(new
             {
@@ -593,7 +528,7 @@ namespace ClientApi.Services
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
 
-            request.Timeout = _apiTimedOut;
+            request.Timeout = _timeOut;
 
             request.AddJsonBody(new
             {
@@ -632,7 +567,7 @@ namespace ClientApi.Services
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
 
-            request.Timeout = _apiTimedOut;
+            request.Timeout = _timeOut;
 
             request.AddJsonBody(new
             {
@@ -670,7 +605,7 @@ namespace ClientApi.Services
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
 
-            request.Timeout = _apiTimedOut;
+            request.Timeout = _timeOut;
 
             request.AddJsonBody(new
             {
@@ -708,7 +643,7 @@ namespace ClientApi.Services
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
 
-            request.Timeout = _apiTimedOut;
+            request.Timeout = _timeOut;
 
             request.AddJsonBody(new
             {
@@ -742,7 +677,7 @@ namespace ClientApi.Services
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
 
-            request.Timeout = _apiTimedOut;
+            request.Timeout = _timeOut;
 
             request.AddJsonBody(new
             {
@@ -771,5 +706,6 @@ namespace ClientApi.Services
 
             return resut.Data;
         }
+
     }
 }

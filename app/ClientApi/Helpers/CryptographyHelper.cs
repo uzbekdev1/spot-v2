@@ -55,6 +55,7 @@ namespace ClientApi.Helpers
                 rsa.PersistKeyInCsp = false;
             }
         }
+    
     }
 
 }

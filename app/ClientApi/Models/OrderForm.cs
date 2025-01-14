@@ -46,6 +46,7 @@ namespace ClientApi.Models
 
         [JsonProperty(PropertyName = "o")]
         public string priceStr { get; set; }
+
     }
 
 }

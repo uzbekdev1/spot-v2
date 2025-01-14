@@ -7,6 +7,7 @@ namespace ClientApi.Controllers
 {
     public class CommonController : BaseController
     {
+
         private readonly ILogger<CommonController> _logger;
 
         private readonly IConfiguration _configuration;
@@ -25,6 +26,12 @@ namespace ClientApi.Controllers
             {
                 var version = _configuration["AppVersion"];
 
+                try
+                {
+                    _logger.LogInformation($"Client {GetIPAddress()}; UserId: {UserId}; AppVersion: {version}");
+                }
+                finally { }
+
                 return Ok(version);
             }
             catch (Exception exp)
@@ -39,15 +46,33 @@ namespace ClientApi.Controllers
         {
             var clientIp = "";
             var version = "";
+            int? userId = null;
             try
             {
-                clientIp = GetIPAddress();
-                version = _configuration["AppVersion"];
+                try
+                {
+                    clientIp = GetIPAddress();
+                    version = _configuration["AppVersion"];
+                    userId = UserId;
+                }
+                finally { }
+
+                if (DateTime.Now.Hour == 10)
+                {
+                    var _minute = DateTime.Now.Minute;
+                    if ((25 <= _minute && _minute <= 35) || (45 <= _minute && _minute <= 55))
+                    {
+                        _logger.LogInformation($"Client {clientIp}: Download app v{version}; UserId: {userId}; Попробуйте позже!");
+
+                        return BadRequest("Попробуйте позже!");
+                    }
+                }
+
                 var root = Path.GetDirectoryName(Assembly.GetAssembly(typeof(Program)).Location);
                 var path = Path.Combine(root, "Files", "SpotClient", test ? "Debug" : "Release", "SpotLauncher.exe");
                 var bytes = await System.IO.File.ReadAllBytesAsync(path);
 
-                _logger.LogInformation($"Client {clientIp}: Download app v{version}");
+                _logger.LogInformation($"Client {clientIp}: Download app v{version}; UserId: {userId};");
 
                 return File(bytes, "application/octet-stream", "SpotLauncher.exe");
             }
@@ -64,5 +89,6 @@ namespace ClientApi.Controllers
         {
             return Ok($"{DateTime.Now:dd-MM-yyyy HH:mm:ss.fff}");
         }
+
     }
 }

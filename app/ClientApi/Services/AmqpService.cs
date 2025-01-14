@@ -7,6 +7,7 @@ namespace ClientApi.Services
 {
     public class AmqpService
     {
+
         private IModel _channel;
 
         private readonly ILogger<AmqpService> _logger;
@@ -25,7 +26,8 @@ namespace ClientApi.Services
                     HostName = "localhost",
                     Port = 5672,
                     UserName = "guest",
-                    Password = "ClLbxh7qmq7h_s"
+                    Password = "ClLbxh7qmq7h_s",
+                    ConsumerDispatchConcurrency = 20
                 };
                 var connection = factory.CreateConnection();
 

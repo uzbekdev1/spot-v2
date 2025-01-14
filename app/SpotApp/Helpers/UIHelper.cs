@@ -30,12 +30,7 @@ namespace SpotApp.Helpers
         {
             return val.ToString("n2");
         }
-
-        public static string NumberFormat(int? val)
-        {
-            return val > 0 ? val.Value.ToString("n2") : "";
-        }
-
+         
         public static void RunAsync(Form form, Action<Form> action, int waiting = 100)
         {
             var runner = new BackgroundWorker();
@@ -112,12 +107,7 @@ namespace SpotApp.Helpers
 
             runner.RunWorkerAsync();
         }
-
-        public static DateTime ToVersionTime(string s)
-        {
-            return DateTime.ParseExact(s, "ddMMyyyy", null, DateTimeStyles.None);
-        }
-
+         
         public static void SafeInvokeForm(Form form, Action<Form> action)
         {
             if (form.InvokeRequired)
@@ -156,5 +146,6 @@ namespace SpotApp.Helpers
 
             return timeValue.ToString();
         }
+   
     }
 }

@@ -13,16 +13,17 @@ using System.Windows.Forms;
 namespace SpotApp.Controls
 {
 
-    public delegate void OpenNewBidEventHandler();
+    internal delegate void OpenNewBidEventHandler();
 
-    public delegate void AllBidsFormListF1KeyEventHandler();
+    internal delegate void AllBidsFormListF1KeyEventHandler();
 
-    public delegate void AllBidsFormBidListFormEventHandler(int contractId);
+    internal delegate void AllBidsFormBidListFormEventHandler(int contractId);
 
-    public delegate void OpenNewPostBidEventHandler();
+    internal delegate void OpenNewPostBidEventHandler();
 
     partial class ContractsControl : UserControl
     {
+
         private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private List<SaleContract> _saleContracts = new List<SaleContract>();
@@ -52,8 +53,11 @@ namespace SpotApp.Controls
         private string _token;
 
         private bool _saleContractSearchIsWorking = false;
+
         private bool _allContractSearchIsWorking = false;
+
         private bool _newSpotContractSearchIsWorking = false;
+
         private bool _orderTemplateSearchIsWorking = false;
 
         private ErrorMessage _errorMessage = new ErrorMessage() { haveError = false };
@@ -81,7 +85,7 @@ namespace SpotApp.Controls
 
             try
             {
-                var service = new SpotServiceV2();
+                var service = new SpotService();
                 _contractParts = service.Parts(_token, 4000);
             }
             catch (Exception ex)
@@ -180,7 +184,7 @@ namespace SpotApp.Controls
                 try
                 {
                     _saleContractSearchIsWorking = true;
-                    var service = new SpotServiceV2();
+                    var service = new SpotService();
                     _saleContracts = service.SaleContracts(partId, term, true, _token, 4000);
                 }
                 catch (Exception ex)
@@ -220,7 +224,7 @@ namespace SpotApp.Controls
                 try
                 {
                     _allContractSearchIsWorking = true;
-                    var service = new SpotServiceV2();
+                    var service = new SpotService();
                     _allContracts = service.AllContracts(partId, term, false, _token, 4000);
                 }
                 catch (Exception ex)
@@ -263,7 +267,7 @@ namespace SpotApp.Controls
                 try
                 {
                     _newSpotContractSearchIsWorking = true;
-                    var service = new SpotServiceV2();
+                    var service = new SpotService();
                     _newSpotContracts = service.NewSpotMainContracts(term, _token, 4000);
                 }
                 catch (Exception ex)
@@ -303,7 +307,7 @@ namespace SpotApp.Controls
                 try
                 {
                     _orderTemplateSearchIsWorking = true;
-                    var service = new SpotServiceV2();
+                    var service = new SpotService();
                     _orderTemplate = service.GetOrderTemplates(term, _token, 4000);
                 }
                 catch (Exception ex)
@@ -662,7 +666,7 @@ namespace SpotApp.Controls
 
                 try
                 {
-                    var service = new SpotServiceV2();
+                    var service = new SpotService();
                     var result = service.DeleteOrderTemplate(SelectedTemplate.id, _token);
                 }
                 catch (Exception ex)
@@ -727,5 +731,6 @@ namespace SpotApp.Controls
                 e.IsInputKey = true;
             }
         }
+
     }
 }

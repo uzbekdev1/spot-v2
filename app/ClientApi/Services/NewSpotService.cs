@@ -7,7 +7,8 @@ namespace ClientApi.Services
 {
     public class NewSpotService
     {
-        private readonly int _apiTimedOut = 6000; // 6000 msec = 6 sec
+
+        private readonly TimeSpan _timeOut = TimeSpan.FromMilliseconds(6 * 1000);
 
         public readonly string _apiUrl;
 
@@ -24,7 +25,7 @@ namespace ClientApi.Services
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
 
-            request.Timeout = _apiTimedOut;
+            request.Timeout = _timeOut;
 
             var response = await client.ExecuteAsync(request);
 
@@ -47,5 +48,6 @@ namespace ClientApi.Services
 
             return resut.Data;
         }
+
     }
 }

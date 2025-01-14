@@ -16,14 +16,15 @@ using System.Windows.Forms;
 namespace SpotApp.Forms
 {
 
-    public delegate void ReloadMyBidEventHandler(string formTag);
+    internal delegate void ReloadMyBidEventHandler(string formTag);
 
-    public delegate void SendAllNewBidsEventHandler();
+    internal delegate void SendAllNewBidsEventHandler();
 
-    public delegate void NewBidFormF1KeyEventHandler();
+    internal delegate void NewBidFormF1KeyEventHandler();
 
     partial class NewBidForm : Form
     {
+
         public event NewBidFormF1KeyEventHandler NewBidFormF1Key;
 
         private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -33,10 +34,6 @@ namespace SpotApp.Forms
         private ContractItem _selectContact;
 
         private readonly string _id;
-
-        public event ReloadMyBidEventHandler ReloadMyBids;
-
-        public event SendAllNewBidsEventHandler SendAllNewBids;
 
         private decimal _contractStartPrice = decimal.Zero;
 
@@ -63,6 +60,8 @@ namespace SpotApp.Forms
         private List<ContractItem> _contracts = new List<ContractItem>();
 
         private ErrorMessage _errorMessage = new ErrorMessage() { haveError = false };
+
+        private bool _bidIsSending = false;
 
         private bool FormNotValid(string errText = "")
         {
@@ -91,6 +90,16 @@ namespace SpotApp.Forms
             if (!decimal.TryParse(UIHelper.CleanNumber(TxtBidPrice.Text), NumberStyles.Any, null, out var bidprice) || bidprice <= 0)
             {
                 return FormNotValid("Цена не действует");
+            }
+
+            var bidPriceStr = bidprice.ToString().Replace(",", ".");
+            var dotIndex = bidPriceStr.IndexOf(".");
+            if (dotIndex != -1)
+            {
+                if (bidPriceStr.Substring(dotIndex + 1).Length > 2)
+                {
+                    return FormNotValid($"Цена {bidprice} не действует");
+                }
             }
 
             if (cbxClientInp == null)
@@ -174,7 +183,7 @@ namespace SpotApp.Forms
             try
             {
                 _refreshClientsIsWorking = true;
-                var service = new SpotServiceV2();
+                var service = new SpotService();
                 _clients = service.ClientsDDL(_token, true, 3000);
             }
             catch (Exception ex)
@@ -279,6 +288,10 @@ namespace SpotApp.Forms
             InitializeComponent();
         }
 
+        public event ReloadMyBidEventHandler ReloadMyBids;
+
+        public event SendAllNewBidsEventHandler SendAllNewBids;
+
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if (keyData == Keys.F1)
@@ -317,7 +330,7 @@ namespace SpotApp.Forms
             try
             {
                 _rangeContractsIsWorking = true;
-                var service = new SpotServiceV2();
+                var service = new SpotService();
                 _rangeContracts = service.RangeContracts(_selectContact.contractId, _token, 3000);
             }
             catch (Exception ex)
@@ -402,19 +415,28 @@ namespace SpotApp.Forms
                     _logger.Error($"WindowOrder: {WindowOrder}; uid: {_id}; nv");
                     return;
                 }
-
-                Opacity = 0;
-                WindowState = FormWindowState.Minimized;
-
+                
                 try
                 {
-                    ThreadPool.QueueUserWorkItem(a =>
+                    if (!_bidIsSending)
                     {
-                        var service = new SpotServiceV2();
-                        _orderForm.clientDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-                        _orderForm.dbDate = _orderForm.clientDate;
-                        service.CreateOrderV2(_orderForm, _token);
-                    });
+                        _bidIsSending = true;
+
+                        Opacity = 0;
+                        WindowState = FormWindowState.Minimized;
+
+                        ThreadPool.QueueUserWorkItem(a =>
+                        {
+                            var service = new SpotService();
+                            _orderForm.clientDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+                            _orderForm.dbDate = _orderForm.clientDate;
+                            service.CreateOrderV2(_orderForm, _token);
+                        });
+                    }
+                    else
+                    {
+                        _logger.Info($"New bid v2 uid: {_orderForm.uid}");
+                    }
 
                     _logger.Info("New bid: ok...");
                 }
@@ -542,7 +564,7 @@ namespace SpotApp.Forms
             try
             {
                 _contractsWithIdIsWorking = true;
-                var service = new SpotServiceV2();
+                var service = new SpotService();
                 _contracts = service.GetContractsWithId($"{contractNumber}", _token, 3000);
             }
             catch (Exception ex)
@@ -802,7 +824,7 @@ namespace SpotApp.Forms
             {
                 _createTemplateIsWorking = true;
 
-                var service = new SpotServiceV2();
+                var service = new SpotService();
                 var createTemplate = service.CreateOrderTemplate(new OrderTemplate { contractId = _orderForm.contractId, inp = _orderForm.inp, price = _orderForm.price, kolvo = _orderForm.kolvo, maxPriceCount = (int)cbxLimitPrice.SelectedValue }, _token);
 
                 _createTemplateIsWorking = false;
@@ -813,5 +835,6 @@ namespace SpotApp.Forms
                     MessageBox.Show($"{createTemplate.Error}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
     }
 }

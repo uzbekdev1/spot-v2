@@ -14,5 +14,6 @@
         public string Version { get; set; }
 
         public string TimeUzExUrl { get; set; }
+
     }
 }

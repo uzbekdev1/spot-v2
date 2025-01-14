@@ -5,7 +5,6 @@ using System.IO;
 using ICSharpCode.SharpZipLib.Zip;
 using SpotLauncher.Properties;
 using IWshRuntimeLibrary;
-using System.Collections.Generic;
 
 namespace SpotLauncher
 {

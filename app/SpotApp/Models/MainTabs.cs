@@ -12,5 +12,6 @@
         NewSpotContract = 2,
 
         BidTemplate = 3
+
     }
 }

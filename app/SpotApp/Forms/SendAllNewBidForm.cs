@@ -11,7 +11,7 @@ using System.Windows.Forms;
 namespace SpotApp.Forms
 {
 
-    public delegate void ReloadMyBidsEventHandler();
+    internal delegate void ReloadMyBidsEventHandler();
 
     partial class SendAllNewBidForm : Form
     {
@@ -29,6 +29,8 @@ namespace SpotApp.Forms
         private double _timeDifference = 0.0;
 
         public event ReloadMyBidsEventHandler ReloadMyBids;
+
+        private bool _bidsIsSending = false;
 
         public SendAllNewBidForm(string token)
         {
@@ -86,7 +88,7 @@ namespace SpotApp.Forms
             {
                 try
                 {
-                    var servise = new SpotServiceV2();
+                    var servise = new SpotService();
                     _timeDifference = servise.GetTimeV2(_token).Subtract(DateTime.Now).TotalMilliseconds;
                 }
                 catch (Exception ex)
@@ -104,26 +106,35 @@ namespace SpotApp.Forms
             {
                 try
                 {
-                    for (var index = 0; index < _orderItems.Count; index++)
+                    if (!_bidsIsSending)
                     {
-                        _orderItems[index].clientDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-                        _orderItems[index].dbDate = _orderItems[index].clientDate;
+                        _bidsIsSending = true;
+
+                        for (var index = 0; index < _orderItems.Count; index++)
+                        {
+                            _orderItems[index].clientDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+                            _orderItems[index].dbDate = _orderItems[index].clientDate;
+                        }
+
+                        var service = new SpotService();
+                        var bulkOrders = service.BulkOrders(_orderItems, _token, _orderLogsJson, _timeDifference);
+                        _logger.Info("Bulk order: OK...");
+
+                        var endDate = DateTime.Now;
+                        _logger.Info($"PC~SendAllNewBidForm.BtnOk_Click_Finally {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds})");
+
+                        if (bulkOrders.Success)
+                        {
+                            MessageBox.Show(this, bulkOrders.Data, "Успешно", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show(this, bulkOrders.Error, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                     }
-
-                    var service = new SpotServiceV2();
-                    var bulkOrders = service.BulkOrders(_orderItems, _token, _orderLogsJson, _timeDifference);
-                    _logger.Info("Bulk order: OK...");
-
-                    var endDate = DateTime.Now;
-                    _logger.Info($"PC~SendAllNewBidForm.BtnOk_Click_Finally {startDate:yyyy-MM-dd HH:mm:ss.fff} - {endDate:yyyy-MM-dd HH:mm:ss.fff} diff({endDate.Subtract(startDate).TotalMilliseconds})");
-
-                    if (bulkOrders.Success)
+                    else 
                     {
-                        MessageBox.Show(this, bulkOrders.Data, "Успешно", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        MessageBox.Show(this, bulkOrders.Error, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        _logger.Info($"Bulk order v2 uid: {_orderItems[0].uid}");
                     }
                 }
                 finally

@@ -2,7 +2,7 @@
 
 namespace SpotApp.Dtos
 {
-    public class RangeContract
+    internal class RangeContract
     {
         
         public DateTime priceDate { get; set; }

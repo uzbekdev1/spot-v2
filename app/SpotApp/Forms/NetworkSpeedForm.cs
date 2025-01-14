@@ -6,16 +6,21 @@ using System.Windows.Forms;
 
 namespace SpotApp.Forms
 {
-    public partial class NetworkSpeedForm : Form
+    partial class NetworkSpeedForm : Form
     {
+
         private const int timerUpdate = 1000;
 
         private NetworkInterface[] nicArr;
 
         private Timer timer;
+
         private long TotalBytesReceived = 0;
+
         private long TotalBytesSent = 0;
+
         private long MaxSpeedDownload = 0;
+
         private long MaxSpeedUpload = 0;
 
         private NetworkInterface SelectedNetworkInterface = null;
@@ -152,5 +157,6 @@ namespace SpotApp.Forms
             TotalBytesReceived = interfaceStats.BytesReceived;
             TotalBytesSent = interfaceStats.BytesSent;
         }
+  
     }
 }

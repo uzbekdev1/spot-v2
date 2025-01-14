@@ -2,6 +2,7 @@
 {
     internal class SaleContract
     {
+
         public int id { get; set; }
 
         public string name { get; set; }
@@ -9,5 +10,6 @@
         public decimal? demand { get; set; }
 
         public decimal? offer { get; set; }
+
     }
 }

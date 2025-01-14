@@ -2,6 +2,7 @@
 {
     internal class MyOrderDesignV2
     {
+
         public int orderId { get; set; }
 
         public string orderTime { get; set; }
@@ -15,5 +16,6 @@
         public int kolvo { get; set; }
 
         public string status { get; set; }
+
     }
 }

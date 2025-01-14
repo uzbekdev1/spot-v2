@@ -12,15 +12,12 @@ using System.Windows.Forms;
 
 namespace SpotApp.Forms
 {
-    public delegate void ContractQuoteFormF1KeyEventHandler();
+    internal delegate void ContractQuoteFormF1KeyEventHandler();
 
-    public delegate void ContractQuoteFormBidFormEventHandler(int contractId);
+    internal delegate void ContractQuoteFormBidFormEventHandler(int contractId);
 
-    public partial class ContractQuoteForm : Form
+    partial class ContractQuoteForm : Form
     {
-        public event ContractQuoteFormF1KeyEventHandler ContractQuoteFormF1Key;
-
-        public event ContractQuoteFormBidFormEventHandler ContractQuoteFormShowBidForm;
 
         private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -44,6 +41,10 @@ namespace SpotApp.Forms
             InitializeComponent();
         }
 
+        public event ContractQuoteFormF1KeyEventHandler ContractQuoteFormF1Key;
+
+        public event ContractQuoteFormBidFormEventHandler ContractQuoteFormShowBidForm;
+
         private void FetchList()
         {
             if (_searchIsWorking)
@@ -57,7 +58,7 @@ namespace SpotApp.Forms
             try
             {
                 _searchIsWorking = true;
-                var service = new SpotServiceV2();
+                var service = new SpotService();
                 _quotes = service.Quotes(_contractId, _token, 5000);
             }
             catch (Exception ex)
@@ -206,5 +207,6 @@ namespace SpotApp.Forms
         {
             ShowBidForms();
         }
+  
     }
 }

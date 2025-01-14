@@ -28,5 +28,6 @@
         public string dbDate { get; set; }
 
         public int orderType { get; set; }
+
     }
 }

@@ -7,6 +7,7 @@ namespace ClientApi.Middlewares
     {
 
         private readonly RequestDelegate _next;
+
         private readonly ILogger<ExceptionMiddleware> _logger;
 
         private void WriteLog(string userId, Exception exception)
@@ -25,30 +26,7 @@ namespace ClientApi.Middlewares
             try
             {
                 await _next(context);
-            }
-            catch (BadHttpRequestException exception)
-            {
-                if (context.Response.HasStarted)
-                {
-                    throw;
-                }
-
-                var error = new ApiResponse
-                {
-                    Data = null,
-                    Error = exception.Message,
-                    Success = false,
-                };
-
-                context.Response.StatusCode = StatusCodes.Status200OK;
-                context.Response.ContentType = "application/json";
-
-                var userId = context.Request.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                WriteLog(userId, exception);
-
-                await context.Response.WriteAsync(error.ToString());
-            }
+            } 
             catch (Exception exception)
             {
                 if (context.Response.HasStarted)
@@ -62,13 +40,12 @@ namespace ClientApi.Middlewares
                     Error = exception.Message,
                     Success = false,
                 };
-
-                context.Response.StatusCode = StatusCodes.Status200OK;
-                context.Response.ContentType = "application/json";
-
                 var userId = context.Request.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 WriteLog(userId, exception);
+
+                context.Response.StatusCode = StatusCodes.Status200OK;
+                context.Response.ContentType = "application/json";
 
                 await context.Response.WriteAsync(error.ToString());
             }

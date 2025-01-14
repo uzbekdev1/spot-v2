@@ -18,6 +18,7 @@ namespace ClientApi.Controllers
     [CheckAuth]
     public class CabinetController : BaseController
     {
+
         private readonly SpotService _spotService;
 
         private readonly NewSpotService _newSpotService;
@@ -40,6 +41,11 @@ namespace ClientApi.Controllers
         {
             var timeNow = DateTime.Now;
             var milliSeconds = timeNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
+
+            Task.Factory.StartNew(() =>
+            {
+                _logger.LogInformation($"CheckTimeV2: {timeNow.ToString("yyyy-MM-dd HH:mm:ss.fff")}; UserId:{UserId}; UserIp:{GetIPAddress}");
+            });
 
             return Ok(milliSeconds);
         }
@@ -77,51 +83,6 @@ namespace ClientApi.Controllers
                 return BadRequest(exp.Message);
             }
         }
-
-        //[HttpPost]
-        //[ProducesDefaultResponseType(typeof(ApiResponse))]
-        //public IActionResult CreateOrder([FromBody] OrderEmbed model, [FromServices] AmqpService amqpService)
-        //{
-
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest("Bad data");
-        //    }
-
-        //    var decode = _cryptographyHelper.Decrypt(model.raw);
-
-        //    if (string.IsNullOrEmpty(decode))
-        //    {
-        //        return BadRequest("Invalid format");
-        //    }
-
-        //    var result = JsonConvert.DeserializeObject<OrderForm>(decode);
-
-        //    if (result == null)
-        //    {
-        //        return BadRequest("Invalid data");
-        //    }
-
-        //    if (!Guid.TryParse(result.uid, out var uid) || uid == Guid.Empty)
-        //    {
-        //        return BadRequest("Invalid key");
-        //    }
-
-        //    var serverDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-
-        //    try
-        //    {
-        //        amqpService.PushMessage(UserId, result.contractId, result.kolvo, result.inp, result.price, GetIPAddress(), result.clientDate, serverDate, result.uid, result.clientVersion, "", result.dbDate);
-
-        //        _logger.LogInformation($"Order time: {serverDate}; Send order: {JsonConvert.SerializeObject(result, Formatting.None)}");
-        //    }
-        //    catch (Exception exp)
-        //    {
-        //        _logger.LogError(LogGenerate.Instance.GenerateLogError("", exp.Message, exp.InnerException, exp.StackTrace, new { UserId, result }));
-        //    }
-
-        //    return Ok();
-        //}
 
         [HttpPost("{orderId}")]
         [ProducesDefaultResponseType(typeof(ApiResponse))]
@@ -642,6 +603,11 @@ namespace ClientApi.Controllers
                     throw new Exception($"Неправильный время подачи {postDate.Value:dd.MM.yyyy HH:mm:ss.fff}");
                 }
 
+                if (postDate.Value < serverDate)
+                {
+                    throw new Exception($"Неправильный время подачи {postDate.Value:dd.MM.yyyy HH:mm:ss.fff} < Сервер время {serverDate:dd.MM.yyyy HH:mm:ss.fff}");
+                }
+
                 if (!int.TryParse(_cryptographyHelper.DecryptV2(result.kolvoStr), out int _kolvo))
                 {
                     throw new Exception("Invalid amount");
@@ -702,5 +668,6 @@ namespace ClientApi.Controllers
                 return BadRequest(exp.Message);
             }
         }
+
     }
 }

@@ -14,6 +14,7 @@ namespace ClientApi.Controllers
 {
     public class AccountController : BaseController
     {
+
         private readonly SpotService _spotService;
 
         private readonly CryptographyHelper _cryptographyHelper;
@@ -99,53 +100,6 @@ namespace ClientApi.Controllers
                 return BadRequest(exp.Message);
             }
         }
-
-#if DEBUG
-
-        //[HttpPost]
-        //[ProducesDefaultResponseType(typeof(ApiResponse<UserInfo>))]
-        //public IActionResult LoginLocale([FromBody] LoginModel result)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest("Bad data");
-        //    }
-
-        //    var info = _spotService.GetUser(result.login, result.password, $"{Guid.NewGuid()}");
-
-        //    if (info == null)
-        //    {
-        //        return BadRequest("User not found");
-        //    }
-
-        //    Log.Information($"User info: {JsonConvert.SerializeObject(info, Formatting.None)}");
-
-        //    var tokenHandler = new JwtSecurityTokenHandler();
-        //    var key = Encoding.ASCII.GetBytes(AppSettings.JwtKey);
-        //    var tokenDescriptor = new SecurityTokenDescriptor
-        //    {
-        //        Subject = new ClaimsIdentity(new Claim[]
-        //        {
-        //                new Claim(ClaimTypes.Name, info.login),
-        //                new Claim(ClaimTypes.NameIdentifier, $"{info.id}"),
-        //        }),
-        //        Expires = DateTime.Now.AddDays(1),
-        //        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-        //    };
-        //    var token = tokenHandler.CreateToken(tokenDescriptor);
-
-        //    return Ok(new UserInfo
-        //    {
-        //        Login = info.login,
-        //        Name = $"{info.first_name} {info.last_name} {info.second_name}",
-        //        Token = tokenHandler.WriteToken(token),
-        //        Windows = info.window_count,
-        //        Version = _configuration["AppVersion"],
-        //        TimeUzExUrl = _configuration["TimeUzExUzUrl"]
-        //    });
-        //}
-
-#endif
 
     }
 }
